@@ -24,6 +24,15 @@ def get_header_guard_end(filename):
 DEST_HEADER = 1
 DEST_KCONFIG = 2
 
+# If nl is something like /soc/peripheral@50000000/qspi@2b000/mx25r6435f@0, it will be
+# converted to C define for node, in this example
+# DT_N_S_soc_S_peripheral_50000000_S_qspi_2b000_S_mx25r6435f_0.
+# If it is just node label, something like flash_sim0, it will just return that.
+def dt_device_node_label_or_node(nl):
+    out = nl.replace('/', "_S_").replace('@', '_' )
+    if (out != nl):
+        out = f"DT_N{out}"
+    return out
 
 def get_config_lines(gpm_config, greg_config, head, split, dest, current_domain=None):
     config_lines = list()
@@ -61,6 +70,7 @@ def get_config_lines(gpm_config, greg_config, head, split, dest, current_domain=
             add_line(f'{name_upper}_END_ADDRESS', hex(partition['end_address']))
             add_line(f'{name_upper}_SIZE', hex(partition['size']))
             add_line(f'{name_upper}_NAME', name)
+            add_line(f'{name_upper}_DRIVER_KCONFIG', region['driver_kconfig'])
 
             if partition_has_device(partition):
                 add_line(f'{name_upper}_ID', str(partition_id))
@@ -77,7 +87,7 @@ def get_config_lines(gpm_config, greg_config, head, split, dest, current_domain=
 
             if dest is DEST_HEADER:
                 if partition_has_device(partition):
-                    add_line(f'{name_upper}_DEV_NAME', f"\"{region['device']}\"")
+                    add_line(f'{name_upper}_DEV', dt_device_node_label_or_node(region['device']))
             elif dest is DEST_KCONFIG:
                 if 'span' in partition.keys():
                     add_line(f'{name_upper}_SPAN', string_of_strings(partition['span']))
