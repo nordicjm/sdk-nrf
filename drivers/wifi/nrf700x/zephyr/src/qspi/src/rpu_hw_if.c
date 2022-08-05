@@ -151,7 +151,7 @@ int rpu_gpio_config(void)
 	}
 
 	ret = gpio_pin_configure_dt(&bucken_spec,
-			GPIO_OUTPUT | NRF_GPIO_DS_ALT);
+			GPIO_OUTPUT | GPIO_DS_ALT);
 
 	ret = gpio_pin_configure_dt(&iovdd_ctrl_spec, GPIO_OUTPUT);
 
