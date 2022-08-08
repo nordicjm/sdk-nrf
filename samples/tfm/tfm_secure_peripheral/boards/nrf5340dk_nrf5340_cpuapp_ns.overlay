@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
- &spi3 {
+#include "nrf5340dk_nrf5340_cpuapp_ns-pinctrl.dtsi"
+
+&spi3 {
 	/* Disabled in non-secure image. */
 	status = "disabled";
-	sck-pin = <47>;
-	miso-pin = <0xffffffff>;
-	mosi-pin = <45>;
 };
