@@ -5,7 +5,7 @@
 #
 
 macro(add_region)
-  set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DRIVER_KCONFIG DYNAMIC_PARTITION)
+  set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DEFAULT_DRIVER_KCONFIG DYNAMIC_PARTITION)
   cmake_parse_arguments(REGION "" "${oneValueArgs}" "" ${ARGN})
   list(APPEND regions ${REGION_NAME})
   list(APPEND region_arguments "--${REGION_NAME}-size;${REGION_SIZE}")
@@ -15,7 +15,7 @@ macro(add_region)
   if (REGION_DEVICE)
     list(APPEND region_arguments "--${REGION_NAME}-device;${REGION_DEVICE}")
   list(APPEND region_arguments
-       "--${REGION_NAME}-driver-kconfig;${REGION_DRIVER_KCONFIG}")
+       "--${REGION_NAME}-default-driver-kconfig;${REGION_DEFAULT_DRIVER_KCONFIG}")
   endif()
   if (REGION_DYNAMIC_PARTITION)
     list(APPEND region_arguments
@@ -193,7 +193,7 @@ add_region(
   BASE ${CONFIG_FLASH_BASE_ADDRESS}
   PLACEMENT complex
   DEVICE flash_controller
-  DRIVER_KCONFIG CONFIG_SOC_FLASH_NRF
+  DEFAULT_DRIVER_KCONFIG CONFIG_SOC_FLASH_NRF
   )
 
 dt_chosen(ext_flash_dev PROPERTY nordic,pm-ext-flash)
@@ -201,13 +201,19 @@ if (DEFINED ext_flash_dev)
   dt_prop(num_bits PATH ${ext_flash_dev} PROPERTY size)
   math(EXPR num_bytes "${num_bits} / 8")
 
+  if (CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+    set(external_flash_driver_kconfig CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+  else()
+    set(external_flash_driver_kconfig CONFIG_NORDIC_QSPI_NOR)
+  endif()
+
   add_region(
     NAME external_flash
     SIZE ${num_bytes}
     BASE ${CONFIG_PM_EXTERNAL_FLASH_BASE}
     PLACEMENT start_to_end
     DEVICE ${ext_flash_dev}
-    DRIVER_KCONFIG CONFIG_NORDIC_QSPI_NOR
+    DEFAULT_DRIVER_KCONFIG ${external_flash_driver_kconfig}
     )
 endif()
 
@@ -235,7 +241,7 @@ if (DEFINED mcuboot_NRF53_MULTI_IMAGE_UPDATE)
     BASE ${ram_flash_addr}
     PLACEMENT start_to_end
     DEVICE ${ram_flash_label}
-    DRIVER_KCONFIG CONFIG_FLASH_SIMULATOR
+    DEFAULT_DRIVER_KCONFIG CONFIG_FLASH_SIMULATOR
     )
 endif()
 
