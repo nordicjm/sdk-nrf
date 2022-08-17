@@ -259,14 +259,13 @@ static int old_entries_invalidate(struct emds_fs *fs)
 	return 0;
 }
 
-int emds_flash_init(struct emds_fs *fs, const struct device *dev)
+int emds_flash_init(struct emds_fs *fs)
 {
 	if (fs->is_initialized) {
 		return -EACCES;
 	}
 
 	k_mutex_init(&fs->emds_lock);
-	fs->flash_dev = dev;
 	if (!fs->flash_dev) {
 		LOG_ERR("No valid flash device found");
 		return -ENXIO;
