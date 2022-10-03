@@ -35,6 +35,11 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     return()
   endif()
 
+  if (CONFIG_SYSBUILD)
+    # Don't configure mcuboot when using sysbuild
+    return()
+  endif()
+
   include(${ZEPHYR_BASE}/../nrf/cmake/fw_zip.cmake)
   include(${ZEPHYR_BASE}/../nrf/cmake/dfu_multi_image.cmake)
 
