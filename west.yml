@@ -33,6 +33,8 @@ manifest:
       url-base: https://github.com/memfault
     - name: ant-nrfconnect
       url-base: https://github.com/ant-nrfconnect
+    - name: nordicjm
+      url-base: https://github.com/nordicjm
 
   # If not otherwise specified, the projects below should be obtained
   # from the ncs remote.
@@ -52,7 +54,8 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
       repo-path: sdk-zephyr
-      revision: d9f99ed1951a973c691cd5d6bd70aecb597b2030
+      revision: sysbuild
+      remote: nordicjm
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
@@ -66,36 +69,18 @@ manifest:
         #
         # Please keep this list sorted alphabetically.
         name-allowlist:
-          - TraceRecorderSource
-          - canopennode
-          - chre
           - cmsis
           - edtt
           - fatfs
-          - fff
           - hal_nordic
-          - hal_st # required for ST sensors (unrealted to STM32 MCUs)
-          - liblc3
           - libmetal
           - littlefs
-          - loramac-node
-          - lvgl
-          - lz4
           - mbedtls
-          - mipi-sys-t
-          - nanopb
           - net-tools
-          - nrf_hw_models
-          - open-amp
           - picolibc
-          - psa-arch-tests
           - segger
-          - tinycbor
           - tinycrypt
-          - tf-m-tests
-          - uoscore-uedhoc
           - zcbor
-          - zscilib
 
     # NCS repositories.
     #
