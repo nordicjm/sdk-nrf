@@ -3,3 +3,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
+
+config SOME_FAKE_CONFIG_VALUE
+	int "test int value for sysbuild"
+	help
+	  Value should only be part of sysbuild
