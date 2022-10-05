@@ -3,6 +3,7 @@ add_subdirectory(${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/bootutil/zephyr
 )
 
 if (CONFIG_MCUBOOT)
+return()
   if (CONFIG_NRF53_MULTI_IMAGE_UPDATE)
     set_shared(IMAGE ${IMAGE_NAME} PROPERTY NRF53_MULTI_IMAGE_UPDATE
       ${CONFIG_NRF53_MULTI_IMAGE_UPDATE})
@@ -35,10 +36,12 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     return()
   endif()
 
-  if (CONFIG_SYSBUILD)
+  if (DEFINED CONFIG_SYSBUILD)
     # Don't configure mcuboot when using sysbuild
     return()
   endif()
+
+    return()
 
   include(${ZEPHYR_BASE}/../nrf/cmake/fw_zip.cmake)
   include(${ZEPHYR_BASE}/../nrf/cmake/dfu_multi_image.cmake)
