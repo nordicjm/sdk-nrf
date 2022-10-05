@@ -124,9 +124,11 @@ function(add_child_image)
   endif()
 
   # Don't add child images when using sysbuild
-  if (CONFIG_SYSBUILD)
+  if (DEFINED CONFIG_SYSBUILD)
     return()
   endif()
+
+return()
 
   set(oneValueArgs NAME SOURCE_DIR DOMAIN PRELOAD_IMAGE)
   cmake_parse_arguments(ACI "" "${oneValueArgs}" "" ${ARGN})

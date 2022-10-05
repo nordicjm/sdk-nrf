@@ -103,6 +103,10 @@ if (NOT (
   return()
 endif()
 
+if (DEFINED CONFIG_SYSBUILD)
+  return()
+endif()
+
 # Set the dynamic partition. This is the only partition which does not
 # have a statically defined size. There is only one dynamic partition per
 # domain. For the "root domain" (ie the domain of the root image) this is
