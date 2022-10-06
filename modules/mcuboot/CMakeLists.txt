@@ -239,18 +239,18 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       )
   endif()
 
-  add_child_image(
+  add_child_image_sysbuild(
     NAME mcuboot
     SOURCE_DIR ${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr
     )
 
   if (CONFIG_BUILD_S1_VARIANT)
-    add_child_image(
+    add_child_image_sysbuild(
       NAME s1_image
       PRELOAD_IMAGE mcuboot
       )
   elseif(CONFIG_BOOT_BUILD_DIRECT_XIP_VARIANT)
-    add_child_image(
+    add_child_image_sysbuild(
       NAME mcuboot_secondary_app
       PRELOAD_IMAGE app
       )
