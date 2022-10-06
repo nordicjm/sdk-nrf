@@ -4,6 +4,18 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+get_property(tmpvar GLOBAL PROPERTY somevar)
+message(WARNING "at this point, tmpvar is ${tmpvar}")
+set_property(GLOBAL APPEND PROPERTY somevar "other!")
+
+get_property(tmpvar GLOBAL PROPERTY letpmrun)
+message(WARNING "check ${tmpvar}")
+if (tmpvar STREQUAL "yes")
+message(WARNING "WOOT")
+else()
+return()
+endif()
+
 macro(add_region)
   set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DEFAULT_DRIVER_KCONFIG DYNAMIC_PARTITION)
   cmake_parse_arguments(REGION "" "${oneValueArgs}" "" ${ARGN})
@@ -83,6 +95,13 @@ get_property(PM_IMAGES GLOBAL PROPERTY PM_IMAGES)
 get_property(PM_SUBSYS_PREPROCESSED GLOBAL PROPERTY PM_SUBSYS_PREPROCESSED)
 get_property(PM_DOMAINS GLOBAL PROPERTY PM_DOMAINS)
 
+#list(APPEND PM_IMAGES mcuboot)
+#message(WARNING "tmp ${PM_IMAGES}")
+#set_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
+#set_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
+
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_PARTITIONS ${pm_out_partition_file})
+
 # This file is executed once per domain.
 #
 # It will be executed if one of the following criteria is true for the
@@ -100,12 +119,12 @@ if (NOT (
   (NOT IMAGE_NAME AND PM_DOMAINS) OR
   (PM_SUBSYS_PREPROCESSED AND CONFIG_PM_SINGLE_IMAGE)
   ))
-  return()
+#  return()
 endif()
 
-if (DEFINED CONFIG_SYSBUILD)
-  return()
-endif()
+#if (DEFINED CONFIG_SYSBUILD)
+#  return()
+#endif()
 
 # Set the dynamic partition. This is the only partition which does not
 # have a statically defined size. There is only one dynamic partition per
@@ -282,6 +301,8 @@ set(pm_output_cmd
   --input-regions ${pm_out_region_file}
   --config-file ${pm_out_dotconf_file}
   )
+
+message(WARNING "one: ${pm_cmd}\r\ntwo: ${pm_output_cmd}\r\n")
 
 # Run the partition manager algorithm.
 execute_process(
@@ -579,6 +600,7 @@ to the external flash")
         )
     endif()
 
+if (DEFINED SB_CONFIG_BOOTLOADER_MCUBOOT)
     math(EXPR app_to_secondary
       "${xip_addr} \
       + ${PM_MCUBOOT_SECONDARY_ADDRESS} \
@@ -590,6 +612,7 @@ to the external flash")
       PROPERTY app_TO_SECONDARY
       ${app_to_secondary}
       )
+endif()
   endif()
 
   # Explicitly add the root image domain hex file to the list

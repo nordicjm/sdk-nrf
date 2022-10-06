@@ -4,7 +4,9 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+message(WARNING "pt1")
 if (CONFIG_PARTITION_MANAGER_ENABLED)
+message(WARNING "pt2")
   if (NOT CONFIG_FLASH_MAP_CUSTOM)
     message(FATAL_ERROR "CONFIG_FLASH_MAP_CUSTOM must be set when \
       CONFIG_PARTITION_MANAGER_ENABLED is set")
@@ -37,6 +39,7 @@ function(preprocess_pm_yml in_file out_file)
     # Share location of preprocessed pm.yml file so that the parent image can
     # use it as source for partition manager configuration.
     set_shared(IMAGE ${IMAGE_NAME} APPEND PROPERTY PM_YML_FILES ${out_file})
+message(WARNING "image name ${IMAGE_NAME}")
   endif()
 
   # Re-configure (Re-execute all CMakeLists.txt code) when original
@@ -120,6 +123,7 @@ set_property(GLOBAL APPEND PROPERTY
   -DUSE_PARTITION_MANAGER=${using_partition_manager}
   )
 
+message(WARNING "2image name ${IMAGE_NAME}")
 if((EXISTS ${CMAKE_SOURCE_DIR}/pm.yml) AND IMAGE_NAME)
   # Only preprocess pm.yml when being built as sub image.
 
