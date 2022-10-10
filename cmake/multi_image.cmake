@@ -4,6 +4,10 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+if(APPLICATION)
+set(IMAGE_NAME ${APPLICATION})
+endif()
+
 if(IMAGE_NAME)
   set_shared(IMAGE ${IMAGE_NAME} PROPERTY KERNEL_HEX_NAME ${KERNEL_HEX_NAME})
   set_shared(IMAGE ${IMAGE_NAME} PROPERTY ZEPHYR_BINARY_DIR ${ZEPHYR_BINARY_DIR})
@@ -21,6 +25,23 @@ if(IMAGE_NAME)
   endif()
 
   generate_shared(IMAGE ${IMAGE_NAME} FILE ${CMAKE_BINARY_DIR}/shared_vars.cmake)
+#elseif(APPLICATION)
+#  set_shared(IMAGE ${APPLICATION} PROPERTY KERNEL_HEX_NAME ${KERNEL_HEX_NAME})
+#  set_shared(IMAGE ${APPLICATION} PROPERTY ZEPHYR_BINARY_DIR ${ZEPHYR_BINARY_DIR})
+#  # Share the elf file, in order to support symbol loading for debuggers.
+#  set_shared(IMAGE ${APPLICATION} PROPERTY KERNEL_ELF_NAME ${KERNEL_ELF_NAME})
+#  set_shared(IMAGE ${APPLICATION}
+#    PROPERTY BUILD_BYPRODUCTS
+#             ${PROJECT_BINARY_DIR}/${KERNEL_HEX_NAME}
+#             ${PROJECT_BINARY_DIR}/${KERNEL_ELF_NAME}
+#  )
+#  # Share the signing key file so that the parent image can use it to
+#  # generate signed update candidates.
+#  if(CONFIG_BOOT_SIGNATURE_KEY_FILE)
+#    set_shared(IMAGE ${APPLICATION} PROPERTY SIGNATURE_KEY_FILE ${CONFIG_BOOT_SIGNATURE_KEY_FILE})
+#  endif()
+#
+#  generate_shared(IMAGE ${APPLICATION} FILE ${CMAKE_BINARY_DIR}/shared_vars.cmake)
 else()
   # Store a preload file with whatever configurations are required to create
   # a variant build of this image (that is, 'app'). Copy relevant information
