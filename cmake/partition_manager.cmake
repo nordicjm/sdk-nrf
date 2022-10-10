@@ -98,7 +98,7 @@ get_property(PM_SUBSYS_PREPROCESSED GLOBAL PROPERTY PM_SUBSYS_PREPROCESSED)
 get_property(PM_DOMAINS GLOBAL PROPERTY PM_DOMAINS)
 
 #list(APPEND PM_IMAGES mcuboot)
-#message(WARNING "tmp ${PM_IMAGES}")
+message(WARNING "tmp ${PM_IMAGES}")
 #set_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
 #set_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
 
@@ -159,15 +159,30 @@ foreach (image ${PM_IMAGES})
   list(APPEND prefixed_images ${DOMAIN}:${image})
   list(APPEND images ${image})
 
-  get_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
-  get_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
+#  get_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
+#  get_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
+#include(${CMAKE_BINARY_DIR}/${image}/shared_vars.cmake)
+
+set(blah1)
+set(blah2)
+set(blah3)
+get_property(blah1 TARGET ${image}_shared_property_target PROPERTY PM_YML_FILES)
+get_property(blah2 TARGET ${image}_shared_property_target PROPERTY ZEPHYR_BINARY_DIR)
+set(${image}_input_files ${blah1})
+set(${image}_binary_dir ${blah2})
+
+message(WARNING "oohhh ${${image}_input_files} and ${${image}_binary_dir}")
+#get_property(${image}_input_files TARGET ${image}_shared_property_target PROPERTY PM_YML_FILES)
+#get_property(${image}_binary_dir TARGET ${image}_shared_property_target PROPERTY ZEPHYR_BINARY_DIR)
 
   list(APPEND input_files  ${${image}_input_files})
   list(APPEND header_files ${${image}_binary_dir}/${generated_path}/pm_config.h)
 
   # Re-configure (Re-execute all CMakeLists.txt code) when original
   # (not preprocessed) configuration file changes.
-  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
+#  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
+get_property(blah3 TARGET ${image}_shared_property_target PROPERTY PM_YML_DEP_FILES)
+set(dependencies ${blah3})
   set_property(
     DIRECTORY APPEND PROPERTY
     CMAKE_CONFIGURE_DEPENDS
@@ -178,8 +193,8 @@ endforeach()
 # Explicitly add the dynamic partition image
 list(APPEND prefixed_images "${DOMAIN}:${dynamic_partition}")
 list(APPEND images ${dynamic_partition})
-list(APPEND input_files ${ZEPHYR_BINARY_DIR}/${generated_path}/pm.yml)
-list(APPEND header_files ${ZEPHYR_BINARY_DIR}/${generated_path}/pm_config.h)
+#list(APPEND input_files ${ZEPHYR_BINARY_DIR}/${generated_path}/pm.yml)
+#list(APPEND header_files ${ZEPHYR_BINARY_DIR}/${generated_path}/pm_config.h)
 
 # Add subsys defined pm.yml to the input_files
 list(APPEND input_files ${PM_SUBSYS_PREPROCESSED})
@@ -707,13 +722,13 @@ else()
   set(merged_hex_to_flash ${PROJECT_BINARY_DIR}/${merged}.hex)
 endif()
 
-get_target_property(runners_content runners_yaml_props_target yaml_contents)
-
-string(REGEX REPLACE "hex_file:[^\n]*"
-  "hex_file: ${merged_hex_to_flash}" new  ${runners_content})
-
-set_property(
-  TARGET         runners_yaml_props_target
-  PROPERTY       yaml_contents
-  ${new}
-  )
+#get_target_property(runners_content runners_yaml_props_target yaml_contents)
+#
+#string(REGEX REPLACE "hex_file:[^\n]*"
+#  "hex_file: ${merged_hex_to_flash}" new  ${runners_content})
+#
+#set_property(
+#  TARGET         runners_yaml_props_target
+#  PROPERTY       yaml_contents
+#  ${new}
+#  )
