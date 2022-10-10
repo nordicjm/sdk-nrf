@@ -8,13 +8,15 @@ get_property(tmpvar GLOBAL PROPERTY somevar)
 message(WARNING "at this point, tmpvar is ${tmpvar}")
 set_property(GLOBAL APPEND PROPERTY somevar "other!")
 
-get_property(tmpvar GLOBAL PROPERTY letpmrun)
-message(WARNING "check ${tmpvar}")
-if (tmpvar STREQUAL "yes")
-message(WARNING "WOOT")
-else()
-return()
-endif()
+message(WARNING "image name ${IMAGE_NAME} application name ${APPLICATION}")
+
+#get_property(tmpvar GLOBAL PROPERTY letpmrun)
+#message(WARNING "check ${tmpvar}")
+#if (tmpvar STREQUAL "yes")
+#message(WARNING "WOOT")
+#else()
+#return()
+#endif()
 
 macro(add_region)
   set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DEFAULT_DRIVER_KCONFIG DYNAMIC_PARTITION)
@@ -119,7 +121,7 @@ if (NOT (
   (NOT IMAGE_NAME AND PM_DOMAINS) OR
   (PM_SUBSYS_PREPROCESSED AND CONFIG_PM_SINGLE_IMAGE)
   ))
-#  return()
+  return()
 endif()
 
 #if (DEFINED CONFIG_SYSBUILD)
@@ -219,26 +221,26 @@ add_region(
   DEFAULT_DRIVER_KCONFIG CONFIG_SOC_FLASH_NRF
   )
 
-dt_chosen(ext_flash_dev PROPERTY nordic,pm-ext-flash)
-if (DEFINED ext_flash_dev)
-  dt_prop(num_bits PATH ${ext_flash_dev} PROPERTY size)
-  math(EXPR num_bytes "${num_bits} / 8")
-
-  if (CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
-    set(external_flash_driver_kconfig CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
-  else()
-    set(external_flash_driver_kconfig CONFIG_NORDIC_QSPI_NOR)
-  endif()
-
-  add_region(
-    NAME external_flash
-    SIZE ${num_bytes}
-    BASE ${CONFIG_PM_EXTERNAL_FLASH_BASE}
-    PLACEMENT start_to_end
-    DEVICE ${ext_flash_dev}
-    DEFAULT_DRIVER_KCONFIG ${external_flash_driver_kconfig}
-    )
-endif()
+#dt_chosen(ext_flash_dev PROPERTY nordic,pm-ext-flash)
+#if (DEFINED ext_flash_dev)
+#  dt_prop(num_bits PATH ${ext_flash_dev} PROPERTY size)
+#  math(EXPR num_bytes "${num_bits} / 8")
+#
+#  if (CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+#    set(external_flash_driver_kconfig CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+#  else()
+#    set(external_flash_driver_kconfig CONFIG_NORDIC_QSPI_NOR)
+#  endif()
+#
+#  add_region(
+#    NAME external_flash
+#    SIZE ${num_bytes}
+#    BASE ${CONFIG_PM_EXTERNAL_FLASH_BASE}
+#    PLACEMENT start_to_end
+#    DEVICE ${ext_flash_dev}
+#    DEFAULT_DRIVER_KCONFIG ${external_flash_driver_kconfig}
+#    )
+#endif()
 
 # If simultaneous updates of the network core and application core is supported
 # we add a region which is used to emulate flash. In reality this data is being
