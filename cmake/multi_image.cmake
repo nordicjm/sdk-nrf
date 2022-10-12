@@ -9,22 +9,31 @@ set(IMAGE_NAME ${APPLICATION})
 endif()
 
 if(IMAGE_NAME)
-  set_shared(IMAGE ${IMAGE_NAME} PROPERTY KERNEL_HEX_NAME ${KERNEL_HEX_NAME})
-  set_shared(IMAGE ${IMAGE_NAME} PROPERTY ZEPHYR_BINARY_DIR ${ZEPHYR_BINARY_DIR})
-  # Share the elf file, in order to support symbol loading for debuggers.
-  set_shared(IMAGE ${IMAGE_NAME} PROPERTY KERNEL_ELF_NAME ${KERNEL_ELF_NAME})
-  set_shared(IMAGE ${IMAGE_NAME}
-    PROPERTY BUILD_BYPRODUCTS
+  set(KERNEL_HEX_NAME ${KERNEL_HEX_NAME} CACHE INTERNAL "")
+  set(ZEPHYR_BINARY_DIR ${ZEPHYR_BINARY_DIR} CACHE INTERNAL "")
+  set(KERNEL_ELF_NAME ${KERNEL_ELF_NAME} CACHE INTERNAL "")
+  set(BUILD_BYPRODUCTS 
              ${PROJECT_BINARY_DIR}/${KERNEL_HEX_NAME}
              ${PROJECT_BINARY_DIR}/${KERNEL_ELF_NAME}
-  )
+ CACHE INTERNAL "")
+
+#  set_shared(IMAGE ${IMAGE_NAME} PROPERTY KERNEL_HEX_NAME ${KERNEL_HEX_NAME})
+#  set_shared(IMAGE ${IMAGE_NAME} PROPERTY ZEPHYR_BINARY_DIR ${ZEPHYR_BINARY_DIR})
+  # Share the elf file, in order to support symbol loading for debuggers.
+#  set_shared(IMAGE ${IMAGE_NAME} PROPERTY KERNEL_ELF_NAME ${KERNEL_ELF_NAME})
+#  set_shared(IMAGE ${IMAGE_NAME}
+#    PROPERTY BUILD_BYPRODUCTS
+#             ${PROJECT_BINARY_DIR}/${KERNEL_HEX_NAME}
+#             ${PROJECT_BINARY_DIR}/${KERNEL_ELF_NAME}
+#  )
   # Share the signing key file so that the parent image can use it to
   # generate signed update candidates.
   if(CONFIG_BOOT_SIGNATURE_KEY_FILE)
-    set_shared(IMAGE ${IMAGE_NAME} PROPERTY SIGNATURE_KEY_FILE ${CONFIG_BOOT_SIGNATURE_KEY_FILE})
+  set(SIGNATURE_KEY_FILE ${CONFIG_BOOT_SIGNATURE_KEY_FILE} CACHE INTERNAL "")
+#    set_shared(IMAGE ${IMAGE_NAME} PROPERTY SIGNATURE_KEY_FILE ${CONFIG_BOOT_SIGNATURE_KEY_FILE})
   endif()
 
-  generate_shared(IMAGE ${IMAGE_NAME} FILE ${CMAKE_BINARY_DIR}/shared_vars.cmake)
+#  generate_shared(IMAGE ${IMAGE_NAME} FILE ${CMAKE_BINARY_DIR}/shared_vars.cmake)
 #elseif(APPLICATION)
 #  set_shared(IMAGE ${APPLICATION} PROPERTY KERNEL_HEX_NAME ${KERNEL_HEX_NAME})
 #  set_shared(IMAGE ${APPLICATION} PROPERTY ZEPHYR_BINARY_DIR ${ZEPHYR_BINARY_DIR})
@@ -423,10 +432,11 @@ function(add_child_image_from_source)
     RESULT_VARIABLE ret
     )
 
-  if (IMAGE_NAME)
-    # Expose your childrens secrets to your parent
-    set_shared(FILE ${CMAKE_BINARY_DIR}/${ACI_NAME}/shared_vars.cmake)
-  endif()
+#  if (IMAGE_NAME)
+#    # Expose your childrens secrets to your parent
+#    set( ${} CACHE INTERNAL "")
+#    set_shared(FILE ${CMAKE_BINARY_DIR}/${ACI_NAME}/shared_vars.cmake)
+#  endif()
 
   set_property(DIRECTORY APPEND PROPERTY
     CMAKE_CONFIGURE_DEPENDS
@@ -452,42 +462,42 @@ function(add_child_image_from_source)
 
   get_shared(${ACI_NAME}_byproducts IMAGE ${ACI_NAME} PROPERTY BUILD_BYPRODUCTS)
 
-  include(ExternalProject)
-  ExternalProject_Add(${ACI_NAME}_subimage
-    SOURCE_DIR ${source_dir}
-    BINARY_DIR ${CMAKE_BINARY_DIR}/${ACI_NAME}
-    BUILD_BYPRODUCTS ${${ACI_NAME}_byproducts}
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . -- ${multi_image_build_args}
-    INSTALL_COMMAND ""
-    BUILD_ALWAYS True
-    USES_TERMINAL_BUILD True
-    )
+#  include(ExternalProject)
+#  ExternalProject_Add(${ACI_NAME}_subimage
+#    SOURCE_DIR ${source_dir}
+#    BINARY_DIR ${CMAKE_BINARY_DIR}/${ACI_NAME}
+#    BUILD_BYPRODUCTS ${${ACI_NAME}_byproducts}
+#    CONFIGURE_COMMAND ""
+#    BUILD_COMMAND ${CMAKE_COMMAND} --build . -- ${multi_image_build_args}
+#    INSTALL_COMMAND ""
+#    BUILD_ALWAYS True
+#    USES_TERMINAL_BUILD True
+#    )
 
-  set_property(
-    TARGET ${ACI_NAME}_subimage
-    PROPERTY preload_file
-    ${preload_file}
-    )
-
-  set_property(
-    TARGET ${ACI_NAME}_subimage
-    PROPERTY source_dir
-    ${source_dir}
-    )
-
-  foreach(kconfig_target
-      menuconfig
-      guiconfig
-      ${EXTRA_KCONFIG_TARGETS}
-      )
-
-    add_custom_target(${ACI_NAME}_${kconfig_target}
-      ${CMAKE_MAKE_PROGRAM} ${kconfig_target}
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${ACI_NAME}
-      USES_TERMINAL
-      )
-  endforeach()
+#  set_property(
+#    TARGET ${ACI_NAME}_subimage
+#    PROPERTY preload_file
+#    ${preload_file}
+#    )
+#
+#  set_property(
+#    TARGET ${ACI_NAME}_subimage
+#    PROPERTY source_dir
+#    ${source_dir}
+#    )
+#
+#  foreach(kconfig_target
+#      menuconfig
+#      guiconfig
+#      ${EXTRA_KCONFIG_TARGETS}
+#      )
+#
+#    add_custom_target(${ACI_NAME}_${kconfig_target}
+#      ${CMAKE_MAKE_PROGRAM} ${kconfig_target}
+#      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${ACI_NAME}
+#      USES_TERMINAL
+#      )
+#  endforeach()
 
   if (NOT "${ACI_NAME}" STREQUAL "${${ACI_DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION}")
     set_property(
@@ -803,10 +813,11 @@ function(add_child_image_from_source_sysbuild_disabled)
     RESULT_VARIABLE ret
     )
 
-  if (IMAGE_NAME)
-    # Expose your childrens secrets to your parent
-    set_shared(FILE ${CMAKE_BINARY_DIR}/${ACI_NAME}/shared_vars.cmake)
-  endif()
+#  if (IMAGE_NAME)
+#    # Expose your childrens secrets to your parent
+#    set( ${} CACHE INTERNAL "")
+#    set_shared(FILE ${CMAKE_BINARY_DIR}/${ACI_NAME}/shared_vars.cmake)
+#  endif()
 
   set_property(DIRECTORY APPEND PROPERTY
     CMAKE_CONFIGURE_DEPENDS
