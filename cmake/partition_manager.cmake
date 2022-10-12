@@ -166,12 +166,14 @@ foreach (image ${PM_IMAGES})
 set(blah1)
 set(blah2)
 set(blah3)
-get_property(blah1 TARGET ${image}_shared_property_target PROPERTY PM_YML_FILES)
-get_property(blah2 TARGET ${image}_shared_property_target PROPERTY ZEPHYR_BINARY_DIR)
+sysbuild_get(blah1 IMAGE ${image} VAR PM_YML_FILES)
+sysbuild_get(blah2 IMAGE ${image} VAR ZEPHYR_BINARY_DIR)
+#get_property(blah1 TARGET ${image}_shared_property_target PROPERTY PM_YML_FILES)
+#get_property(blah2 TARGET ${image}_shared_property_target PROPERTY ZEPHYR_BINARY_DIR)
 set(${image}_input_files ${blah1})
 set(${image}_binary_dir ${blah2})
 
-message(WARNING "oohhh ${${image}_input_files} and ${${image}_binary_dir}")
+message(WARNING "oohhh ${image} got ${${image}_input_files} and ${${image}_binary_dir}")
 #get_property(${image}_input_files TARGET ${image}_shared_property_target PROPERTY PM_YML_FILES)
 #get_property(${image}_binary_dir TARGET ${image}_shared_property_target PROPERTY ZEPHYR_BINARY_DIR)
 
@@ -181,7 +183,8 @@ message(WARNING "oohhh ${${image}_input_files} and ${${image}_binary_dir}")
   # Re-configure (Re-execute all CMakeLists.txt code) when original
   # (not preprocessed) configuration file changes.
 #  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
-get_property(blah3 TARGET ${image}_shared_property_target PROPERTY PM_YML_DEP_FILES)
+sysbuild_get(blah3 IMAGE ${image} VAR PM_YML_DEP_FILES)
+#get_property(blah3 TARGET ${image}_shared_property_target PROPERTY PM_YML_DEP_FILES)
 set(dependencies ${blah3})
   set_property(
     DIRECTORY APPEND PROPERTY
@@ -189,6 +192,10 @@ set(dependencies ${blah3})
     ${dependencies}
     )
 endforeach()
+
+#
+#  list(APPEND header_files ${${app_name}_binary_dir}/${generated_path}/pm_config.h)
+  list(APPEND header_files ${CMAKE_BINARY_DIR}/${app_name}/zephyr/${generated_path}/pm_config.h)
 
 # Explicitly add the dynamic partition image
 list(APPEND prefixed_images "${DOMAIN}:${dynamic_partition}")
@@ -262,24 +269,29 @@ add_region(
 # placed in RAM. This is used to bank the network core update in RAM while
 # the application core update is banked in flash. This works since the nRF53
 # application core has 512kB of RAM and the network core only has 256kB of flash
-get_shared(
-  mcuboot_NRF53_MULTI_IMAGE_UPDATE
-  IMAGE mcuboot
-  PROPERTY NRF53_MULTI_IMAGE_UPDATE
-  )
+sysbuild_get(mcuboot_NRF53_MULTI_IMAGE_UPDATE IMAGE mcuboot VAR NRF53_MULTI_IMAGE_UPDATE)
+#get_shared(
+#  mcuboot_NRF53_MULTI_IMAGE_UPDATE
+#  IMAGE mcuboot
+#  PROPERTY NRF53_MULTI_IMAGE_UPDATE
+#  )
 
-get_shared(
-  mcuboot_NRF53_RECOVERY_NETWORK_CORE
-  IMAGE mcuboot
-  PROPERTY NRF53_RECOVERY_NETWORK_CORE
-  )
+sysbuild_get(mcuboot_NRF53_RECOVERY_NETWORK_CORE IMAGE mcuboot VAR NRF53_RECOVERY_NETWORK_CORE)
+#get_shared(
+#  mcuboot_NRF53_RECOVERY_NETWORK_CORE
+#  IMAGE mcuboot
+#  PROPERTY NRF53_RECOVERY_NETWORK_CORE
+#  )
 
 if ((DEFINED mcuboot_NRF53_MULTI_IMAGE_UPDATE) OR (DEFINED mcuboot_NRF53_RECOVERY_NETWORK_CORE))
   # This region will contain the 'mcuboot_secondary' partition, and the banked
   # updates for the network core will be stored here.
-  get_shared(ram_flash_label IMAGE mcuboot PROPERTY RAM_FLASH_LABEL)
-  get_shared(ram_flash_addr IMAGE mcuboot PROPERTY RAM_FLASH_ADDR)
-  get_shared(ram_flash_size IMAGE mcuboot PROPERTY RAM_FLASH_SIZE)
+  sysbuild_get(ram_flash_label IMAGE mcuboot VAR RAM_FLASH_LABEL)
+  sysbuild_get(ram_flash_addr IMAGE mcuboot VAR RAM_FLASH_ADDR)
+  sysbuild_get(ram_flash_size IMAGE mcuboot VAR RAM_FLASH_SIZE)
+#  get_shared(ram_flash_label IMAGE mcuboot PROPERTY RAM_FLASH_LABEL)
+#  get_shared(ram_flash_addr IMAGE mcuboot PROPERTY RAM_FLASH_ADDR)
+#  get_shared(ram_flash_size IMAGE mcuboot PROPERTY RAM_FLASH_SIZE)
 
   add_region(
     NAME ram_flash
@@ -364,6 +376,8 @@ string(REPLACE " " ";" PM_ALL_BY_SIZE ${PM_ALL_BY_SIZE})
 # Iterate over every partition, from smallest to largest.
 foreach(part ${PM_ALL_BY_SIZE})
   string(TOUPPER ${part} PART)
+#sysbuild_get(${part}_PM_HEX_FILE IMAGE ${image} VAR PM_YML_DEP_FILES)
+#sysbuild_get(${part}_PM_ELF_FILE IMAGE ${image} VAR PM_YML_DEP_FILES)
   get_property(${part}_PM_HEX_FILE GLOBAL PROPERTY ${part}_PM_HEX_FILE)
   get_property(${part}_PM_ELF_FILE GLOBAL PROPERTY ${part}_PM_ELF_FILE)
 
@@ -379,12 +393,15 @@ foreach(part ${PM_ALL_BY_SIZE})
     list(APPEND explicitly_assigned ${part})
   else()
     if(${part} IN_LIST images)
-      get_shared(${part}_bin_dir  IMAGE ${part} PROPERTY ZEPHYR_BINARY_DIR)
-      get_shared(${part}_hex_file IMAGE ${part} PROPERTY KERNEL_HEX_NAME)
-      get_shared(${part}_elf_file IMAGE ${part} PROPERTY KERNEL_ELF_NAME)
+      sysbuild_get(${part}_bin_dir IMAGE ${part} VAR ZEPHYR_BINARY_DIR)
+      sysbuild_get(${part}_hex_file IMAGE ${part} VAR KERNEL_HEX_NAME)
+      sysbuild_get(${part}_elf_file IMAGE ${part} VAR KERNEL_ELF_NAME)
+#      get_shared(${part}_bin_dir  IMAGE ${part} PROPERTY ZEPHYR_BINARY_DIR)
+#      get_shared(${part}_hex_file IMAGE ${part} PROPERTY KERNEL_HEX_NAME)
+#      get_shared(${part}_elf_file IMAGE ${part} PROPERTY KERNEL_ELF_NAME)
       set(${part}_PM_HEX_FILE ${${part}_bin_dir}/${${part}_hex_file})
       set(${part}_PM_ELF_FILE ${${part}_bin_dir}/${${part}_elf_file})
-      set(${part}_PM_TARGET ${part}_subimage)
+#      set(${part}_PM_TARGET ${part}_subimage)
     elseif(${part} IN_LIST containers)
       set(${part}_PM_HEX_FILE ${PROJECT_BINARY_DIR}/${part}.hex)
       set(${part}_PM_TARGET ${part}_hex)
@@ -428,30 +445,30 @@ foreach(container ${containers} ${merged})
   endif()
 
   # Add command to merge files.
-  add_custom_command(
-    OUTPUT ${PROJECT_BINARY_DIR}/${container}.hex
-    COMMAND
-    ${PYTHON_EXECUTABLE}
-    ${ZEPHYR_BASE}/scripts/build/mergehex.py
-    -o ${PROJECT_BINARY_DIR}/${container}.hex
-    ${${container}overlap_arg}
-    ${${container}hex_files}
-    DEPENDS
-    ${${container}targets}
-    ${${container}hex_files}
-    # SES will load symbols from all elf files listed as dependencies to
-    # ${PROJECT_BINARY_DIR}/merged.hex. Therefore we add
-    # ${${container}elf_files} as dependency to ensure they are loaded by SES
-    # even though it is unnecessary for building the application.
-    ${${container}elf_files}
-    )
-
-  # Wrapper target for the merge command.
-  add_custom_target(
-    ${container}_hex
-    ALL DEPENDS
-    ${PROJECT_BINARY_DIR}/${container}.hex
-    )
+#  add_custom_command(
+#    OUTPUT ${PROJECT_BINARY_DIR}/${container}.hex
+#    COMMAND
+#    ${PYTHON_EXECUTABLE}
+#    ${ZEPHYR_BASE}/scripts/build/mergehex.py
+#    -o ${PROJECT_BINARY_DIR}/${container}.hex
+#    ${${container}overlap_arg}
+#    ${${container}hex_files}
+#    DEPENDS
+#    ${${container}targets}
+#    ${${container}hex_files}
+#    # SES will load symbols from all elf files listed as dependencies to
+#    # ${PROJECT_BINARY_DIR}/merged.hex. Therefore we add
+#    # ${${container}elf_files} as dependency to ensure they are loaded by SES
+#    # even though it is unnecessary for building the application.
+#    ${${container}elf_files}
+#    )
+#
+#  # Wrapper target for the merge command.
+#  add_custom_target(
+#    ${container}_hex
+#    ALL DEPENDS
+#    ${PROJECT_BINARY_DIR}/${container}.hex
+#    )
 
 endforeach()
 
@@ -482,17 +499,28 @@ if (is_dynamic_partition_in_domain)
   # Expose the generated partition manager configuration files to parent image.
   # This is used by the root image to create the global configuration in
   # pm_config.h.
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_PARTITIONS ${pm_out_partition_file})
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_REGIONS ${pm_out_region_file})
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_HEADER_FILES ${header_files})
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_IMAGES ${prefixed_images})
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_HEX_FILE ${PROJECT_BINARY_DIR}/${merged}.hex)
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOTCONF_FILES ${pm_out_dotconf_file})
-  set_shared(IMAGE ${DOMAIN} PROPERTY PM_APP_HEX ${PROJECT_BINARY_DIR}/app.hex)
-  set_shared(IMAGE ${IMAGE_NAME} APPEND PROPERTY BUILD_BYPRODUCTS ${PROJECT_BINARY_DIR}/${merged}.hex)
+  set(DOMAIN ${DOMAIN} CACHE INTERNAL "")
+  set(PM_DOMAIN_PARTITIONS ${pm_out_partition_file} CACHE INTERNAL "")
+  set(PM_DOMAIN_REGIONS ${pm_out_region_file} CACHE INTERNAL "")
+  set(PM_DOMAIN_HEADER_FILES ${header_files} CACHE INTERNAL "")
+  set(PM_DOMAIN_IMAGES ${prefixed_images} CACHE INTERNAL "")
+  set(PM_HEX_FILE ${PROJECT_BINARY_DIR}/${merged}.hex CACHE INTERNAL "")
+  set(PM_DOTCONF_FILES ${pm_out_dotconf_file} CACHE INTERNAL "")
+  set(PM_APP_HEX ${PROJECT_BINARY_DIR}/app.hex CACHE INTERNAL "")
+#  set( ${} CACHE INTERNAL "")
+
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_PARTITIONS ${pm_out_partition_file})
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_REGIONS ${pm_out_region_file})
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_HEADER_FILES ${header_files})
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_IMAGES ${prefixed_images})
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_HEX_FILE ${PROJECT_BINARY_DIR}/${merged}.hex)
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOTCONF_FILES ${pm_out_dotconf_file})
+#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_APP_HEX ${PROJECT_BINARY_DIR}/app.hex)
+#  set_shared(IMAGE ${IMAGE_NAME} APPEND PROPERTY BUILD_BYPRODUCTS ${PROJECT_BINARY_DIR}/${merged}.hex)
   if(CONFIG_SECURE_BOOT)
     # Only when secure boot is enabled the app will be signed.
-    set_shared(IMAGE ${DOMAIN} PROPERTY PM_SIGNED_APP_HEX ${PROJECT_BINARY_DIR}/signed_by_b0_app.hex)
+#    set_shared(IMAGE ${DOMAIN} PROPERTY PM_SIGNED_APP_HEX ${PROJECT_BINARY_DIR}/signed_by_b0_app.hex)
+    set(PM_SIGNED_APP_HEX ${PROJECT_BINARY_DIR}/signed_by_b0_app.hex CACHE INTERNAL "")
   endif()
 else()
   # This is the root image, generate the global pm_config.h
@@ -505,18 +533,23 @@ else()
   foreach (d ${PM_DOMAINS})
     # Don't include shared vars from own domain.
     if (NOT ("${DOMAIN}" STREQUAL "${d}"))
-      get_shared(shared_header_files          IMAGE ${d} PROPERTY PM_DOMAIN_HEADER_FILES)
-      get_shared(shared_prefixed_images       IMAGE ${d} PROPERTY PM_DOMAIN_IMAGES)
-      get_shared(shared_pm_out_partition_file IMAGE ${d} PROPERTY PM_DOMAIN_PARTITIONS)
-      get_shared(shared_pm_out_region_file    IMAGE ${d} PROPERTY PM_DOMAIN_REGIONS)
-      get_shared(shared_domain_hex_files      IMAGE ${d} PROPERTY PM_HEX_FILE)
+      sysbuild_get(shared_header_files IMAGE ${d} VAR PM_DOMAIN_HEADER_FILES)
+      sysbuild_get(shared_prefixed_images IMAGE ${d} VAR PM_DOMAIN_IMAGES)
+      sysbuild_get(shared_pm_out_partition_file IMAGE ${d} VAR PM_DOMAIN_PARTITIONS)
+      sysbuild_get(shared_pm_out_region_file IMAGE ${d} VAR PM_DOMAIN_REGIONS)
+      sysbuild_get(shared_domain_hex_files IMAGE ${d} VAR PM_HEX_FILE)
+#      get_shared(shared_header_files          IMAGE ${d} PROPERTY PM_DOMAIN_HEADER_FILES)
+#      get_shared(shared_prefixed_images       IMAGE ${d} PROPERTY PM_DOMAIN_IMAGES)
+#      get_shared(shared_pm_out_partition_file IMAGE ${d} PROPERTY PM_DOMAIN_PARTITIONS)
+#      get_shared(shared_pm_out_region_file    IMAGE ${d} PROPERTY PM_DOMAIN_REGIONS)
+#      get_shared(shared_domain_hex_files      IMAGE ${d} PROPERTY PM_HEX_FILE)
 
       list(APPEND header_files          ${shared_header_files})
       list(APPEND prefixed_images       ${shared_prefixed_images})
       list(APPEND pm_out_partition_file ${shared_pm_out_partition_file})
       list(APPEND pm_out_region_file    ${shared_pm_out_region_file})
       list(APPEND domain_hex_files      ${shared_domain_hex_files})
-      list(APPEND global_hex_depends    ${${d}_PM_DOMAIN_DYNAMIC_PARTITION}_subimage)
+#      list(APPEND global_hex_depends    ${${d}_PM_DOMAIN_DYNAMIC_PARTITION}_subimage)
 
       # Add domain prefix cmake variables for all partitions
       # Here, we actually overwrite the already imported kconfig values
@@ -524,7 +557,8 @@ else()
       # are accessed through the 'partition_manager' target, and most likely
       # through generator expression, as this file is one of the last
       # cmake files executed in the configure stage.
-      get_shared(conf_file IMAGE ${d} PROPERTY PM_DOTCONF_FILES)
+      sysbuild_get(conf_file IMAGE ${d} VAR PM_DOTCONF_FILES)
+#      get_shared(conf_file IMAGE ${d} PROPERTY PM_DOTCONF_FILES)
       import_kconfig(PM_ ${conf_file} ${d}_pm_var_names)
 
       foreach(name ${${d}_pm_var_names})
@@ -572,7 +606,8 @@ to the external flash")
     # If so, this indicates that we need to support firmware updates on the
     # network core. This again means that we should generate the required
     # hex files.
-    get_shared(cpunet_signed_app_hex IMAGE CPUNET PROPERTY PM_SIGNED_APP_HEX)
+    sysbuild_get(cpunet_signed_app_hex IMAGE CPUNET VAR PM_SIGNED_APP_HEX)
+#    get_shared(cpunet_signed_app_hex IMAGE CPUNET PROPERTY PM_SIGNED_APP_HEX)
 
     if (CONFIG_NRF53_UPGRADE_NETWORK_CORE
         AND DEFINED cpunet_signed_app_hex)
@@ -581,11 +616,12 @@ to the external flash")
       # through the 'partition_manager' target.
       get_target_property(net_app_addr partition_manager CPUNET_PM_APP_ADDRESS)
 
-      get_shared(
-        mcuboot_NRF53_MULTI_IMAGE_UPDATE
-        IMAGE mcuboot
-        PROPERTY NRF53_MULTI_IMAGE_UPDATE
-        )
+      sysbuild_get(mcuboot_NRF53_MULTI_IMAGE_UPDATE IMAGE mcuboot VAR NRF53_MULTI_IMAGE_UPDATE)
+#      get_shared(
+#        mcuboot_NRF53_MULTI_IMAGE_UPDATE
+#        IMAGE mcuboot
+#        PROPERTY NRF53_MULTI_IMAGE_UPDATE
+#        )
 
       # Check if multi image updates are enabled, in which case we need
       # to use the "_1" variant of the secondary partition for the network core.
@@ -647,6 +683,7 @@ endif()
     --images ${prefixed_images}
     )
 
+message(WARNING "Run: ${pm_global_output_cmd}")
   execute_process(
     COMMAND
     ${pm_global_output_cmd}

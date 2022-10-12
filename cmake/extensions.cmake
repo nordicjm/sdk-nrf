@@ -291,68 +291,68 @@ endfunction()
 # This function can be used to re-share properties from a child to its
 # grand parent.
 #
-function(set_shared)
-  set(flags       "APPEND")
-  set(single_args "FILE;IMAGE")
-  set(multi_args  "PROPERTY")
-  cmake_parse_arguments(SHARE "${flags}" "${single_args}" "${multi_args}" ${ARGN})
-
-  check_arguments_required("set_shared" SHARE IMAGE FILE)
-
-  check_arguments_exclusive("set_shared" SHARE FILE IMAGE PROPERTY APPEND)
-  check_arguments_exclusive("set_shared" SHARE IMAGE FILE)
-
-  set(prop_target ${IMAGE_NAME}_shared_property_target)
-  if(NOT TARGET ${prop_target})
-    add_custom_target(${prop_target})
-  endif()
-
-  if(DEFINED SHARE_IMAGE)
-    # When using IMAGE, then PROPERTY is also required.
-    check_arguments_required("set_shared" SHARE PROPERTY)
-
-    set(share_prop_target ${SHARE_IMAGE}_shared_property_target)
-
-    if(SHARE_APPEND)
-      set(SHARE_APPEND APPEND)
-    else()
-      set(SHARE_APPEND)
-    endif()
-
-    get_property(string_targets TARGET ${prop_target} PROPERTY image_targets)
-    if(NOT "add_custom_target(${share_prop_target})" IN_LIST string_targets)
-      set_property(
-        TARGET ${prop_target} APPEND PROPERTY
-        image_targets "add_custom_target(${share_prop_target})"
-      )
-    endif()
-
-    set_property(TARGET ${prop_target} APPEND_STRING PROPERTY shared_vars
-      "set_property(TARGET ${share_prop_target} ${SHARE_APPEND} PROPERTY ${SHARE_PROPERTY})\n"
-    )
-  endif()
-
-  if(DEFINED SHARE_FILE)
-    set_property(TARGET ${prop_target} APPEND_STRING PROPERTY shared_vars
-      "include(${SHARE_FILE})\n"
-    )
-  endif()
-endfunction()
+#function(set_shared)
+#  set(flags       "APPEND")
+#  set(single_args "FILE;IMAGE")
+#  set(multi_args  "PROPERTY")
+#  cmake_parse_arguments(SHARE "${flags}" "${single_args}" "${multi_args}" ${ARGN})
+#
+#  check_arguments_required("set_shared" SHARE IMAGE FILE)
+#
+#  check_arguments_exclusive("set_shared" SHARE FILE IMAGE PROPERTY APPEND)
+#  check_arguments_exclusive("set_shared" SHARE IMAGE FILE)
+#
+#  set(prop_target ${IMAGE_NAME}_shared_property_target)
+#  if(NOT TARGET ${prop_target})
+#    add_custom_target(${prop_target})
+#  endif()
+#
+#  if(DEFINED SHARE_IMAGE)
+#    # When using IMAGE, then PROPERTY is also required.
+#    check_arguments_required("set_shared" SHARE PROPERTY)
+#
+#    set(share_prop_target ${SHARE_IMAGE}_shared_property_target)
+#
+#    if(SHARE_APPEND)
+#      set(SHARE_APPEND APPEND)
+#    else()
+#      set(SHARE_APPEND)
+#    endif()
+#
+#    get_property(string_targets TARGET ${prop_target} PROPERTY image_targets)
+#    if(NOT "add_custom_target(${share_prop_target})" IN_LIST string_targets)
+#      set_property(
+#        TARGET ${prop_target} APPEND PROPERTY
+#        image_targets "add_custom_target(${share_prop_target})"
+#      )
+#    endif()
+#
+#    set_property(TARGET ${prop_target} APPEND_STRING PROPERTY shared_vars
+#      "set_property(TARGET ${share_prop_target} ${SHARE_APPEND} PROPERTY ${SHARE_PROPERTY})\n"
+#    )
+#  endif()
+#
+#  if(DEFINED SHARE_FILE)
+#    set_property(TARGET ${prop_target} APPEND_STRING PROPERTY shared_vars
+#      "include(${SHARE_FILE})\n"
+#    )
+#  endif()
+#endfunction()
 
 # generate_shared(IMAGE <img> FILE <file>)
-function(generate_shared)
-  set(single_args "IMAGE;FILE")
-  cmake_parse_arguments(SHARE "" "${single_args}" "" ${ARGN})
-
-  check_arguments_required_all("generate_shared" SHARE IMAGE FILE)
-
-  set(prop_target ${IMAGE_NAME}_shared_property_target)
-  file(GENERATE OUTPUT ${SHARE_FILE}
-      CONTENT
-        "$<JOIN:$<TARGET_PROPERTY:${prop_target},image_targets>,\n>
-$<TARGET_PROPERTY:${prop_target},shared_vars>"
-    )
-endfunction()
+#function(generate_shared)
+#  set(single_args "IMAGE;FILE")
+#  cmake_parse_arguments(SHARE "" "${single_args}" "" ${ARGN})
+#
+#  check_arguments_required_all("generate_shared" SHARE IMAGE FILE)
+#
+#  set(prop_target ${IMAGE_NAME}_shared_property_target)
+#  file(GENERATE OUTPUT ${SHARE_FILE}
+#      CONTENT
+#        "$<JOIN:$<TARGET_PROPERTY:${prop_target},image_targets>,\n>
+#$<TARGET_PROPERTY:${prop_target},shared_vars>"
+#    )
+#endfunction()
 
 #
 # Usage
@@ -363,19 +363,19 @@ endfunction()
 #
 # Example usage 'get_shared(prop_value IMAGE child PROPERTY property_in_child)'
 #
-function(get_shared var)
-  set(single_args "IMAGE")
-  set(multi_args  "PROPERTY")
-  cmake_parse_arguments(SHARE "" "${single_args}" "${multi_args}" ${ARGN})
-
-  check_arguments_required_all("get_shared" SHARE IMAGE PROPERTY)
-
-  if(TARGET ${SHARE_IMAGE}_shared_property_target)
-    get_property(
-      ${var}
-      TARGET   ${SHARE_IMAGE}_shared_property_target
-      PROPERTY ${SHARE_PROPERTY}
-    )
-    set(${var} ${${var}} PARENT_SCOPE)
-  endif()
-endfunction()
+#function(get_shared var)
+#  set(single_args "IMAGE")
+#  set(multi_args  "PROPERTY")
+#  cmake_parse_arguments(SHARE "" "${single_args}" "${multi_args}" ${ARGN})
+#
+#  check_arguments_required_all("get_shared" SHARE IMAGE PROPERTY)
+#
+#  if(TARGET ${SHARE_IMAGE}_shared_property_target)
+#    get_property(
+#      ${var}
+#      TARGET   ${SHARE_IMAGE}_shared_property_target
+#      PROPERTY ${SHARE_PROPERTY}
+#    )
+#    set(${var} ${${var}} PARENT_SCOPE)
+#  endif()
+#endfunction()
