@@ -18,6 +18,11 @@ message(WARNING "image name ${IMAGE_NAME} application name ${APPLICATION}")
 #return()
 #endif()
 
+#set(regions)
+#set(region_arguments)
+#set(prefixed_images)
+#set(header_files)
+
 macro(add_region)
   set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DEFAULT_DRIVER_KCONFIG DYNAMIC_PARTITION)
   cmake_parse_arguments(REGION "" "${oneValueArgs}" "" ${ARGN})
@@ -97,13 +102,6 @@ get_property(PM_IMAGES GLOBAL PROPERTY PM_IMAGES)
 get_property(PM_SUBSYS_PREPROCESSED GLOBAL PROPERTY PM_SUBSYS_PREPROCESSED)
 get_property(PM_DOMAINS GLOBAL PROPERTY PM_DOMAINS)
 
-#list(APPEND PM_IMAGES mcuboot)
-message(WARNING "tmp ${PM_IMAGES}")
-#set_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
-#set_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
-
-#  set_shared(IMAGE ${DOMAIN} PROPERTY PM_DOMAIN_PARTITIONS ${pm_out_partition_file})
-
 # This file is executed once per domain.
 #
 # It will be executed if one of the following criteria is true for the
@@ -122,6 +120,10 @@ if (NOT (
   (PM_SUBSYS_PREPROCESSED AND CONFIG_PM_SINGLE_IMAGE)
   ))
   return()
+endif()
+
+if (NOT DEFINED DO_FULL_RUN)
+return()
 endif()
 
 #if (DEFINED CONFIG_SYSBUILD)
@@ -525,14 +527,18 @@ if (is_dynamic_partition_in_domain)
 else()
   # This is the root image, generate the global pm_config.h
   # First, include the shared properties for all child images.
+message(WARNING "root image?")
   if (PM_DOMAINS)
+message(WARNING "domains?")
     # We ensure the existence of PM_DOMAINS to support older cmake versions.
     # When version >= 3.17 is required this check can be removed.
     list(REMOVE_DUPLICATES PM_DOMAINS)
   endif()
   foreach (d ${PM_DOMAINS})
     # Don't include shared vars from own domain.
+message(WARNING "d: ${d}")
     if (NOT ("${DOMAIN}" STREQUAL "${d}"))
+set(d hci_rpmsg)
       sysbuild_get(shared_header_files IMAGE ${d} VAR PM_DOMAIN_HEADER_FILES)
       sysbuild_get(shared_prefixed_images IMAGE ${d} VAR PM_DOMAIN_IMAGES)
       sysbuild_get(shared_pm_out_partition_file IMAGE ${d} VAR PM_DOMAIN_PARTITIONS)

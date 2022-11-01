@@ -81,6 +81,9 @@ manifest:
           - segger
           - tinycrypt
           - zcbor
+          - psa-arch-tests
+          - tf-m-tests
+          - open-amp
 
     # NCS repositories.
     #
