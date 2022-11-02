@@ -536,14 +536,15 @@ message(WARNING "domains?")
   endif()
   foreach (d ${PM_DOMAINS})
     # Don't include shared vars from own domain.
-message(WARNING "d: ${d}")
+message(WARNING "d: ${d}, other core images: ${OTHER_CORE_IMAGES} images: ${IMAGES}")
     if (NOT ("${DOMAIN}" STREQUAL "${d}"))
-set(d hci_rpmsg)
-      sysbuild_get(shared_header_files IMAGE ${d} VAR PM_DOMAIN_HEADER_FILES)
-      sysbuild_get(shared_prefixed_images IMAGE ${d} VAR PM_DOMAIN_IMAGES)
-      sysbuild_get(shared_pm_out_partition_file IMAGE ${d} VAR PM_DOMAIN_PARTITIONS)
-      sysbuild_get(shared_pm_out_region_file IMAGE ${d} VAR PM_DOMAIN_REGIONS)
-      sysbuild_get(shared_domain_hex_files IMAGE ${d} VAR PM_HEX_FILE)
+foreach (i ${OTHER_CORE_IMAGES})
+#set(d hci_rpmsg)
+      sysbuild_get(shared_header_files IMAGE ${i} VAR PM_DOMAIN_HEADER_FILES)
+      sysbuild_get(shared_prefixed_images IMAGE ${i} VAR PM_DOMAIN_IMAGES)
+      sysbuild_get(shared_pm_out_partition_file IMAGE ${i} VAR PM_DOMAIN_PARTITIONS)
+      sysbuild_get(shared_pm_out_region_file IMAGE ${i} VAR PM_DOMAIN_REGIONS)
+      sysbuild_get(shared_domain_hex_files IMAGE ${i} VAR PM_HEX_FILE)
 #      get_shared(shared_header_files          IMAGE ${d} PROPERTY PM_DOMAIN_HEADER_FILES)
 #      get_shared(shared_prefixed_images       IMAGE ${d} PROPERTY PM_DOMAIN_IMAGES)
 #      get_shared(shared_pm_out_partition_file IMAGE ${d} PROPERTY PM_DOMAIN_PARTITIONS)
@@ -563,16 +564,17 @@ set(d hci_rpmsg)
       # are accessed through the 'partition_manager' target, and most likely
       # through generator expression, as this file is one of the last
       # cmake files executed in the configure stage.
-      sysbuild_get(conf_file IMAGE ${d} VAR PM_DOTCONF_FILES)
-#      get_shared(conf_file IMAGE ${d} PROPERTY PM_DOTCONF_FILES)
-      import_kconfig(PM_ ${conf_file} ${d}_pm_var_names)
-
-      foreach(name ${${d}_pm_var_names})
-        set_property(
-          TARGET partition_manager
-          PROPERTY ${d}_${name}
-          ${${name}}
-          )
+#      sysbuild_get(conf_file IMAGE ${d} VAR PM_DOTCONF_FILES)
+##      get_shared(conf_file IMAGE ${d} PROPERTY PM_DOTCONF_FILES)
+#      import_kconfig(PM_ ${conf_file} ${d}_pm_var_names)
+#
+#      foreach(name ${${d}_pm_var_names})
+#        set_property(
+#          TARGET partition_manager
+#          PROPERTY ${d}_${name}
+#          ${${name}}
+#          )
+#      endforeach()
       endforeach()
     endif()
   endforeach()
