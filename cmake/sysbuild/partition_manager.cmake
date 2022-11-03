@@ -1,95 +1,169 @@
 #
-# Copyright (c) 2019 Nordic Semiconductor
+# Copyright (c) 2022 Nordic Semiconductor
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+# Load static configuration if found.
+# Try user defined file first, then file found in configuration directory,
+# finally file from board directory.
+
 macro(add_region)
-  set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DEFAULT_DRIVER_KCONFIG DYNAMIC_PARTITION)
+  set(oneValueArgs NAME SIZE BASE PLACEMENT DEVICE DEFAULT_DRIVER_KCONFIG DYNAMIC_PARTITION DOMAIN)
   cmake_parse_arguments(REGION "" "${oneValueArgs}" "" ${ARGN})
-  list(APPEND regions ${REGION_NAME})
-  list(APPEND region_arguments "--${REGION_NAME}-size;${REGION_SIZE}")
-  list(APPEND region_arguments "--${REGION_NAME}-base-address;${REGION_BASE}")
-  list(APPEND region_arguments
+  if(DEFINED REGION_DOMAIN)
+    set(underscore_domain ${REGION_DOMAIN}_)
+  else()
+    set(underscore_domain)
+  endif()
+
+  list(APPEND ${underscore_domain}regions ${REGION_NAME})
+  list(APPEND ${underscore_domain}region_arguments "--${REGION_NAME}-size;${REGION_SIZE}")
+  list(APPEND ${underscore_domain}region_arguments "--${REGION_NAME}-base-address;${REGION_BASE}")
+  list(APPEND ${underscore_domain}region_arguments
     "--${REGION_NAME}-placement-strategy;${REGION_PLACEMENT}")
   if (REGION_DEVICE)
-    list(APPEND region_arguments "--${REGION_NAME}-device;${REGION_DEVICE}")
-  list(APPEND region_arguments
+    list(APPEND ${underscore_domain}region_arguments "--${REGION_NAME}-device;${REGION_DEVICE}")
+  list(APPEND ${underscore_domain}region_arguments
        "--${REGION_NAME}-default-driver-kconfig;${REGION_DEFAULT_DRIVER_KCONFIG}")
   endif()
   if (REGION_DYNAMIC_PARTITION)
-    list(APPEND region_arguments
+    list(APPEND ${underscore_domain}region_arguments
       "--${REGION_NAME}-dynamic-partition;${REGION_DYNAMIC_PARTITION}")
   endif()
 endmacro()
 
-# Load static configuration if found.
-# Try user defined file first, then file found in configuration directory,
-# finally file from board directory.
-if(DEFINED PM_STATIC_YML_FILE)
-  string(CONFIGURE "${PM_STATIC_YML_FILE}" user_def_pm_static)
-endif()
+function(partition_manager)
+  cmake_parse_arguments(PM "" "DOMAIN" "IN_FILES;REGIONS" ${ARGN})
 
-ncs_file(CONF_FILES ${APPLICATION_CONFIG_DIR}
-         PM conf_dir_pm_static
-         DOMAIN ${DOMAIN}
-         BUILD ${CONF_FILE_BUILD_TYPE}
-)
+  if(DEFINED PM_DOMAIN)
+    set(image_name ${DOMAIN_APP_${PM_DOMAIN}})
+    set(user_def_pm_static ${${image_name}_PM_STATIC_YML_FILE})
+  else()
+    set(user_def_pm_static ${PM_STATIC_YML_FILE})
+    set(image_name ${DOMAIN_APP_APP})
+  endif()
 
-ncs_file(CONF_FILES ${BOARD_DIR}
-         PM board_dir_pm_static
-         DOMAIN ${DOMAIN}
-         BUILD ${CONF_FILE_BUILD_TYPE}
-)
+  sysbuild_get(${image_name}_APPLICATION_CONFIG_DIR IMAGE ${image_name} VAR APPLICATION_CONFIG_DIR CACHE)
 
-ncs_file(CONF_FILES ${BOARD_DIR}
-         PM board_dir_pm_static_common
-         DOMAIN ${DOMAIN}
-)
-
-if(EXISTS "${user_def_pm_static}" AND NOT IS_DIRECTORY "${user_def_pm_static}")
-  set(static_configuration_file ${user_def_pm_static})
-elseif (EXISTS ${conf_dir_pm_static})
-  set(static_configuration_file ${conf_dir_pm_static})
-elseif (EXISTS ${board_dir_pm_static})
-  set(static_configuration_file ${board_dir_pm_static})
-elseif (EXISTS ${board_dir_pm_static_common})
-  set(static_configuration_file ${board_dir_pm_static_common})
-endif()
-
-if (EXISTS "${static_configuration_file}" AND NOT SYSBUILD)
-  message(STATUS "Found partition manager static configuration: "
-                 "${static_configuration_file}"
+  ncs_file(CONF_FILES ${${image_name}_APPLICATION_CONFIG_DIR}
+           PM conf_dir_pm_static
+           DOMAIN ${DOMAIN}
+           BUILD ${CONF_FILE_BUILD_TYPE}
   )
-  set(static_configuration --static-config ${static_configuration_file})
-endif()
 
-if (NOT static_configuration AND CONFIG_PM_IMAGE_NOT_BUILT_FROM_SOURCE)
-  message(WARNING
-    "One or more child image is not configured to be built from source. \
-    However, there is no static configuration provided to the \
-    partition manager. Please provide a static configuration as described in \
-    the 'Scripts -> Partition Manager -> Static configuration' chapter in the \
-    documentation. Without this information, the build system is not able to \
-    place the image correctly in flash.")
-endif()
+  ncs_file(CONF_FILES ${BOARD_DIR}
+           PM board_dir_pm_static
+           DOMAIN ${DOMAIN}
+           BUILD ${CONF_FILE_BUILD_TYPE}
+  )
+
+  if(EXISTS "${user_def_pm_static}" AND NOT IS_DIRECTORY "${user_def_pm_static}")
+    set(static_configuration_file ${user_def_pm_static})
+  elseif (EXISTS ${conf_dir_pm_static})
+    set(static_configuration_file ${conf_dir_pm_static})
+  elseif (EXISTS ${board_dir_pm_static})
+    set(static_configuration_file ${board_dir_pm_static})
+  endif()
+
+  if (EXISTS ${static_configuration_file})
+    message(STATUS "Found partition manager static configuration ${PM_DOMAIN}: "
+                   "${static_configuration_file}"
+    )
+    set(static_configuration --static-config ${static_configuration_file})
+  endif()
+
+  if (NOT static_configuration AND CONFIG_PM_IMAGE_NOT_BUILT_FROM_SOURCE)
+    message(WARNING
+      "One or more child image is not configured to be built from source. \
+      However, there is no static configuration provided to the \
+      partition manager. Please provide a static configuration as described in \
+      the 'Scripts -> Partition Manager -> Static configuration' chapter in the \
+      documentation. Without this information, the build system is not able to \
+      place the image correctly in flash.")
+  endif()
 
 
-# Check if current image is the dynamic partition in its domain.
-# I.E. it is the only partition without a statically configured size in this
-# domain. This is equivalent to the 'app' partition in the root domain.
-#
-# The dynamic partition is specified by the parent domain (i.e. the domain
-# which creates the current domain through 'create_domain_image()'.
-if(DEFINED ${DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION
-   AND "${IMAGE_NAME}" STREQUAL "${${DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION}"
-)
-  set(is_dynamic_partition_in_domain TRUE)
-endif()
+# We must set this when running for the domain, so how is the domain name partition handled in settings ?
+  if("${PM_DOMAIN}" STREQUAL "CPUNET")
+    set(dynamic_partition ${${PM_DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION})
+    set(
+      dynamic_partition_argument
+      "--flash_primary-dynamic-partition;${dynamic_partition}"
+      )
+  endif()
+
+  if (DEFINED PM_DOMAIN)
+    set(underscore _)
+  else()
+    set(underscore)
+  endif()
+
+  set(pm_out_partition_file ${APPLICATION_BINARY_DIR}/partitions${underscore}${PM_DOMAIN}.yml)
+  set(pm_out_region_file ${APPLICATION_BINARY_DIR}/regions${underscore}${PM_DOMAIN}.yml)
+  set(pm_out_dotconf_file ${APPLICATION_BINARY_DIR}/pm${underscore}${PM_DOMAIN}.config)
+
+  set(pm_cmd
+    ${PYTHON_EXECUTABLE}
+    ${ZEPHYR_NRF_MODULE_DIR}/scripts/partition_manager.py
+    --input-files ${PM_IN_FILES}
+    --regions ${PM_REGIONS}
+    --output-partitions ${pm_out_partition_file}
+    --output-regions ${pm_out_region_file}
+    ${dynamic_partition_argument}
+    ${static_configuration}
+    ${${PM_DOMAIN}${underscore}region_arguments}     # region args are scoped in and thus available. Should probably be in arg.
+    )
+  # ToDo: add_region is done only for main app, how about DOMAIN ?
+
+  set(pm_output_cmd
+    ${PYTHON_EXECUTABLE}
+    ${ZEPHYR_NRF_MODULE_DIR}/scripts/partition_manager_output.py
+    --input-partitions ${pm_out_partition_file}
+    --input-regions ${pm_out_region_file}
+    --config-file ${pm_out_dotconf_file}
+    )
+
+  # Run the partition manager algorithm.
+  execute_process(
+    COMMAND
+    ${pm_cmd}
+    RESULT_VARIABLE ret
+    )
+
+  if(NOT ${ret} EQUAL "0")
+    message(FATAL_ERROR "Partition Manager failed, aborting. Command: ${pm_cmd}")
+  endif()
+
+  # Produce header files and config file.
+  execute_process(
+    COMMAND
+    ${pm_output_cmd}
+    RESULT_VARIABLE ret
+    )
+
+  if(NOT ${ret} EQUAL "0")
+    message(FATAL_ERROR "Partition Manager output generation failed, aborting. Command: ${pm_output_cmd}")
+  endif()
+
+endfunction()
+
+
+## Check if current image is the dynamic partition in its domain.
+## I.E. it is the only partition without a statically configured size in this
+## domain. This is equivalent to the 'app' partition in the root domain.
+##
+## The dynamic partition is specified by the parent domain (i.e. the domain
+## which creates the current domain through 'create_domain_image()'.
+#if(DEFINED ${DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION
+#   AND "${IMAGE_NAME}" STREQUAL "${${DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION}"
+#)
+#  set(is_dynamic_partition_in_domain TRUE)
+#endif()
 
 get_property(PM_IMAGES GLOBAL PROPERTY PM_IMAGES)
 get_property(PM_SUBSYS_PREPROCESSED GLOBAL PROPERTY PM_SUBSYS_PREPROCESSED)
-get_property(PM_DOMAINS GLOBAL PROPERTY PM_DOMAINS)
+#get_property(PM_DOMAINS GLOBAL PROPERTY PM_DOMAINS)
 
 # This file is executed once per domain.
 #
@@ -101,24 +175,22 @@ get_property(PM_DOMAINS GLOBAL PROPERTY PM_DOMAINS)
 # - It's the root image, and other domains exist.
 # - A subsys has defined a partition and CONFIG_PM_SINGLE_IMAGE is set.
 # Otherwise, return here
-if (NOT (
-  (IMAGE_NAME AND is_dynamic_partition_in_domain) OR
-  (NOT IMAGE_NAME AND static_configuration) OR
-  (NOT IMAGE_NAME AND PM_IMAGES) OR
-  (NOT IMAGE_NAME AND PM_DOMAINS) OR
-  (PM_SUBSYS_PREPROCESSED AND CONFIG_PM_SINGLE_IMAGE)
-  )
-  OR SYSBUILD
-  )
-  return()
-endif()
+#if (NOT (
+#  (IMAGE_NAME AND is_dynamic_partition_in_domain) OR
+#  (NOT IMAGE_NAME AND static_configuration) OR
+#  (NOT IMAGE_NAME AND PM_IMAGES) OR
+#  (NOT IMAGE_NAME AND PM_DOMAINS) OR
+#  (PM_SUBSYS_PREPROCESSED AND CONFIG_PM_SINGLE_IMAGE)
+#  ))
+#  return()
+#endif()
 
 # Set the dynamic partition. This is the only partition which does not
 # have a statically defined size. There is only one dynamic partition per
 # domain. For the "root domain" (ie the domain of the root image) this is
 # always "app".
 if (NOT is_dynamic_partition_in_domain)
-  set(dynamic_partition "app")
+  set(dynamic_partition "app")  # Should this be renamed to main image name, or does it matter at all ?
 else()
   set(dynamic_partition ${${DOMAIN}_PM_DOMAIN_DYNAMIC_PARTITION})
   set(
@@ -127,107 +199,162 @@ else()
     )
 endif()
 
-# Check if the dynamic partition image hex has already been defined
-get_property(DYNAMIC_PARTITION_HEX GLOBAL PROPERTY
-  ${dynamic_partition}_PM_HEX_FILE
-  )
-if (NOT DYNAMIC_PARTITION_HEX)
-  # Add the dynamic partition as an image partition.
-  set_property(GLOBAL PROPERTY
-    ${dynamic_partition}_PM_HEX_FILE
-    ${PROJECT_BINARY_DIR}/${KERNEL_HEX_NAME}
-    )
-endif()
-
-get_property(DYNAMIC_PARTITION_TARGET GLOBAL PROPERTY
-  ${dynamic_partition}_PM_TARGET
-  )
-if (NOT DYNAMIC_PARTITION_TARGET)
-  set_property(GLOBAL PROPERTY
-    ${dynamic_partition}_PM_TARGET
-    ${logical_target_for_zephyr_elf}
-    )
-endif()
+# Image files, those should be queried from actual image.
+# Add the dynamic partition as an image partition.
+#set_property(GLOBAL PROPERTY
+#  ${dynamic_partition}_PM_HEX_FILE
+#  ${PROJECT_BINARY_DIR}/${KERNEL_HEX_NAME}
+#  )
+#
+#set_property(GLOBAL PROPERTY
+#  ${dynamic_partition}_PM_TARGET
+#  ${logical_target_for_zephyr_elf}
+#  )
 
 # Prepare the input_files, header_files, and images lists
 set(generated_path include/generated)
-foreach (image ${PM_IMAGES})
-  list(APPEND prefixed_images ${DOMAIN}:${image})
-  list(APPEND images ${image})
+# ToDo: In child image, this happens to each domain parent.
+# In parent image, it only happen to direct children, not children of children.
+# This must be adjusted into:
+# Explicitly add the main dynamic partition image
+sysbuild_get(${DEFAULT_IMAGE}_input_files IMAGE ${DEFAULT_IMAGE} VAR PM_YML_FILES CACHE)
+sysbuild_get(${DEFAULT_IMAGE}_binary_dir  IMAGE ${DEFAULT_IMAGE} VAR ZEPHYR_BINARY_DIR CACHE)
+list(APPEND prefixed_images ":${dynamic_partition}")
+list(APPEND input_files  ${${DEFAULT_IMAGE}_input_files})
+list(APPEND header_files ${${DEFAULT_IMAGE}_binary_dir}/${generated_path}/pm_config.h)
+foreach (image ${IMAGES})
+  set(domain)
+  # Special handling of `app_image` as this must be added as `:app` for historic reasons.
+  # `:app` is handled below.
+  foreach (d ${PM_DOMAINS})
+    if(${image} IN_LIST PM_${d}_IMAGES)
+      set(domain ${d})
+      break()
+    endif()
+  endforeach()
 
-  get_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
-  get_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
+  if(NOT "${DEFAULT_IMAGE}" STREQUAL "${image}")
+    sysbuild_get(${image}_input_files IMAGE ${image} VAR PM_YML_FILES CACHE)
+    sysbuild_get(${image}_binary_dir  IMAGE ${image} VAR ZEPHYR_BINARY_DIR CACHE)
 
-  list(APPEND input_files  ${${image}_input_files})
-  list(APPEND header_files ${${image}_binary_dir}/${generated_path}/pm_config.h)
-
-  # Re-configure (Re-execute all CMakeLists.txt code) when original
-  # (not preprocessed) configuration file changes.
-  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
-  set_property(
-    DIRECTORY APPEND PROPERTY
-    CMAKE_CONFIGURE_DEPENDS
-    ${dependencies}
-    )
+    list(APPEND prefixed_images ${domain}:${image})
+    list(APPEND images ${image})
+    list(APPEND header_files ${${image}_binary_dir}/${generated_path}/pm_config.h)
+    if(NOT DEFINED domain OR "${DOMAIN_APP_${domain}}" STREQUAL "${image}")
+      list(APPEND input_files  ${${image}_input_files})
+    endif()
+  endif()
 endforeach()
 
-# Explicitly add the dynamic partition image
-list(APPEND prefixed_images "${DOMAIN}:${dynamic_partition}")
+#foreach (image ${IMAGES})
+#    # Re-configure (Re-execute all CMakeLists.txt code) when original
+#    # (not preprocessed) configuration file changes.
+#  #  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
+#  #  set_property(
+#  #    DIRECTORY APPEND PROPERTY
+#  #    CMAKE_CONFIGURE_DEPENDS
+#  #    ${dependencies}
+#  #    )
+#endforeach()
+
+list(APPEND input_files  ${${DEFAULT_IMAGE}_binary_dir}/${generated_path}/pm.yml)
+
+foreach (d ${PM_DOMAINS})
+  foreach (image ${PM_${d}_IMAGES})
+    if(NOT "${DOMAIN_APP_${d}}" STREQUAL "${image}")
+      list(APPEND ${d}_input_files  ${${image}_input_files})
+      list(APPEND ${d}_header_files ${${image}_binary_dir}/${generated_path}/pm_config.h)
+    endif()
+  endforeach()
+
+  # ToDo: Adjust into each image generated folder instead of this.
+  list(APPEND ${d}_input_files ${PROJECT_BINARY_DIR}/${generated_path}/pm.yml)
+  list(APPEND ${d}_header_files ${PROJECT_BINARY_DIR}/${generated_path}/pm_config.h)
+endforeach()
+
+# ToDo images can probably be remove now.
 list(APPEND images ${dynamic_partition})
-list(APPEND input_files ${ZEPHYR_BINARY_DIR}/${generated_path}/pm.yml)
-list(APPEND header_files ${ZEPHYR_BINARY_DIR}/${generated_path}/pm_config.h)
 
 # Add subsys defined pm.yml to the input_files
 list(APPEND input_files ${PM_SUBSYS_PREPROCESSED})
 
-if (DEFINED CONFIG_SOC_SERIES_NRF91X)
-  # See nRF91 Product Specification, chapter "UICR"
-  set(otp_start_addr "0xff8108")
-  set(otp_size 756) # 189 * 4
-elseif (DEFINED CONFIG_SOC_NRF5340_CPUAPP)
-  # See nRF5340 Product Specification, chapter Application Core -> ... "UICR"
-  set(otp_start_addr "0xff8100")
-  set(otp_size 764)  # 191 * 4
-endif()
+set(DOMAIN_APP_MAIN ${app_name})
+foreach(d MAIN ${PM_DOMAINS})
+  # CPUNET
+  set(image_name ${DOMAIN_APP_${d}})
+  if(${d} STREQUAL "MAIN")
+    set(d)
+  endif()
+  sysbuild_get(${image_name}_CONFIG_PM_SRAM_SIZE IMAGE ${image_name} VAR CONFIG_PM_SRAM_SIZE KCONFIG)
+  sysbuild_get(${image_name}_CONFIG_PM_SRAM_BASE IMAGE ${image_name} VAR CONFIG_PM_SRAM_BASE KCONFIG)
 
-add_region(
-  NAME sram_primary
-  SIZE ${CONFIG_PM_SRAM_SIZE}
-  BASE ${CONFIG_PM_SRAM_BASE}
-  PLACEMENT complex
-  DYNAMIC_PARTITION sram_primary
-  )
+  sysbuild_get(${image_name}_CONFIG_SOC_NRF9160 IMAGE ${image_name} VAR CONFIG_SOC_NRF9160 KCONFIG)
+  sysbuild_get(${image_name}_CONFIG_SOC_NRF5340_CPUAPP IMAGE ${image_name} VAR CONFIG_SOC_NRF5340_CPUAPP KCONFIG)
 
-math(EXPR flash_size "${CONFIG_FLASH_SIZE} * 1024" OUTPUT_FORMAT HEXADECIMAL)
+  if (${image_name}_CONFIG_SOC_NRF9160)
+    # See nRF9160 Product Specification, chapter "UICR"
+    set(otp_start_addr "0xff8108")
+    set(otp_size 756) # 189 * 4
+  elseif (${image_name}_CONFIG_SOC_NRF5340_CPUAPP)
+    # See nRF5340 Product Specification, chapter Application Core -> ... "UICR"
+    set(otp_start_addr "0xff8100")
+    set(otp_size 764)  # 191 * 4
+  endif()
 
-if (CONFIG_SOC_SERIES_NRF91X OR CONFIG_SOC_NRF5340_CPUAPP)
   add_region(
-    NAME otp
-    SIZE ${otp_size}
-    BASE ${otp_start_addr}
-    PLACEMENT start_to_end
+    NAME sram_primary
+    SIZE ${${image_name}_CONFIG_PM_SRAM_SIZE}
+    BASE ${${image_name}_CONFIG_PM_SRAM_BASE}
+    PLACEMENT complex
+    DYNAMIC_PARTITION sram_primary
+    DOMAIN ${d}
     )
-endif()
-add_region(
-  NAME flash_primary
-  SIZE ${flash_size}
-  BASE ${CONFIG_FLASH_BASE_ADDRESS}
-  PLACEMENT complex
-  DEVICE flash_controller
-  DEFAULT_DRIVER_KCONFIG CONFIG_SOC_FLASH_NRF
-  )
 
-dt_chosen(ext_flash_dev PROPERTY nordic,pm-ext-flash)
-if (DEFINED ext_flash_dev)
-  dt_prop(num_bits PATH ${ext_flash_dev} PROPERTY size)
+  sysbuild_get(${image_name}_CONFIG_FLASH_SIZE IMAGE ${image_name} VAR CONFIG_FLASH_SIZE KCONFIG)
+  math(EXPR flash_size "${${image_name}_CONFIG_FLASH_SIZE} * 1024" OUTPUT_FORMAT HEXADECIMAL)
+
+  if (${image_name}_CONFIG_SOC_NRF9160 OR ${image_name}_CONFIG_SOC_NRF5340_CPUAPP)
+    add_region(
+      NAME otp
+      SIZE ${otp_size}
+      BASE ${otp_start_addr}
+      PLACEMENT start_to_end
+      DOMAIN ${d}
+      )
+  endif()
+  sysbuild_get(${image_name}_CONFIG_FLASH_BASE_ADDRESS IMAGE ${image_name} VAR CONFIG_FLASH_BASE_ADDRESS KCONFIG)
+  add_region(
+    NAME flash_primary
+    SIZE ${flash_size}
+    BASE ${${image_name}_CONFIG_FLASH_BASE_ADDRESS}
+    PLACEMENT complex
+    DEVICE flash_controller
+    DEFAULT_DRIVER_KCONFIG CONFIG_SOC_FLASH_NRF
+    DOMAIN ${d}
+    )
+
+
+endforeach()
+
+sysbuild_get(ext_flash_enabled IMAGE ${DEFAULT_IMAGE} VAR CONFIG_PM_EXTERNAL_FLASH_ENABLED KCONFIG)
+sysbuild_get(ext_flash_path IMAGE ${DEFAULT_IMAGE} VAR CONFIG_PM_EXTERNAL_FLASH_PATH KCONFIG)
+sysbuild_get(num_bits IMAGE ${DEFAULT_IMAGE} VAR CONFIG_PM_EXTERNAL_FLASH_SIZE_BITS KCONFIG)
+
+if(ext_flash_enabled)
   math(EXPR num_bytes "${num_bits} / 8")
 
-  set(external_flash_driver_kconfig CONFIG_PM_EXTERNAL_FLASH_HAS_DRIVER)
+  sysbuild_get(custom_driver IMAGE ${DEFAULT_IMAGE} VAR CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK KCONFIG)
+  if (custom_driver)
+    set(external_flash_driver_kconfig CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+  else()
+    set(external_flash_driver_kconfig CONFIG_NORDIC_QSPI_NOR)
+  endif()
 
+  sysbuild_get(external_flash_base IMAGE ${DEFAULT_IMAGE} VAR CONFIG_PM_EXTERNAL_FLASH_BASE KCONFIG)
   add_region(
     NAME external_flash
     SIZE ${num_bytes}
-    BASE ${CONFIG_PM_EXTERNAL_FLASH_BASE}
+    BASE ${external_flash_base}
     PLACEMENT start_to_end
     DEVICE "DT_CHOSEN(nordic_pm_ext_flash)"
     DEFAULT_DRIVER_KCONFIG ${external_flash_driver_kconfig}
@@ -268,73 +395,37 @@ if ((DEFINED mcuboot_NRF53_MULTI_IMAGE_UPDATE) OR (DEFINED mcuboot_NRF53_RECOVER
     )
 endif()
 
-if (DOMAIN)
-  set(UNDERSCORE_DOMAIN _${DOMAIN})
-endif()
+# Do per domain, end with main app domain.
+# Will that suffice ?
+partition_manager(IN_FILES ${input_files} REGIONS ${regions})
+foreach(d ${PM_DOMAINS})
+  set(image_name ${DOMAIN_APP_${d}})
+  partition_manager(DOMAIN ${d} IN_FILES ${${d}_input_files} REGIONS ${${d}_regions})
 
-set(pm_out_partition_file ${APPLICATION_BINARY_DIR}/partitions${UNDERSCORE_DOMAIN}.yml)
-set(pm_out_region_file ${APPLICATION_BINARY_DIR}/regions${UNDERSCORE_DOMAIN}.yml)
-set(pm_out_dotconf_file ${APPLICATION_BINARY_DIR}/pm${UNDERSCORE_DOMAIN}.config)
-
-set(pm_cmd
-  ${PYTHON_EXECUTABLE}
-  ${NRF_DIR}/scripts/partition_manager.py
-  --input-files ${input_files}
-  --regions ${regions}
-  --output-partitions ${pm_out_partition_file}
-  --output-regions ${pm_out_region_file}
-  ${dynamic_partition_argument}
-  ${static_configuration}
-  ${region_arguments}
-  )
-
-set(pm_output_cmd
-  ${PYTHON_EXECUTABLE}
-  ${NRF_DIR}/scripts/partition_manager_output.py
-  --input-partitions ${pm_out_partition_file}
-  --input-regions ${pm_out_region_file}
-  --config-file ${pm_out_dotconf_file}
-  )
-
-# Run the partition manager algorithm.
-execute_process(
-  COMMAND
-  ${pm_cmd}
-  RESULT_VARIABLE ret
-  )
-
-if(NOT ${ret} EQUAL "0")
-  message(FATAL_ERROR "Partition Manager failed, aborting. Command: ${pm_cmd}")
-endif()
-
-# Produce header files and config file.
-execute_process(
-  COMMAND
-  ${pm_output_cmd}
-  RESULT_VARIABLE ret
-  )
-
-if(NOT ${ret} EQUAL "0")
-  message(FATAL_ERROR "Partition Manager output generation failed, aborting. Command: ${pm_output_cmd}")
-endif()
+#  foreach(d ${PM_DOMAINS})
+#    # Should list be adjust to domain image list ?
+#    # In files must be adjust according to image being built/
+#    partition_manager(DOMAIN ${d} IN_FILES ${${d}_input_files} REGIONS ${domain_regions})
+#  endforeach()
+endforeach()
 
 # Create a dummy target that we can add properties to for
 # extraction in generator expressions.
 add_custom_target(partition_manager)
 
-# Make Partition Manager configuration available in CMake
-import_kconfig(PM_ ${pm_out_dotconf_file} pm_var_names)
-
-foreach(name ${pm_var_names})
-  set_property(
-    TARGET partition_manager
-    PROPERTY ${name}
-    ${${name}}
-    )
-endforeach()
-
-# Turn the space-separated list into a Cmake list.
-string(REPLACE " " ";" PM_ALL_BY_SIZE ${PM_ALL_BY_SIZE})
+## Make Partition Manager configuration available in CMake
+#import_kconfig(PM_ ${pm_out_dotconf_file} pm_var_names)
+#
+#foreach(name ${pm_var_names})
+#  set_property(
+#    TARGET partition_manager
+#    PROPERTY ${name}
+#    ${${name}}
+#    )
+#endforeach()
+#
+## Turn the space-separated list into a Cmake list.
+#string(REPLACE " " ";" PM_ALL_BY_SIZE ${PM_ALL_BY_SIZE})
 
 # Iterate over every partition, from smallest to largest.
 foreach(part ${PM_ALL_BY_SIZE})
@@ -402,31 +493,33 @@ foreach(container ${containers} ${merged})
     set(${container}overlap_arg --overlap=replace)
   endif()
 
-  # Add command to merge files.
-  add_custom_command(
-    OUTPUT ${PROJECT_BINARY_DIR}/${container}.hex
-    COMMAND
-    ${PYTHON_EXECUTABLE}
-    ${ZEPHYR_BASE}/scripts/build/mergehex.py
-    -o ${PROJECT_BINARY_DIR}/${container}.hex
-    ${${container}overlap_arg}
-    ${${container}hex_files}
-    DEPENDS
-    ${${container}targets}
-    ${${container}hex_files}
-    # SES will load symbols from all elf files listed as dependencies to
-    # ${PROJECT_BINARY_DIR}/merged.hex. Therefore we add
-    # ${${container}elf_files} as dependency to ensure they are loaded by SES
-    # even though it is unnecessary for building the application.
-    ${${container}elf_files}
-    )
-
-  # Wrapper target for the merge command.
-  add_custom_target(
-    ${container}_hex
-    ALL DEPENDS
-    ${PROJECT_BINARY_DIR}/${container}.hex
-    )
+# Should all files still be merged ?
+# And under which circumstances.
+#  # Add command to merge files.
+#  add_custom_command(
+#    OUTPUT ${PROJECT_BINARY_DIR}/${container}.hex
+#    COMMAND
+#    ${PYTHON_EXECUTABLE}
+#    ${ZEPHYR_BASE}/scripts/build/mergehex.py
+#    -o ${PROJECT_BINARY_DIR}/${container}.hex
+#    ${${container}overlap_arg}
+#    ${${container}hex_files}
+#    DEPENDS
+#    ${${container}targets}
+#    ${${container}hex_files}
+#    # SES will load symbols from all elf files listed as dependencies to
+#    # ${PROJECT_BINARY_DIR}/merged.hex. Therefore we add
+#    # ${${container}elf_files} as dependency to ensure they are loaded by SES
+#    # even though it is unnecessary for building the application.
+#    ${${container}elf_files}
+#    )
+#
+#  # Wrapper target for the merge command.
+#  add_custom_target(
+#    ${container}_hex
+#    ALL DEPENDS
+#    ${PROJECT_BINARY_DIR}/${container}.hex
+#    )
 
 endforeach()
 
@@ -452,7 +545,13 @@ if (CONFIG_SECURE_BOOT AND CONFIG_BOOTLOADER_MCUBOOT)
     )
 endif()
 
+# Always add main partition file to list.
+list(APPEND pm_out_partition_file ${APPLICATION_BINARY_DIR}/partitions.yml)
+list(APPEND pm_out_region_file    ${APPLICATION_BINARY_DIR}/regions.yml)
+
 if (is_dynamic_partition_in_domain)
+  # Nothing is built as child.
+  # We have all required info available, just need to use them.
   # We are being built as sub image.
   # Expose the generated partition manager configuration files to parent image.
   # This is used by the root image to create the global configuration in
@@ -493,14 +592,18 @@ else()
       list(APPEND domain_hex_files      ${shared_domain_hex_files})
       list(APPEND global_hex_depends    ${${d}_PM_DOMAIN_DYNAMIC_PARTITION}_subimage)
 
+      # Updated code.
+      # All partition files are now created in this CMake invocation, so just add them:
+      list(APPEND pm_out_partition_file ${APPLICATION_BINARY_DIR}/partitions_${d}.yml)
+      list(APPEND pm_out_region_file    ${APPLICATION_BINARY_DIR}/regions_${d}.yml)
+
       # Add domain prefix cmake variables for all partitions
       # Here, we actually overwrite the already imported kconfig values
       # for our own domain. This is not an issue since all of these variables
       # are accessed through the 'partition_manager' target, and most likely
       # through generator expression, as this file is one of the last
       # cmake files executed in the configure stage.
-      get_shared(conf_file IMAGE ${d} PROPERTY PM_DOTCONF_FILES)
-      import_kconfig(PM_ ${conf_file} ${d}_pm_var_names)
+      import_kconfig(PM_ ${APPLICATION_BINARY_DIR}/pm_${d}.config ${d}_pm_var_names)
 
       foreach(name ${${d}_pm_var_names})
         set_property(
@@ -613,7 +716,7 @@ to the external flash")
   # available. Generate the global pm_config.h, and provide it to all images.
   set(pm_global_output_cmd
     ${PYTHON_EXECUTABLE}
-    ${NRF_DIR}/scripts/partition_manager_output.py
+    ${ZEPHYR_NRF_MODULE_DIR}/scripts/partition_manager_output.py
     --input-partitions ${pm_out_partition_file}
     --input-regions ${pm_out_region_file}
     --header-files ${header_files}
@@ -652,28 +755,28 @@ to the external flash")
     COMMAND_EXPAND_LISTS
     )
 
-  if (PM_DOMAINS)
-    # For convenience, generate global hex file containing all domains' hex
-    # files.
-    set(merged_domains  merged_domains)
-    set(final_merged ${ZEPHYR_BINARY_DIR}/${merged_domains}.hex)
-
-    # Add command to merge files.
-    add_custom_command(
-      OUTPUT ${final_merged}
-      COMMAND
-      ${PYTHON_EXECUTABLE}
-      ${ZEPHYR_BASE}/scripts/build/mergehex.py
-      -o ${final_merged}
-      ${domain_hex_files}
-      DEPENDS
-      ${domain_hex_files}
-      ${global_hex_depends}
-      )
-
-    # Wrapper target for the merge command.
-    add_custom_target(merged_domains_hex ALL DEPENDS ${final_merged})
-  endif()
+# ToDo: do we still want to merge hex files for all the domains ?
+#  if (PM_DOMAINS)
+#    # For convenience, generate global hex file containing all domains' hex
+#    # files.
+#    set(final_merged ${PROJECT_BINARY_DIR}/merged_domains.hex)
+#
+#    # Add command to merge files.
+#    add_custom_command(
+#      OUTPUT ${final_merged}
+#      COMMAND
+#      ${PYTHON_EXECUTABLE}
+#      ${ZEPHYR_BASE}/scripts/build/mergehex.py
+#      -o ${final_merged}
+#      ${domain_hex_files}
+#      DEPENDS
+#      ${domain_hex_files}
+#      ${global_hex_depends}
+#      )
+#
+#    # Wrapper target for the merge command.
+#    add_custom_target(merged_domains_hex ALL DEPENDS ${final_merged})
+#  endif()
 
   set(ZEPHYR_RUNNER_CONFIG_KERNEL_HEX "${final_merged}"
     CACHE STRING "Path to merged image in Intel Hex format" FORCE)
@@ -688,20 +791,21 @@ endif()
 # set that variable. Hence we must operate on the 'yaml_contents' property,
 # which is evaluated in a generator expression.
 
-if (merged_domains)
-  # Multiple domains are included in the build, point to the result of
-  # merging the merged hex file for all domains.
-  set(merged_hex_to_flash ${merged_domains}.hex)
-else()
-  set(merged_hex_to_flash ${merged}.hex)
-endif()
-
-get_target_property(runners_content runners_yaml_props_target yaml_contents)
-
-string(REGEX REPLACE "hex_file:[^\n]*"
-  "hex_file: ${merged_hex_to_flash}" runners_content_updated_hex_file ${runners_content})
-
-set_property(
-  TARGET         runners_yaml_props_target
-  PROPERTY       yaml_contents ${runners_content_updated_hex_file}
-  )
+#if (final_merged)
+#  # Multiple domains are included in the build, point to the result of
+#  # merging the merged hex file for all domains.
+#  set(merged_hex_to_flash ${final_merged})
+#else()
+#  set(merged_hex_to_flash ${PROJECT_BINARY_DIR}/${merged}.hex)
+#endif()
+#
+#get_target_property(runners_content runners_yaml_props_target yaml_contents)
+#
+#string(REGEX REPLACE "hex_file:[^\n]*"
+#  "hex_file: ${merged_hex_to_flash}" new  ${runners_content})
+#
+#set_property(
+#  TARGET         runners_yaml_props_target
+#  PROPERTY       yaml_contents
+#  ${new}
+#  )
