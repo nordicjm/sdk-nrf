@@ -203,8 +203,13 @@ set(generated_path include/generated)
 # In parent image, it only happen to direct children, not children of children.
 # This must be adjusted into:
 # Explicitly add the main dynamic partition image
+sysbuild_get(${app_name}_input_files IMAGE ${app_name} VAR PM_YML_FILES CACHE)
+sysbuild_get(${app_name}_binary_dir  IMAGE ${app_name} VAR ZEPHYR_BINARY_DIR CACHE)
 list(APPEND prefixed_images ":${dynamic_partition}")
+list(APPEND input_files  ${${app_name}_input_files})
+list(APPEND header_files ${${app_name}_binary_dir}/${generated_path}/pm_config.h)
 foreach (image ${IMAGES})
+  set(domain)
   # Special handling of `app_image` as this must be added as `:app` for historic reasons.
   # `:app` is handled below.
   foreach (d ${PM_DOMAINS})
@@ -214,32 +219,28 @@ foreach (image ${IMAGES})
     endif()
   endforeach()
 
+  # ToDo: Clean handling of domains, currently we are not handling domain children properly.
+  # (Children of children, like the b0n case.
   if(NOT "${app_name}" STREQUAL "${image}")
+    sysbuild_get(${image}_input_files IMAGE ${image} VAR PM_YML_FILES CACHE)
+    sysbuild_get(${image}_binary_dir  IMAGE ${image} VAR ZEPHYR_BINARY_DIR CACHE)
     list(APPEND prefixed_images ${domain}:${image})
     list(APPEND images ${image})
-  endif()
-endforeach()
-
-foreach (image ${IMAGES})
-  sysbuild_get(${image}_input_files IMAGE ${image} VAR PM_YML_FILES CACHE)
-  sysbuild_get(${image}_binary_dir  IMAGE ${image} VAR ZEPHYR_BINARY_DIR CACHE)
-  #  get_shared(${image}_input_files IMAGE ${image} PROPERTY PM_YML_FILES)
-  #  get_shared(${image}_binary_dir  IMAGE ${image} PROPERTY ZEPHYR_BINARY_DIR)
-
-  # ToDo: Clean handling of domains, currently hardcoded to CPUNET here while thinking.
-  if(NOT ${image} IN_LIST PM_CPUNET_IMAGES OR "${DOMAIN_APP_CPUNET}" STREQUAL "${image}")
     list(APPEND input_files  ${${image}_input_files})
     list(APPEND header_files ${${image}_binary_dir}/${generated_path}/pm_config.h)
   endif()
-    # Re-configure (Re-execute all CMakeLists.txt code) when original
-    # (not preprocessed) configuration file changes.
-  #  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
-  #  set_property(
-  #    DIRECTORY APPEND PROPERTY
-  #    CMAKE_CONFIGURE_DEPENDS
-  #    ${dependencies}
-  #    )
 endforeach()
+
+#foreach (image ${IMAGES})
+#    # Re-configure (Re-execute all CMakeLists.txt code) when original
+#    # (not preprocessed) configuration file changes.
+#  #  get_shared(dependencies IMAGE ${image} PROPERTY PM_YML_DEP_FILES)
+#  #  set_property(
+#  #    DIRECTORY APPEND PROPERTY
+#  #    CMAKE_CONFIGURE_DEPENDS
+#  #    ${dependencies}
+#  #    )
+#endforeach()
 
 list(APPEND input_files  ${${app_name}_binary_dir}/${generated_path}/pm.yml)
 
