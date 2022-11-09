@@ -24,6 +24,8 @@ def parse_args():
     parser.add_argument('--output', required=True, type=argparse.FileType(mode='w'), help='Output zip path')
     parser.add_argument('--bin-files', required=True, type=argparse.FileType(mode='r'), nargs='+',
                         help='Bin files to be stored in zip')
+    parser.add_argument('--file-names', required=False, nargs='+',
+                        help='Names to store files as in zip')
     parser.add_argument('--meta-info-file', required=False,
                         help='''File containg build meta info for an nRF Connect
                         SDK build. The Zephyr and nRF Connect SDK revisions
@@ -76,7 +78,17 @@ if __name__ == '__main__':
 
     shared_info = dict()
     special_info = dict()
-    name_to_path = {get_name(f): f.name for f in args.bin_files}
+
+    # Use specified output filenames, if they were given
+    if args.file_names is None:
+        name_to_path = {get_name(f): f.name for f in args.bin_files}
+    else:
+        if (len(args.bin_files) != len(args.file_names)):
+            raise OSError(errno.EINVAL, "Number of arguments for --file-names must match --bin-files", args.file_names)
+
+        name_to_path = {}
+        for f in args.bin_files:
+            name_to_path[args.file_names[args.bin_files.index(f)]] = f.name
 
     for i in info:
         special = False
