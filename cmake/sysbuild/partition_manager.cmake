@@ -219,15 +219,16 @@ foreach (image ${IMAGES})
     endif()
   endforeach()
 
-  # ToDo: Clean handling of domains, currently we are not handling domain children properly.
-  # (Children of children, like the b0n case.
   if(NOT "${app_name}" STREQUAL "${image}")
     sysbuild_get(${image}_input_files IMAGE ${image} VAR PM_YML_FILES CACHE)
     sysbuild_get(${image}_binary_dir  IMAGE ${image} VAR ZEPHYR_BINARY_DIR CACHE)
+
     list(APPEND prefixed_images ${domain}:${image})
     list(APPEND images ${image})
-    list(APPEND input_files  ${${image}_input_files})
     list(APPEND header_files ${${image}_binary_dir}/${generated_path}/pm_config.h)
+    if(NOT DEFINED domain OR "${DOMAIN_APP_${domain}}" STREQUAL "${image}")
+      list(APPEND input_files  ${${image}_input_files})
+    endif()
   endif()
 endforeach()
 
