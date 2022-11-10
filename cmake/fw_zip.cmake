@@ -6,7 +6,7 @@
 
 function(generate_dfu_zip)
   set(oneValueArgs OUTPUT TYPE TARGET)
-  set(multiValueArgs BIN_FILES FILE_NAMES SCRIPT_PARAMS)
+  set(multiValueArgs BIN_FILES FILE_NAMES IMAGES SCRIPT_PARAMS)
   cmake_parse_arguments(GENZIP "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if (NOT(
@@ -38,6 +38,7 @@ function(generate_dfu_zip)
     "type=${GENZIP_TYPE}"
     "board=${CONFIG_BOARD}"
     "soc=${CONFIG_SOC}"
+DEPENDS ${GENZIP_IMAGES}
 #    DEPENDS ${GENZIP_BIN_FILES} ${meta_info_file}
     )
 
