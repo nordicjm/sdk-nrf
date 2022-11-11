@@ -322,28 +322,30 @@ foreach(d MAIN ${PM_DOMAINS})
 
 endforeach()
 
-# ToDo: Handle the external flash use-case
-#dt_chosen(ext_flash_dev PROPERTY nordic,pm-ext-flash)
-#if (DEFINED ext_flash_dev)
-#  dt_prop(num_bits PATH ${ext_flash_dev} PROPERTY size)
-#  math(EXPR num_bytes "${num_bits} / 8")
-#
-#  if (CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
-#    set(external_flash_driver_kconfig CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
-#  else()
-#    set(external_flash_driver_kconfig CONFIG_NORDIC_QSPI_NOR)
-#  endif()
-#
-#  sysbuild_get(${app_name}_CONFIG_PM_EXTERNAL_FLASH_BASE IMAGE ${app_name} VAR CONFIG_PM_EXTERNAL_FLASH_BASE KCONFIG)
-#  add_region(
-#    NAME external_flash
-#    SIZE ${num_bytes}
-#    BASE ${${app_name}_CONFIG_PM_EXTERNAL_FLASH_BASE}
-#    PLACEMENT start_to_end
-#    DEVICE ${ext_flash_dev}
-#    DEFAULT_DRIVER_KCONFIG ${external_flash_driver_kconfig}
-#    )
-#endif()
+sysbuild_get(ext_flash_enabled IMAGE ${app_name} VAR CONFIG_PM_EXTERNAL_FLASH_ENABLED KCONFIG)
+sysbuild_get(ext_flash_path IMAGE ${app_name} VAR CONFIG_PM_EXTERNAL_FLASH_PATH KCONFIG)
+sysbuild_get(num_bits IMAGE ${app_name} VAR CONFIG_PM_EXTERNAL_FLASH_SIZE_BITS KCONFIG)
+
+if(ext_flash_enabled)
+  math(EXPR num_bytes "${num_bits} / 8")
+
+  sysbuild_get(custom_driver IMAGE ${app_name} VAR CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK KCONFIG)
+  if (custon_driver)
+    set(external_flash_driver_kconfig CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+  else()
+    set(external_flash_driver_kconfig CONFIG_NORDIC_QSPI_NOR)
+  endif()
+
+  sysbuild_get(external_flash_base IMAGE ${app_name} VAR CONFIG_PM_EXTERNAL_FLASH_BASE KCONFIG)
+  add_region(
+    NAME external_flash
+    SIZE ${num_bytes}
+    BASE ${external_flash_base}
+    PLACEMENT start_to_end
+    DEVICE ${ext_flash_path}
+    DEFAULT_DRIVER_KCONFIG ${external_flash_driver_kconfig}
+    )
+endif()
 
 # If simultaneous updates of the network core and application core is supported
 # we add a region which is used to emulate flash. In reality this data is being
