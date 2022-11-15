@@ -158,7 +158,11 @@ def write_gpm_config(gpm_config, regions_config, name, out_path):
         image_config_lines.append('#define PM_PADDING {}'.format(hex(gpm_config[domain]['mcuboot_pad']['size'])))
         print(gpm_config[domain]["mcuboot_pad"]["size"])
     else:
-        image_config_lines.append('#define PM_PADDING {}'.format(hex(0)))
+        if (domain != "" and gpm_config[domain]['app']['span'][0] == pm_image):
+            image_config_lines.append('#define PM_PADDING {}'.format(hex(gpm_config[domain]['provision']['size'])))
+            print(gpm_config[domain]["provision"]["size"])
+        else:
+            image_config_lines.append('#define PM_PADDING {}'.format(hex(0)))
 
     image_sram_partition = f'{image}_sram'
     image_has_custom_sram = image_sram_partition in gpm_config[domain]
