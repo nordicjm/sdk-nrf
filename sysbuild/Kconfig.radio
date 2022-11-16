@@ -50,3 +50,48 @@ config RADIO_HCI_RPMSG_DOMAIN
 config RADIO_HCI_RPMSG_DOMAIN_APP
 	bool
 	default y if RADIO_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+
+config SUPPORT_RADIO_BOOTLOADER
+	bool
+	default y
+
+config SUPPORT_RADIO_BOOTLOADER_B0N
+	bool
+	default y
+
+choice RADIO_BOOTLOADER
+	prompt "Radio-core bootloader support"
+	default RADIO_BOOTLOADER_NONE
+	depends on SUPPORT_RADIO_BOOTLOADER
+
+config RADIO_BOOTLOADER_NONE
+	bool "None"
+	help
+	  Do not Include a radio bootloader image in the build
+
+config RADIO_BOOTLOADER_B0N
+	bool "b0n"
+	depends on SUPPORT_RADIO_BOOTLOADER_B0N
+	help
+	  Include b0n as the radio bootloader image to use
+
+endchoice
+
+config RADIO_BOOTLOADER_B0N_NAME
+	string
+	default "b0n"
+	depends on RADIO_BOOTLOADER_B0N
+	help
+	  Image name of radio hci rpmsg.
+
+config RADIO_BOOTLOADER_B0N_BOARD
+	string
+	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	depends on RADIO_BOOTLOADER_B0N
+	help
+	  Remote board when building this sample.
+	  If not set, the board given to sysbuild is used.
+
+config RADIO_BOOTLOADER_B0N_DOMAIN
+	string
+	default "CPUNET" if RADIO_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
