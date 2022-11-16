@@ -1,0 +1,52 @@
+# Copyright (c) 2022 Nordic Semiconductor
+#
+# SPDX-License-Identifier: Apache-2.0
+
+config SUPPORT_RADIO
+	bool
+	default y
+
+config SUPPORT_RADIO_HCI_RPMSG
+	bool
+	default y
+
+choice RADIO
+	prompt "Radio support"
+	default RADIO_NONE
+	depends on SUPPORT_RADIO
+
+config RADIO_NONE
+	bool "None"
+	help
+	  Do not Include a radio image in the build
+
+config RADIO_HCI_RPMSG
+	bool "hci_rpmsg"
+	depends on SUPPORT_RADIO_HCI_RPMSG
+	help
+	  Include hci_rpmsg as the radio image to use
+
+endchoice
+
+config RADIO_HCI_RPMSG_NAME
+	string
+	default "hci_rpmsg"
+	depends on RADIO_HCI_RPMSG
+	help
+	  Image name of radio hci rpmsg.
+
+config RADIO_HCI_RPMSG_BOARD
+	string
+	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	depends on RADIO_HCI_RPMSG
+	help
+	  Remote board when building this sample.
+	  If not set, the board given to sysbuild is used.
+
+config RADIO_HCI_RPMSG_DOMAIN
+	string
+	default "CPUNET" if RADIO_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+
+config RADIO_HCI_RPMSG_DOMAIN_APP
+	bool
+	default y if RADIO_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
