@@ -51,8 +51,8 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/introduction/index.html
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
-      revision: refs/heads/sysbuild/partition_manager
-      url: https://github.com/tejlmand/fw-nrfconnect-zephyr-1
+      revision: refs/heads/sysbuild_v3
+      url: https://github.com/nordicjm/sdk-zephyr
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
