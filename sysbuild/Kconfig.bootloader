@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2022 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+config SECURE_BOOT
+	bool "Secure Bootloader"
+	default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	depends on BOOTLOADER_MCUBOOT
+	help
+	  Set this option to enable the first stage bootloader which
+	  verifies the signature of the app.
