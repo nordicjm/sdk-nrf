@@ -13,8 +13,8 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT)
   )
 endif()
 
-
 if(SB_CONFIG_SECURE_BOOT)
+if(SB_CONFIG_RADIO_BOOTLOADER_B0N)
   add_overlay_config(
     ${SB_CONFIG_RADIO_HCI_RPMSG_NAME} # ToDo: Create a common Kconfig setting
                                       # which can then default to the exact
@@ -27,6 +27,7 @@ if(SB_CONFIG_SECURE_BOOT)
     mcuboot
     "${ZEPHYR_NRF_MODULE_DIR}/subsys/pcd/pcd.conf"
   )
+endif()
 endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/radio.cmake)
