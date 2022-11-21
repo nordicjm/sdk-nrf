@@ -4,6 +4,35 @@
 
 # Include hci_rpmsg if enabled.
 if(SB_CONFIG_RADIO_HCI_RPMSG)
+  # Propagate bootloader and signing settings from this system to the MCUboot and
+  # application image build systems.
+  if(SB_CONFIG_RADIO_BOOTLOADER_B0N)
+    set(${SB_CONFIG_RADIO_HCI_RPMSG_NAME}_CONFIG_BOOTLOADER_MCUBOOT y CACHE STRING
+        "B0N is enabled as bootloader" FORCE
+    )
+    set(${SB_CONFIG_RADIO_HCI_RPMSG_NAME}_CONFIG_MCUBOOT_SIGNATURE_KEY_FILE
+        \"${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}\" CACHE STRING
+        "Signature key file for signing" FORCE
+    )
+
+    set(${SB_CONFIG_RADIO_HCI_RPMSG_NAME}_CONFIG_ROM_START_OFFSET "0x200" CACHE STRING
+        "Flash load offset" FORCE
+    )
+
+    # Set corresponding values in mcuboot
+    set(mcuboot_CONFIG_BOOT_SIGNATURE_TYPE_${SB_CONFIG_SIGNATURE_TYPE} y CACHE STRING
+        "B0N signature type" FORCE
+    )
+    set(mcuboot_CONFIG_BOOT_SIGNATURE_KEY_FILE
+        \"${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}\" CACHE STRING
+        "Signature key file for signing" FORCE
+    )
+  else()
+    set(${SB_CONFIG_RADIO_HCI_RPMSG_NAME}_CONFIG_BOOTLOADER_MCUBOOT n CACHE STRING
+        "B0N is disabled as bootloader" FORCE
+    )
+  endif()
+
   ExternalZephyrProject_Add(
     APPLICATION ${SB_CONFIG_RADIO_HCI_RPMSG_NAME}
     SOURCE_DIR ${ZEPHYR_BASE}/samples/bluetooth/hci_rpmsg
