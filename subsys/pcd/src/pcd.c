@@ -147,6 +147,7 @@ static int network_core_pcd_cmdset(const void *src_addr, size_t len, bool wait)
 	LOG_INF("Turned on network core");
 
 	if (!wait) {
+LOG_ERR("no wait");
 		return 0;
 	}
 
@@ -157,8 +158,10 @@ static int network_core_pcd_cmdset(const void *src_addr, size_t len, bool wait)
 		k_busy_wait(1 * USEC_PER_SEC);
 
 		err = pcd_fw_copy_status_get();
+LOG_ERR("wait, err = %d", err);
 	} while (err == PCD_STATUS_COPY);
 
+LOG_ERR("hmm");
 	if (err == PCD_STATUS_COPY_FAILED) {
 		LOG_ERR("Network core update failed");
 		return err;
@@ -189,11 +192,14 @@ static int network_core_update(const void *src_addr, size_t len, bool wait)
 
 int pcd_network_core_update_initiate(const void *src_addr, size_t len)
 {
-	return network_core_update(src_addr, len, false);
+LOG_ERR("start update1 %p %d", src_addr, len);
+//	return network_core_update(src_addr, len, false);
+	return network_core_update(src_addr, len, true);
 }
 
 int pcd_network_core_update(const void *src_addr, size_t len)
 {
+LOG_ERR("start update2 %p %d", src_addr, len);
 	return network_core_update(src_addr, len, true);
 }
 
