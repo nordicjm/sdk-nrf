@@ -19,6 +19,9 @@
 
 #include <dfu/pcd.h>
 
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(nrf53hook, 4);
+
 int boot_read_image_header_hook(int img_index, int slot,
 		struct image_header *img_head)
 {
@@ -118,12 +121,50 @@ int boot_copy_region_post_hook(int img_index, const struct flash_area *area,
 	return 0;
 }
 
+static bool net_core_update_started = false;
+
 int boot_serial_uploaded_hook(int img_index, const struct flash_area *area,
 		size_t size)
 {
 	if (img_index == NET_CORE_VIRTUAL_PRIMARY_SLOT) {
-		return network_core_update(false);
+LOG_ERR("ye2");
+		int rc = network_core_update(false);
+if (rc == 0) {
+net_core_update_started = true;
+rc = 10;
+}
+k_busy_wait(1000000);
+return rc;
 	}
 
 	return 0;
+}
+
+extern enum pcd_status pcd_fw_copy_status_get();
+extern void network_core_pcd_tidy();
+int check_netcore_status()
+{
+enum pcd_status lolz;
+if (net_core_update_started == false) {
+return 2;
+}
+
+//while (lolz == PCD_STATUS_COPY) {
+k_busy_wait(1000000);
+lolz = pcd_fw_copy_status_get();
+LOG_ERR("State: %d", lolz);
+//}
+
+if (lolz == PCD_STATUS_COPY) {
+return 1;
+}
+
+LOG_ERR("DONE! %d", lolz);
+
+network_core_pcd_tidy();
+
+net_core_update_started = false;
+
+LOG_ERR("no2");
+return 0;
 }

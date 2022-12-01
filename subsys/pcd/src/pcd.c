@@ -131,6 +131,14 @@ static int pcd_cmd_write(const void *data, size_t len, off_t offset)
 	return 0;
 }
 
+void network_core_pcd_tidy()
+{
+	/* Configure nRF5340 Network MCU back into Non-Secure domain.
+	 * This is the default for the network core when it's reset.
+	 */
+	nrf_spu_extdomain_set(NRF_SPU, 0, false, false);
+}
+
 static int network_core_pcd_cmdset(const void *src_addr, size_t len, bool wait)
 {
 	int err;
@@ -166,6 +174,7 @@ static int network_core_pcd_cmdset(const void *src_addr, size_t len, bool wait)
 
 	nrf_reset_network_force_off(NRF_RESET, true);
 	LOG_INF("Turned off network core");
+network_core_pcd_tidy();
 	return 0;
 }
 
@@ -180,10 +189,7 @@ static int network_core_update(const void *src_addr, size_t len, bool wait)
 	nrf_spu_extdomain_set(NRF_SPU, 0, true, false);
 
 	err = network_core_pcd_cmdset(src_addr, len, wait);
-	/* Configure nRF5340 Network MCU back into Non-Secure domain.
-	 * This is the default for the network core when it's reset.
-	 */
-	nrf_spu_extdomain_set(NRF_SPU, 0, false, false);
+
 	return err;
 }
 
