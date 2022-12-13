@@ -1,0 +1,6 @@
+# This is a Kconfig @template@ file used for passing sysbuild controlled Kconfig
+# settings from sysbuild to images.
+
+config PARTITION_MANAGER_ENABLED
+	bool
+	default y if "@SB_CONFIG_PARTITION_MANAGER@"

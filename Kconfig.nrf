@@ -12,7 +12,7 @@ menu "Nordic nRF Connect"
 # enabled (CONFIG_BOOTLOADER_MCUBOOT), since NCS use partition_manager to
 # get this offset intsead.
 config ROM_START_OFFSET
-	default 0 if PARTITION_MANAGER_ENABLED
+	default 0 if PARTITION_MANAGER_ENABLED && !SYSBUILD_CONTROLLED
 
 #
 # Provide a new choice to override the mbedtls_external library completely

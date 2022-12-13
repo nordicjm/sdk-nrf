@@ -1,6 +1,7 @@
 choice
 	prompt "$(module) build strategy"
 	default $(module)_BUILD_STRATEGY_FROM_SOURCE
+	depends on !SYSBUILD_CONTROLLED
 
 config $(module)_BUILD_STRATEGY_USE_HEX_FILE
 	# Mandatory option when being built through add_child_image'
