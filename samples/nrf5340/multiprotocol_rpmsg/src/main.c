@@ -26,10 +26,11 @@
 
 #include <nrf_802154_serialization_error.h>
 
-#define BT_DBG_ENABLED 0
-#define LOG_MODULE_NAME hci_rpmsg
-#include "common/log.h"
 #include "common/assert.h"
+
+#define LOG_LEVEL CONFIG_MULTIPROTOCOL_RPMSG_LOG_LEVEL
+#include "zephyr/logging/log.h"
+LOG_MODULE_REGISTER(multiprotocol_rpmsg);
 
 static struct ipc_ept hci_ept;
 

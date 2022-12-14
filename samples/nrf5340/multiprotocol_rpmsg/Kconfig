@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2022 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+source "Kconfig.zephyr"
+
+menu "Nordic Multiprotocol RPMsg sample"
+
+config MULTIPROTOCOL_RPMSG_LOG_LEVEL
+	int "Default log level"
+	range 0 4
+	default 0
+
+endmenu
