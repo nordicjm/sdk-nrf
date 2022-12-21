@@ -19,3 +19,17 @@
   platforms:
     - all
   comment: "Disable zephyr Regression and PSA Arch tests, we maintain copies of these in sdk-nrf"
+
+- scenarios:
+    - applications.nrf_desktop.zrelease
+  platforms:
+    - nrf52820dongle_nrf52820
+    - nrf52833dk_nrf52820
+  comment: "Disable targets due to MCUboot partition flash memory overflow"
+
+- scenarios:
+    - applications.nrf_desktop.zdebug
+    - applications.nrf_desktop.zdebugwithshell
+  platforms:
+    - nrf52833dk_nrf52833
+  comment: "Disable targets due to MCUboot partition flash memory overflow"
