@@ -9,6 +9,15 @@
 # booted by B0, and set the required properties for that image to be
 # bootable by B0.
 
+set_ifndef(partition_manager_target partition_manager)
+
+if(NCS_SYSBUILD_PARTITION_MANAGER)
+  # Should we clear CONFIG_ namespace and load image to make things easier ?
+  # Let's try for now.
+  ExternalProject_Get_Property(hci_rpmsg BINARY_DIR)
+  import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+endif()
+
 if (CONFIG_NCS_IS_VARIANT_IMAGE)
   # When building the a variant of an image, the configuration of the variant image
   # is identical to the base image, except 'CONFIG_NCS_IS_VARIANT_IMAGE'. This file is
@@ -51,7 +60,7 @@ if (DEFINED CONFIG_SB_MONOTONIC_COUNTER)
 endif()
 
 # Build and include hex file containing provisioned data for the bootloader.
-set(NRF_SCRIPTS            ${NRF_DIR}/scripts)
+set(NRF_SCRIPTS            ${ZEPHYR_NRF_MODULE_DIR}/scripts)
 set(NRF_BOOTLOADER_SCRIPTS ${NRF_SCRIPTS}/bootloader)
 set(PROVISION_HEX_NAME     provision.hex)
 set(PROVISION_HEX          ${PROJECT_BINARY_DIR}/${PROVISION_HEX_NAME})
@@ -88,11 +97,12 @@ if ((CONFIG_SB_VALIDATE_FW_SIGNATURE OR CONFIG_SB_VALIDATE_FW_HASH) AND
   set(PROVISION_DEPENDS signature_public_key_file_target)
 endif()
 
-if (CONFIG_SOC_NRF5340_CPUNET)
-  set(s0_arg --s0-addr $<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>)
+# Adjustment to be able to load into sysbuild
+if (CONFIG_SOC_NRF5340_CPUNET OR "${domain}" STREQUAL "CPUNET")
+  set(s0_arg --s0-addr $<TARGET_PROPERTY:${partition_manager_target},PM_APP_ADDRESS>)
 else()
-  set(s0_arg --s0-addr $<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>)
-  set(s1_arg --s1-addr $<TARGET_PROPERTY:partition_manager,PM_S1_ADDRESS>)
+  set(s0_arg --s0-addr $<TARGET_PROPERTY:${partition_manager_target},PM_S0_ADDRESS>)
+  set(s1_arg --s1-addr $<TARGET_PROPERTY:${partition_manager_target},PM_S1_ADDRESS>)
 endif()
 
 if (CONFIG_SB_DEBUG_NO_VERIFY_HASHES)
@@ -107,7 +117,7 @@ add_custom_command(
   ${NRF_BOOTLOADER_SCRIPTS}/provision.py
   ${s0_arg}
   ${s1_arg}
-  --provision-addr $<TARGET_PROPERTY:partition_manager,PM_PROVISION_ADDRESS>
+  --provision-addr $<TARGET_PROPERTY:${partition_manager_target},PM_PROVISION_ADDRESS>
   ${public_keys_file_arg}
   --output ${PROVISION_HEX}
   ${monotonic_counter_arg}

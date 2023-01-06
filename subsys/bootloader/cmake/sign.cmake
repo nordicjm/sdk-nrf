@@ -61,13 +61,19 @@ add_custom_target(
 
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/bl_validation_magic.cmake)
 
-set(slots s0_image)
-if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET)
-  list(APPEND slots app)
-endif()
+# For sysbuild, let's start to just get the main app in place, and from there extend into full
+# container once we have determined how to combine merging with sysbuild flashing.
+if(NCS_SYSBUILD_PARTITION_MANAGER)
+  set(slots ${DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN}})
+else()
+  set(slots s0_image)
+  if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET)
+    list(APPEND slots app)
+  endif()
 
-if (CONFIG_BUILD_S1_VARIANT)
-  list(APPEND slots s1_image)
+  if (CONFIG_BUILD_S1_VARIANT)
+    list(APPEND slots s1_image)
+  endif ()
 endif ()
 
 if (NOT "${CONFIG_SB_VALIDATION_INFO_CRYPTO_ID}" EQUAL "1")
@@ -79,6 +85,18 @@ foreach (slot ${slots})
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
 
+if(NCS_SYSBUILD_PARTITION_MANAGER)
+  # A container can be merged, in which case we should use old style below,
+  # or it may be an actual image, where we know everything.
+  # Initial support disregards the merged hex files.
+  # I parent-child, everything is merged, even when having a single image in a
+  # container (where the original image == the merged image).
+  sysbuild_get(${slot}_image_dir IMAGE ${slot} VAR APPLICATION_BINARY_DIR CACHE)
+  sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
+  set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
+  set(sign_depends ${slot})
+else()
   if (${slot} STREQUAL "s1_image")
     # The s1_image slot is built as a child image, add the dependency and
     # path to its hex file accordingly. We cannot use the shared variables
@@ -91,6 +109,7 @@ foreach (slot ${slots})
     set(sign_depends ${slot}_hex)
   endif()
   list(APPEND sign_depends ${slot_hex} ${SIGN_KEY_FILE_DEPENDS})
+endif()
 
   set(to_sign ${slot_hex})
   set(hash_file ${GENERATED_PATH}/${slot}_firmware.sha256)
