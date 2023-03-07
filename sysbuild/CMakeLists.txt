@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022 Nordic Semiconductor
+# Copyright (c) 2022-2023 Nordic Semiconductor
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
@@ -19,10 +19,15 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
   endif()
+
+  if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+    # mcuboot is enabled, a firmware zip of the update files needs to be created
+    include(${ZEPHYR_NRF_MODULE_DIR}/sysbuild/packager_postbuild.cmake)
+  endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
 
 # Enable use of partition manager with sysbuild.
-# Consider if this shoulc come through Sysbuild Kconfig flag.
+# Consider if this should come through Sysbuild Kconfig flag.
 set(NCS_SYSBUILD_PARTITION_MANAGER TRUE PARENT_SCOPE)
 
 include(${CMAKE_CURRENT_LIST_DIR}/extensions.cmake)
@@ -46,3 +51,7 @@ endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/netcore.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/secureboot.cmake)
+
+# Append extra tools that need to run
+list(APPEND SYSBUILD_EXTRA_TOOLS "${ZEPHYR_NRF_MODULE_DIR}/sysbuild/packager")
+set(SYSBUILD_EXTRA_TOOLS ${SYSBUILD_EXTRA_TOOLS} PARENT_SCOPE)
