@@ -4,6 +4,23 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+# Sysbuild function hooks used bed nRF Connect SDK
+function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
+  cmake_parse_arguments(POST_CMAKE "" "" "IMAGES" ${ARGN})
+
+  # Run partition manager for each image before running CMake.
+  set(domain ${SB_CONFIG_SECURE_BOOT_DOMAIN})
+  if(DEFINED domain)
+    set(partition_manager_target partition_manager_${domain})
+  endif()
+  add_subdirectory_ifdef(SB_CONFIG_SECURE_BOOT ${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/image secure_bootloader)
+
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
+  if(SB_CONFIG_PARTITION_MANAGER)
+    include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
+  endif()
+endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
+
 # Enable use of partition manager with sysbuild.
 # Consider if this shoulc come through Sysbuild Kconfig flag.
 set(NCS_SYSBUILD_PARTITION_MANAGER TRUE PARENT_SCOPE)
