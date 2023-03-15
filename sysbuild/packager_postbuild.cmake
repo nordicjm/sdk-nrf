@@ -29,13 +29,20 @@ else()
     )
 endif()
 
-generate_dfu_zip(
+#generate_dfu_zip(
+#  OUTPUT ${PROJECT_BINARY_DIR}/dfu_application.zip
+#  BIN_FILES ${generate_bin_files}
+#  TYPE application
+#  SCRIPT_PARAMS ${generate_script_params}
+#  APPNAME ${DEFAULT_IMAGE}
+#  SOC ${app_core_soc}
+#  BOARD ${BOARD}
+#  IMAGES ${DEFAULT_IMAGE}
+#  )
+
+generate_dfu_zip2(
   OUTPUT ${PROJECT_BINARY_DIR}/dfu_application.zip
-  BIN_FILES ${generate_bin_files}
   TYPE application
   SCRIPT_PARAMS ${generate_script_params}
-  APPNAME ${DEFAULT_IMAGE}
-  SOC ${app_core_soc}
-  BOARD ${BOARD}
   IMAGES ${DEFAULT_IMAGE}
   )
