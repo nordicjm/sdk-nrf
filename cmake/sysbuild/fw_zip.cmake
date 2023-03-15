@@ -27,8 +27,15 @@ function(generate_dfu_zip)
     set(meta_argument --meta-info-file ${meta_info_file})
   endif()
 
+  set(dotconfigs)
   foreach(image ${GENZIP_IMAGES})
-    add_custom_command(TARGET ${image} POST_BUILD
+    ExternalProject_Get_Property(${GENZIP_IMAGES} BINARY_DIR)
+    list(APPEND dotconfigs ${BINARY_DIR}/zephyr/.config)
+  endforeach()
+
+  set_property(SOURCE ${GENZIP_BIN_FILES} ${dotconfigs} PROPERTY GENERATED TRUE)
+
+  add_custom_command(OUTPUT ${GENZIP_OUTPUT}
       COMMAND
       ${PYTHON_EXECUTABLE}
       ${ZEPHYR_NRF_MODULE_DIR}/scripts/bootloader/generate_zip.py
@@ -40,10 +47,10 @@ function(generate_dfu_zip)
       "type=${GENZIP_TYPE}"
       "board=${GENZIP_BOARD}"
       "soc=${GENZIP_SOC}"
-      DEPENDS ${meta_info_file} ${GENZIP_BIN_FILES}
-      )
-  endforeach()
+      DEPENDS ${meta_info_file} ${GENZIP_IMAGES} ${dotconfigs}
+  )
 
+  add_custom_target(dfu_zip ALL DEPENDS ${GENZIP_OUTPUT})
 #  get_filename_component(TARGET_NAME ${GENZIP_OUTPUT} NAME)
 #  string(REPLACE "." "_" TARGET_NAME ${TARGET_NAME})
 #
