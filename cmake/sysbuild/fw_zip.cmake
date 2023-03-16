@@ -50,9 +50,12 @@ function(generate_dfu_zip)
       -DTYPE=${GENZIP_TYPE}
       -DBOARD=${GENZIP_BOARD}
       -DSOC=${GENZIP_SOC}
+      -DMONITOR_FILE=${CMAKE_BINARY_DIR}/zip_monitor.mon
       -P ${CMAKE_CURRENT_LIST_DIR}/generate_zip.cmake
-      DEPENDS ${meta_info_file} ${GENZIP_IMAGES} ${dotconfigs}
+      DEPENDS ${meta_info_file} ${GENZIP_IMAGES} ${dotconfigs} ${GENZIP_BIN_FILES}
   )
+
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_BINARY_DIR}/zip_monitor.mon)
 
   add_custom_target(dfu_zip ALL DEPENDS ${GENZIP_OUTPUT})
 #  get_filename_component(TARGET_NAME ${GENZIP_OUTPUT} NAME)

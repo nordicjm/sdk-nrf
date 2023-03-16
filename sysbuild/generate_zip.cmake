@@ -23,3 +23,5 @@ execute_process(
       "soc=${SOC}"
 )
 
+file(WRITE ${MONITOR_FILE}.tmp ${bin_files})
+zephyr_file_copy(${MONITOR_FILE}.tmp ${MONITOR_FILE} ONLY_IF_DIFFERENT)
