@@ -27,26 +27,30 @@ function(generate_dfu_zip)
     set(meta_argument --meta-info-file ${meta_info_file})
   endif()
 
+  set(image_binary_dirs)
   set(dotconfigs)
   foreach(image ${GENZIP_IMAGES})
     ExternalProject_Get_Property(${GENZIP_IMAGES} BINARY_DIR)
+    list(APPEND image_binary_dirs ${BINARY_DIR})
     list(APPEND dotconfigs ${BINARY_DIR}/zephyr/.config)
   endforeach()
 
   set_property(SOURCE ${GENZIP_BIN_FILES} ${dotconfigs} PROPERTY GENERATED TRUE)
 
+
   add_custom_command(OUTPUT ${GENZIP_OUTPUT}
-      COMMAND
-      ${PYTHON_EXECUTABLE}
-      ${ZEPHYR_NRF_MODULE_DIR}/scripts/bootloader/generate_zip.py
-      --bin-files ${GENZIP_BIN_FILES}
-      --output ${GENZIP_OUTPUT}
-      --name "${GENZIP_APPNAME}"
-      ${meta_argument}
-      ${GENZIP_SCRIPT_PARAMS}
-      "type=${GENZIP_TYPE}"
-      "board=${GENZIP_BOARD}"
-      "soc=${GENZIP_SOC}"
+      COMMAND ${CMAKE_COMMAND}
+      -DZEPHYR_BASE=${ZEPHYR_BASE}
+      -DDOTCONFIGS=${dotconfigs}
+      -DIMAGE_BINARY_DIRS=${image_binary_dirs}
+      -DOUTPUT=${GENZIP_OUTPUT}
+      -DAPP_NAME=${GENZIP_APPNAME}
+      -DMETA_ARGUMENT=${meta_argument}
+      -DSCRIPT_PARAMS=${GENZIP_SCRIPT_PARAMS}
+      -DTYPE=${GENZIP_TYPE}
+      -DBOARD=${GENZIP_BOARD}
+      -DSOC=${GENZIP_SOC}
+      -P ${CMAKE_CURRENT_LIST_DIR}/generate_zip.cmake
       DEPENDS ${meta_info_file} ${GENZIP_IMAGES} ${dotconfigs}
   )
 
