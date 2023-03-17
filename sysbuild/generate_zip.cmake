@@ -6,7 +6,7 @@ include(extensions)
 set(binfiles)
 foreach(dir dotconfig IN ZIP_LISTS IMAGE_BINARY_DIRS DOTCONFIGS)
   import_kconfig(CONFIG_ ${dotconfig})
-  list(APPEND bin_files ${dir}/zephyr/${CONFIG_KERNEL_BIN_NAME}.bin)
+  list(APPEND bin_files ${dir}/zephyr/${CONFIG_KERNEL_BIN_NAME}.signed.bin)
 endforeach()
 
 execute_process(
