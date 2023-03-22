@@ -25,7 +25,6 @@ else()
     )
   set(generate_script_params
     "load_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
-    "version_MCUBOOT=${app_core_version}"
     )
 endif()
 
