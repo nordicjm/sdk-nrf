@@ -22,9 +22,11 @@ function(generate_dfu_zip)
     message(FATAL_ERROR "Missing required param")
   endif()
 
-  if(CONFIG_BUILD_OUTPUT_META)
-    set(meta_info_file ${PROJECT_BINARY_DIR}/${KERNEL_META_NAME})
-    set(meta_argument --meta-info-file ${meta_info_file})
+  sysbuild_get(app_core_output_meta IMAGE ${DEFAULT_IMAGE} VAR CONFIG_BUILD_OUTPUT_META KCONFIG)
+
+  if(app_core_output_meta)
+    sysbuild_get(app_core_prefix_name IMAGE ${DEFAULT_IMAGE} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+    set(meta_argument ${CMAKE_BINARY_DIR}/${DEFAULT_IMAGE}/zephyr/${app_core_prefix_name}.meta)
   endif()
 
   # Generate list of target image binary directories and zephyr configuration files.

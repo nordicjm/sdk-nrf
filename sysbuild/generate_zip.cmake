@@ -37,6 +37,10 @@ foreach(dir dotconfig IN ZIP_LISTS IMAGE_BINARY_DIRS DOTCONFIGS)
   set(current_image "${current_image} ADD 1")
 endforeach()
 
+if(META_ARGUMENT)
+  set(META_ARGUMENT_PREFIX --meta-info-file)
+endif()
+
 execute_process(
       COMMAND
       ${PYTHON_EXECUTABLE}
@@ -44,7 +48,7 @@ execute_process(
       --bin-files ${bin_files}
       --output ${OUTPUT}
       --name "${APP_NAME}"
-      ${META_ARGUMENT}
+      ${META_ARGUMENT_PREFIX} ${META_ARGUMENT}
       ${SCRIPT_PARAMS} ${generate_script_params}
       "type=${TYPE}"
       "board=${BOARD}"
