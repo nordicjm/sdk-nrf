@@ -4,7 +4,13 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-# Sysbuild function hooks used bed nRF Connect SDK
+if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+  set(${app_name}_CONFIG_BUILD_OUTPUT_META y CACHE STRING
+      "Output build meta information"
+  )
+endif()
+
+# Sysbuild function hooks used by nRF Connect SDK
 function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   cmake_parse_arguments(POST_CMAKE "" "" "IMAGES" ${ARGN})
 
