@@ -12,26 +12,25 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 
-
-#if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/configuration/${BOARD}")
-#  message(FATAL_ERROR
-#          "Board ${BOARD} is not supported.\n"
-#          "Please make sure board specific configuration files are added to "
-#          "${CMAKE_CURRENT_SOURCE_DIR}/configuration/${BOARD}")
-#endif()
-
 ################################################################################
 
 # The application uses the configuration/<board> scheme for configuration files.
-if(NOT DEFINED APPLICATION_CONFIG_DIR)
+#if(NOT DEFINED APPLICATION_CONFIG_DIR)
 set(APPLICATION_CONFIG_DIR "configuration/\${BOARD}")
-endif()
+#endif()
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project("nRF52 Desktop"
         VERSION 0.1)
 
 ################################################################################
+
+if (NOT EXISTS "${APPLICATION_CONFIG_DIR}")
+  message(FATAL_ERROR
+          "Board ${BOARD} is not supported.\n"
+          "Please make sure board specific configuration files are added to "
+          "${CMAKE_CURRENT_SOURCE_DIR}/configuration/${BOARD}")
+endif()
 
 assert(CONFIG_DESKTOP_HID_REPORT_DESC "HID report descriptor file must be specified")
 
@@ -50,7 +49,7 @@ zephyr_library_include_directories(
 
 zephyr_include_directories(
   configuration/common
-  configuration/${BOARD}
+  ${APPLICATION_CONFIG_DIR}
   )
 
 # Application sources
