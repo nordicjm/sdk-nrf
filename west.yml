@@ -92,6 +92,15 @@ manifest:
     #
     # Some of these are also Zephyr modules which have NCS-specific
     # changes.
+    - name: hostap
+      repo-path: sdk-hostap
+      path: modules/lib/hostap
+      revision: ff98ecf541f1e43a9e89e4d47f24e7c59c65f5fe
+      userdata:
+        ncs:
+          upstream-url: https://w1.fi/cgit/hostap/
+          upstream-sha: e792f38db8471f35ee94f109a4093dece8f78c6a
+          compare-by-default: false
     - name: mcuboot
       repo-path: sdk-mcuboot
       revision: c78d59dbe8ec48cfbdff9a0bfc12f25b90c73d2f
@@ -121,6 +130,15 @@ manifest:
           upstream-url: https://github.com/project-chip/connectedhomeip
           upstream-sha: 4088a77f557e8571a39338fad51a1d8eb0131d79
           compare-by-default: false
+      submodules:
+        - name: nlio
+          path: third_party/nlio/repo
+        - name: nlassert
+          path: third_party/nlassert/repo
+        - name: nlunit-test
+          path: third_party/nlunit-test/repo
+        - name: pigweed
+          path: third_party/pigweed/repo
     - name: nrf-802154
       repo-path: sdk-nrf-802154
       path: nrf-802154
