@@ -82,6 +82,8 @@ manifest:
         name-allowlist:
           - cmsis
           - hal_nordic
+          - libmetal
+          - open-amp
           - segger
           - tinycrypt
           - zcbor
@@ -102,6 +104,47 @@ manifest:
       repo-path: sdk-nrfxlib
       path: nrfxlib
       revision: 9cb73143fb543d3eefeeb356ae335a7e4c756512
+    - name: qcbor
+      url: https://github.com/laurencelundblade/QCBOR.git
+      revision: b0e7033268e88c9f27146fa9a1415ef4c19ebaff
+      path: modules/tee/tf-m/qcbor
+    - name: trusted-firmware-m
+      repo-path: sdk-trusted-firmware-m
+      path: modules/tee/tf-m/trusted-firmware-m
+      revision: ab8140dd25da98356619ae7ed02b735404c5b962
+    - name: matter
+      repo-path: sdk-connectedhomeip
+      path: modules/lib/matter
+      revision: 032a0a95c5b6c761b35cd73e98e41f56f59fa5f0
+      userdata:
+        ncs:
+          upstream-url: https://github.com/project-chip/connectedhomeip
+          upstream-sha: 4088a77f557e8571a39338fad51a1d8eb0131d79
+          compare-by-default: false
+    - name: nrf-802154
+      repo-path: sdk-nrf-802154
+      path: nrf-802154
+      revision: 2e0320844049e041de9d5769d810c5a15b10842a
+      groups:
+        - nrf-802154
+    - name: cjson
+      repo-path: sdk-cjson
+      path: modules/lib/cjson
+      revision: c6af068b7f05207b28d68880740e4b9ec1e4b50a
+      userdata:
+        ncs:
+          upstream-url: https://github.com/DaveGamble/cJSON
+          upstream-sha: d2735278ed1c2e4556f53a7a782063b31331dbf7
+          compare-by-default: false
+    - name: openthread
+      repo-path: sdk-openthread
+      path: modules/lib/openthread
+      revision: 2c8a0af24433dd802414ae1832a3f3e5948514b7
+      userdata:
+        ncs:
+          upstream-url: https://github.com/openthread/openthread
+          upstream-sha: 55074652907295709f9f3361244a6e76f732bcba
+          compare-by-default: false
 
   # West-related configuration for the nrf repository.
   self:

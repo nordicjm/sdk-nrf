@@ -6,14 +6,6 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 
-
-if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/configuration/${BOARD}")
-  message(FATAL_ERROR
-          "Board ${BOARD} is not supported.\n"
-          "Please make sure board specific configuration files are added to "
-          "${CMAKE_CURRENT_SOURCE_DIR}/configuration/${BOARD}")
-endif()
-
 ################################################################################
 
 # The application uses the configuration/<board> scheme for configuration files.
@@ -23,6 +15,13 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(ZigbeeWeatherStation)
 
 ################################################################################
+
+if (NOT EXISTS "${APPLICATION_CONFIG_DIR}")
+  message(FATAL_ERROR
+          "Board ${BOARD} is not supported.\n"
+          "Please make sure board specific configuration files are added to "
+          "${CMAKE_CURRENT_SOURCE_DIR}/configuration/${BOARD}")
+endif()
 
 # NORDIC SDK APP START
 target_sources(app PRIVATE
