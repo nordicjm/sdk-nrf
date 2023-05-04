@@ -4,20 +4,12 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-#get_cmake_property(_variableNames VARIABLES)
-#list (SORT _variableNames)
-#foreach (_variableName ${_variableNames})
-#    message(STATUS "${_variableName}=${${_variableName}}")
-#endforeach()
-
 cmake_minimum_required(VERSION 3.20.0)
 
 ################################################################################
 
 # The application uses the configuration/<board> scheme for configuration files.
-#if(NOT DEFINED APPLICATION_CONFIG_DIR)
 set(APPLICATION_CONFIG_DIR "configuration/\${BOARD}")
-#endif()
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project("nRF52 Desktop"

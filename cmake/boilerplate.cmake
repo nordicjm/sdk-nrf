@@ -9,13 +9,6 @@
 # For more information regarding the Zephyr Build Configuration CMake package, please refer to:
 # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/zephyr_cmake_package.html#zephyr-build-configuration-cmake-package
 
-#message(WARNING "start")
-#get_cmake_property(_variableNames VARIABLES)
-#list (SORT _variableNames)
-#foreach (_variableName ${_variableNames})
-#    message(STATUS "${_variableName}=${${_variableName}}")
-#endforeach()
-
 include(${NRF_DIR}/boards/deprecated.cmake)
 
 if(NOT BOARD)
@@ -38,4 +31,3 @@ endif()
 
 list(PREPEND CMAKE_MODULE_PATH ${NRF_DIR}/cmake/modules)
 list(PREPEND CMAKE_MODULE_PATH /tmp/bb/NOPE)
-#include(extra-boards OPTIONAL)
