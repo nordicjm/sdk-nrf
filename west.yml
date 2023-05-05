@@ -55,10 +55,11 @@ manifest:
   projects:
 
     - name: NOPE
-      repo-path: NOPE.git
+#      repo-path: NOPE.git
+      repo-path: sdk-nrf-next.git
       path: NOPE
       remote: moi
-      revision: main
+      revision: other
     # The Zephyr RTOS fork in the NCS, along with the subset of its
     # modules which NCS imports directly.
     #
