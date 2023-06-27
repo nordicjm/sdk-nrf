@@ -37,6 +37,8 @@ manifest:
       url-base: https://github.com/ant-nrfconnect
     - name: babblesim
       url-base: https://github.com/BabbleSim
+    - name: mine
+      url-base: https://github.com/nordicjm
 
   # If not otherwise specified, the projects below should be obtained
   # from the ncs remote.
@@ -59,7 +61,8 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
       repo-path: sdk-zephyr
-      revision: 890edab701c076b8f8ded3cf2197179a75679ad2
+      revision: hacks_xip
+      remote: mine
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
@@ -73,35 +76,14 @@ manifest:
         #
         # Please keep this list sorted alphabetically.
         name-allowlist:
-          - TraceRecorderSource
-          - canopennode
-          - chre
           - cmsis
-          - edtt
-          - fatfs
           - hal_nordic
-          - hal_st # required for ST sensors (unrelated to STM32 MCUs)
-          - hal_wurthelektronik
-          - liblc3
           - libmetal
           - littlefs
-          - loramac-node
-          - lvgl
-          - lz4
-          - mipi-sys-t
-          - nanopb
-          - net-tools
-          - nrf_hw_models
           - open-amp
-          - picolibc
-          - psa-arch-tests
           - segger
-          - tinycbor
-          - tinycrypt
-          - tf-m-tests
-          - uoscore-uedhoc
           - zcbor
-          - zscilib
+          - tinycrypt
 
     # NCS repositories.
     #
@@ -115,15 +97,6 @@ manifest:
         ncs:
           upstream-url: https://w1.fi/cgit/hostap/
           upstream-sha: e792f38db8471f35ee94f109a4093dece8f78c6a
-          compare-by-default: false
-    - name: wfa-qt-control-app
-      repo-path: sdk-wi-fiquicktrack-controlappc
-      path: modules/lib/wfa-qt-control-app
-      revision: f3391efd16c909d78c36dc7f9c81901b268deecc
-      userdata:
-        ncs:
-          upstream-url: https://github.com/Wi-FiQuickTrack/Wi-FiQuickTrack-ControlAppC
-          upstream-sha: 1225729e8d84075f03bf9fc51eee85d84dfb0091
           compare-by-default: false
     - name: mcuboot
       repo-path: sdk-mcuboot
@@ -163,20 +136,6 @@ manifest:
           upstream-url: https://github.com/project-chip/connectedhomeip
           upstream-sha: 8f66f4215bc0708efc8cc73bda80620e67d8955f
           compare-by-default: false
-    - name: nrf-802154
-      repo-path: sdk-nrf-802154
-      path: nrf-802154
-      revision: ef53e051cd04d62b330596f8982f4763f18e4148
-      groups:
-        - nrf-802154
-    - name: dragoon
-      # Only for internal Nordic development
-      repo-path: dragoon.git
-      remote: dragoon
-      revision: 6dfb5a0c9ed62b9ff28b865276ee4fce67066156
-      submodules: true
-      groups:
-        - dragoon
     - name: cjson
       repo-path: sdk-cjson
       path: modules/lib/cjson
@@ -186,34 +145,12 @@ manifest:
           upstream-url: https://github.com/DaveGamble/cJSON
           upstream-sha: d2735278ed1c2e4556f53a7a782063b31331dbf7
           compare-by-default: false
-    - name: homekit
-      repo-path: sdk-homekit
-      revision: 2ecf5993ca6f4662517e4e287aec0eb979962112
+    - name: nrf-802154
+      repo-path: sdk-nrf-802154
+      path: nrf-802154
+      revision: ef53e051cd04d62b330596f8982f4763f18e4148
       groups:
-        - homekit
-    - name: find-my
-      repo-path: sdk-find-my
-      revision: 68e82297568d9c8e1d244e87858b4bd332643605
-      groups:
-        - find-my
-    - name: azure-sdk-for-c
-      repo-path: azure-sdk-for-c
-      path: modules/lib/azure-sdk-for-c
-      revision: 308c171cb4b5eed266649012a68406487ec81fb2
-      userdata:
-        ncs:
-          upstream-url: https://github.com/Azure/azure-sdk-for-c
-          upstream-sha: adc56bc6138a28b5490bce339a31a2581a072092
-          compare-by-default: false
-    - name: cirrus
-      repo-path: sdk-mcu-drivers
-      path: modules/hal/cirrus-logic
-      revision: 9f6b3812237fbb0d4157ba3584c13f1644fcbe3a
-      userdata:
-        ncs:
-          upstream-url: https://github.com/CirrusLogic/mcu-drivers
-          upstream-sha: 1be6ca7253133a21a1e9fe0fbb4656e17d63a936
-          compare-by-default: false
+        - nrf-802154
     - name: openthread
       repo-path: sdk-openthread
       path: modules/lib/openthread
@@ -223,30 +160,6 @@ manifest:
           upstream-url: https://github.com/openthread/openthread
           upstream-sha: d9abe3071c0131a4adb5d7e7451319b735e6d855
           compare-by-default: false
-
-    # Other third-party repositories.
-    - name: cmock
-      path: test/cmock
-      submodules: true
-      revision: f65066f15d8248e6dcb778efb8739904a4512087
-      remote: throwtheswitch
-    - name: memfault-firmware-sdk
-      path: modules/lib/memfault-firmware-sdk
-      revision: 0.43.3
-      remote: memfault
-    - name: ant
-      repo-path: sdk-ant
-      revision: 01087e4e6d2a9c4dec759ad6223d39e0cfb2bfa2
-      remote: ant-nrfconnect
-      groups:
-        - ant
-    - name: bsim
-      repo-path: bsim_west
-      remote: babblesim
-      revision: 384a091445c57b44ac8cbd18ebd245b47c71db94
-      import:
-        path-prefix: tools
-
 
   # West-related configuration for the nrf repository.
   self:

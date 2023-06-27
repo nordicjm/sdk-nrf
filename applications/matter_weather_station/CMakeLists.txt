@@ -62,3 +62,35 @@ chip_configure_data_model(app
     ZAP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/weather-station.zap
 )
 # NORDIC SDK APP END
+
+zephyr_code_relocate(FILES
+#                     src/main.cpp
+                     src/app_task.cpp
+                     src/battery.cpp
+                     src/buzzer.cpp
+                     src/zap-generated/callback-stub.cpp
+                     src/zap-generated/IMClusterCommandHandler.cpp
+                     LOCATION EXTFLASH_TEXT NOCOPY)
+
+zephyr_code_relocate(FILES
+#                     src/main.cpp
+                     src/app_task.cpp
+                     src/battery.cpp
+                     src/buzzer.cpp
+                     src/zap-generated/callback-stub.cpp
+                     src/zap-generated/IMClusterCommandHandler.cpp
+                     LOCATION RAM_DATA)
+
+#zephyr_code_relocate(LIBRARY drivers__ieee802154 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY drivers__sensor__adxl362 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY drivers__sensor__bme680 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY drivers__sensor__bmm150 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY ..__nrf__lib__dk_buttons_and_leds LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY ..__nrf__subsys__nfc__lib LOCATION EXTFLASH_TEXT NOCOPY)
+
+#zephyr_code_relocate(LIBRARY drivers__ieee802154 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY drivers__sensor__adxl362 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY drivers__sensor__bme680 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY drivers__sensor__bmm150 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY ..__nrf__lib__dk_buttons_and_leds LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY ..__nrf__subsys__nfc__lib LOCATION RAM_DATA)
