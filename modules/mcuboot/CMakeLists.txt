@@ -193,6 +193,50 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       )
   endfunction()
 
+  function(split)
+    # Splits an elf image into 2 sets of hex and bin files
+    #
+    # Required arguments are:
+    # ELF_FILE_IN
+    # ELF_SECTION_NAME
+    # HEX_INCLUDE_FILE_OUT
+    # HEX_EXCLUDE_FILE_OUT
+    set(oneValueArgs ELF_FILE_IN ELF_SECTION_NAME HEX_INCLUDE_FILE_OUT HEX_EXCLUDE_FILE_OUT)
+    set(multiValueArgs DEPENDS)
+    cmake_parse_arguments(SPLIT_ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    check_arguments_required_all(split SPLIT_ARG ${oneValueArgs})
+
+    add_custom_command(
+      OUTPUT
+      ${SPLIT_ARG_HEX_INCLUDE_FILE_OUT}
+
+      COMMAND
+      ${CMAKE_OBJCOPY}
+      --output-target=ihex
+      -R \"${SPLIT_ARG_ELF_SECTION_NAME}\"
+      ${SPLIT_ARG_ELF_FILE_IN}
+      ${SPLIT_ARG_HEX_INCLUDE_FILE_OUT}
+
+      DEPENDS
+      ${SPLIT_ARG_DEPENDS}
+    )
+
+    add_custom_command(
+      OUTPUT
+      ${SPLIT_ARG_HEX_EXCLUDE_FILE_OUT}
+
+      COMMAND
+      ${CMAKE_OBJCOPY}
+      --output-target=ihex
+      -j "${SPLIT_ARG_ELF_SECTION_NAME}"
+      ${SPLIT_ARG_ELF_FILE_IN}
+      ${SPLIT_ARG_HEX_EXCLUDE_FILE_OUT}
+
+      DEPENDS
+      ${SPLIT_ARG_DEPENDS}
+    )
+  endfunction()
+
   if (CONFIG_BUILD_S1_VARIANT AND ("${CONFIG_S1_VARIANT_IMAGE_NAME}" STREQUAL "mcuboot"))
     # Inject this configuration from parent image to mcuboot.
     add_overlay_config(
@@ -377,6 +421,78 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       set(rom_fixed)
     endif()
 
+    if(CONFIG_XIP_SPLIT_IMAGE)
+      split(
+        ELF_FILE_IN ${PROJECT_BINARY_DIR}/${KERNEL_ELF_NAME}
+        ELF_SECTION_NAME "_EXTFLASH_TEXT_SECTION_NAME"
+        HEX_INCLUDE_FILE_OUT ${PROJECT_BINARY_DIR}/internal_flash.hex
+        HEX_EXCLUDE_FILE_OUT ${PROJECT_BINARY_DIR}/qspi_flash.hex
+        DEPENDS ${app_sign_depends} ${PROJECT_BINARY_DIR}/${KERNEL_ELF_NAME}
+      )
+
+    add_custom_target(mcuboot_split_target
+      DEPENDS
+      ${PROJECT_BINARY_DIR}/internal_flash.hex
+      ${PROJECT_BINARY_DIR}/qspi_flash.hex
+    )
+
+    sign(
+      SIGNED_BIN_FILE_IN ${PROJECT_BINARY_DIR}/internal_flash.hex
+      SIGNED_HEX_FILE_NAME_PREFIX ${PROJECT_BINARY_DIR}/internal_flash
+      SLOT_SIZE $<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_PRIMARY_SIZE>
+      SIGNED_HEX_FILE_OUT internal_flash_signed_hex
+      SIGNED_BIN_FILE_OUT internal_flash_signed_bin
+      ${sign_dependencies}
+      ${rom_fixed}
+      DEPENDS ${app_sign_depends} mcuboot_split_target
+    )
+
+    sign(
+      SIGNED_BIN_FILE_IN ${PROJECT_BINARY_DIR}/qspi_flash.hex
+      SIGNED_HEX_FILE_NAME_PREFIX ${PROJECT_BINARY_DIR}/qspi_flash
+      SLOT_SIZE $<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_PRIMARY_SIZE>
+      SIGNED_HEX_FILE_OUT qspi_flash_signed_hex
+      SIGNED_BIN_FILE_OUT qspi_flash_signed_bin
+      ${sign_dependencies}
+      ${rom_fixed}
+      DEPENDS ${app_sign_depends} mcuboot_split_target
+    )
+
+    add_custom_target(mcuboot_sign_target
+      DEPENDS
+      ${internal_flash_signed_hex}
+      ${internal_flash_signed_bin}
+      ${qspi_flash_signed_hex}
+      ${qspi_flash_signed_bin}
+      )
+
+    set_property(GLOBAL PROPERTY
+      mcuboot_primary_app_PM_HEX_FILE
+      ${qspi_flash_signed_hex}
+      )
+    set_property(GLOBAL PROPERTY
+      mcuboot_primary_app_PM_TARGET
+      mcuboot_sign_target
+      )
+
+    set(generate_bin_app_files
+      ${PROJECT_BINARY_DIR}/internal_flash_update.bin
+      ${PROJECT_BINARY_DIR}/qspi_flash_update.bin
+    )
+
+    set(generate_script_app_params
+      "internal_flash_update.binload_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
+      "internal_flash_update.binimage_index=0"
+      "internal_flash_update.binslot_index_primary=1"
+      "internal_flash_update.binslot_index_secondary=2"
+      "internal_flash_update.binversion_MCUBOOT=${CONFIG_MCUBOOT_IMAGE_VERSION}"
+      "qspi_flash_update.binload_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
+      "qspi_flash_update.binimage_index=2"
+      "qspi_flash_update.binslot_index_primary=5"
+      "qspi_flash_update.binslot_index_secondary=6"
+      "qspi_flash_update.binversion_MCUBOOT=${CONFIG_MCUBOOT_IMAGE_VERSION}"
+    )
+else()
     sign(
       SIGNED_BIN_FILE_IN ${app_to_sign_hex}
       SIGNED_HEX_FILE_NAME_PREFIX ${PROJECT_BINARY_DIR}/app
@@ -391,7 +507,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       )
 
     add_custom_target(mcuboot_sign_target
-      DEPENDS ${app_signed_hex} ${app_signed_bin} ${app_signed_test_hex}
+      DEPENDS ${app_signed_hex} ${app_signed_bin} ${app_signed_test_hex} ${OTHER_DEP}
       )
 
     set_property(GLOBAL PROPERTY
@@ -402,6 +518,11 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       mcuboot_primary_app_PM_TARGET
       mcuboot_sign_target
       )
+
+    set(generate_bin_app_files
+      ${PROJECT_BINARY_DIR}/${app_core_binary_name}
+    )
+endif()
 
     if (CONFIG_BOOT_BUILD_DIRECT_XIP_VARIANT)
       get_shared(mcuboot_secondary_app_bin_dir IMAGE mcuboot_secondary_app PROPERTY ZEPHYR_BINARY_DIR)
@@ -494,15 +615,22 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       get_shared(net_core_version IMAGE net_core PROPERTY VERSION)
 
       set(generate_bin_files
-        ${PROJECT_BINARY_DIR}/${app_core_binary_name}
+        ${generate_bin_app_files}
         ${PROJECT_BINARY_DIR}/${net_core_binary_name}
         )
+
+      if(NOT CONFIG_XIP_SPLIT_IMAGE)
+        set(generate_script_app_params
+          "${app_core_binary_name}load_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
+          "${app_core_binary_name}image_index=0"
+          "${app_core_binary_name}slot_index_primary=1"
+          "${app_core_binary_name}slot_index_secondary=2"
+          "${app_core_binary_name}version_MCUBOOT=${CONFIG_MCUBOOT_IMAGE_VERSION}"
+        )
+      endif()
+
       set(generate_script_params
-        "${app_core_binary_name}load_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
-        "${app_core_binary_name}image_index=0"
-        "${app_core_binary_name}slot_index_primary=1"
-        "${app_core_binary_name}slot_index_secondary=2"
-        "${app_core_binary_name}version_MCUBOOT=${CONFIG_MCUBOOT_IMAGE_VERSION}"
+        ${generate_script_app_params}
         "${net_core_binary_name}image_index=1"
         "${net_core_binary_name}slot_index_primary=3"
         "${net_core_binary_name}slot_index_secondary=4"
@@ -514,11 +642,16 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     else()
       # No network core update
       if(CONFIG_BOOT_BUILD_DIRECT_XIP_VARIANT)
+        if(CONFIG_XIP_SPLIT_IMAGE)
+          message(FATAL_ERROR "This build configuration is not supported:
+CONFIG_BOOT_BUILD_DIRECT_XIP_VARIANT cannot be used with CONFIG_XIP_SPLIT_IMAGE.")
+        endif()
+
         set(secondary_app_core_binary_name mcuboot_secondary_app_update.bin)
         set(generate_bin_files
-          ${PROJECT_BINARY_DIR}/${app_core_binary_name}
+          ${generate_bin_app_files}
           ${PROJECT_BINARY_DIR}/${secondary_app_core_binary_name}
-          )
+        )
         set(generate_script_params
           "${app_core_binary_name}load_address=$<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_PRIMARY_APP_ADDRESS>"
           "${app_core_binary_name}version_MCUBOOT+XIP=${CONFIG_MCUBOOT_IMAGE_VERSION}"
@@ -526,15 +659,20 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
           "${secondary_app_core_binary_name}load_address=$<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_SECONDARY_APP_ADDRESS>"
           "${secondary_app_core_binary_name}version_MCUBOOT+XIP=${CONFIG_MCUBOOT_IMAGE_VERSION}"
           "${secondary_app_core_binary_name}slot=1"
-          )
+        )
       else()
         set(generate_bin_files
-          ${PROJECT_BINARY_DIR}/${app_core_binary_name}
+          ${generate_bin_app_files}
+        )
+
+        if(NOT CONFIG_XIP_SPLIT_IMAGE)
+          set(generate_script_params
+            "load_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
+            "version_MCUBOOT=${CONFIG_MCUBOOT_IMAGE_VERSION}"
           )
-        set(generate_script_params
-          "load_address=$<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>"
-          "version_MCUBOOT=${CONFIG_MCUBOOT_IMAGE_VERSION}"
-          )
+        else()
+          set(generate_script_params ${generate_script_app_params})
+        endif()
       endif()
     endif()
 
@@ -543,7 +681,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       BIN_FILES ${generate_bin_files}
       TYPE application
       SCRIPT_PARAMS ${generate_script_params}
-      )
+    )
 
     if (CONFIG_BUILD_S1_VARIANT AND ("${CONFIG_S1_VARIANT_IMAGE_NAME}" STREQUAL "mcuboot"))
       # Secure Boot (B0) is enabled, and we have to build update candidates
@@ -630,6 +768,11 @@ if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD)
   set(dfu_multi_image_ids)
   set(dfu_multi_image_paths)
   set(dfu_multi_image_targets)
+
+        if(CONFIG_XIP_SPLIT_IMAGE)
+          message(FATAL_ERROR "This build configuration is not supported:
+CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD cannot be used with CONFIG_XIP_SPLIT_IMAGE.")
+        endif()
 
   if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP)
     list(APPEND dfu_multi_image_ids 0)
