@@ -45,6 +45,7 @@ target_sources(app PRIVATE
     src/zap-generated/callback-stub.cpp
     ${COMMON_ROOT}/src/led_widget.cpp
     ${COMMON_ROOT}/src/dfu_over_smp.cpp
+    src/mem_init.c
 )
 
 if(CONFIG_CHIP_OTA_REQUESTOR OR CONFIG_MCUMGR_TRANSPORT_BT)
@@ -86,6 +87,13 @@ zephyr_code_relocate(LIBRARY drivers__sensor__adxl362 LOCATION EXTFLASH_TEXT NOC
 zephyr_code_relocate(LIBRARY drivers__sensor__bme680 LOCATION EXTFLASH_TEXT NOCOPY)
 zephyr_code_relocate(LIBRARY drivers__sensor__bmm150 LOCATION EXTFLASH_TEXT NOCOPY)
 zephyr_code_relocate(LIBRARY ..__nrf__lib__dk_buttons_and_leds LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__mgmt LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__smp LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__util LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__img_mgmt LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__os_mgmt LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__zephyr_basic LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__transport LOCATION EXTFLASH_TEXT NOCOPY)
 zephyr_code_relocate(LIBRARY ..__nrf__subsys__nfc__lib LOCATION EXTFLASH_TEXT NOCOPY)
 
 #zephyr_code_relocate(LIBRARY drivers__ieee802154 LOCATION RAM_DATA)
@@ -93,4 +101,11 @@ zephyr_code_relocate(LIBRARY drivers__sensor__adxl362 LOCATION RAM_DATA)
 zephyr_code_relocate(LIBRARY drivers__sensor__bme680 LOCATION RAM_DATA)
 zephyr_code_relocate(LIBRARY drivers__sensor__bmm150 LOCATION RAM_DATA)
 zephyr_code_relocate(LIBRARY ..__nrf__lib__dk_buttons_and_leds LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__mgmt LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__smp LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__util LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__img_mgmt LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__os_mgmt LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__zephyr_basic LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__transport LOCATION RAM_DATA)
 zephyr_code_relocate(LIBRARY ..__nrf__subsys__nfc__lib LOCATION RAM_DATA)
