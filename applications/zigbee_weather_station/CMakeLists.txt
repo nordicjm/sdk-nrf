@@ -24,3 +24,35 @@ target_sources(app PRIVATE
 )
 
 # NORDIC SDK APP END
+
+zephyr_code_relocate(FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/sensor.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/weather_station.c
+                     LOCATION EXTFLASH_TEXT NOCOPY)
+
+zephyr_code_relocate(FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/sensor.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/weather_station.c
+                     LOCATION RAM_DATA)
+
+zephyr_code_relocate(LIBRARY drivers__ieee802154 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY drivers__sensor__adxl362 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY drivers__sensor__bme680 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY drivers__sensor__bmm150 LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY ..__nrf__lib__dk_buttons_and_leds LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__net LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__net__ip LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY ..__nrfxlib__zboss__production LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY zboss-sources LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY nrf-802154-platform LOCATION EXTFLASH_TEXT NOCOPY)
+
+zephyr_code_relocate(LIBRARY drivers__ieee802154 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY drivers__sensor__adxl362 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY drivers__sensor__bme680 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY drivers__sensor__bmm150 LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY ..__nrf__lib__dk_buttons_and_leds LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__net LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__net__ip LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY ..__nrfxlib__zboss__production LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY zboss-sources LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY nrf-802154-platform LOCATION RAM_DATA)
