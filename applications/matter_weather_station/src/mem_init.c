@@ -102,4 +102,4 @@ static int qspi_ext_mem_init(void)
 }
 
 //SYS_INIT(qspi_ext_mem_init, POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_OBJECTS);
-SYS_INIT(qspi_ext_mem_init, POST_KERNEL, 40);
+//SYS_INIT(qspi_ext_mem_init, POST_KERNEL, 40);
