@@ -23,7 +23,7 @@
  */
 MEMORY
 {
-     EXTFLASH (wx) : ORIGIN = 0x10100000, LENGTH = 0x100000
+     EXTFLASH (wx) : ORIGIN = 0x10120000, LENGTH = 0x100000
 }
 
 #include <zephyr/arch/arm/aarch32/cortex_m/scripts/linker.ld>
