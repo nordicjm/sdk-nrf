@@ -65,7 +65,6 @@ chip_configure_data_model(app
 # NORDIC SDK APP END
 
 zephyr_code_relocate(FILES
-#                     src/main.cpp
                      src/app_task.cpp
                      src/battery.cpp
                      src/buzzer.cpp
@@ -74,7 +73,6 @@ zephyr_code_relocate(FILES
                      LOCATION EXTFLASH_TEXT NOCOPY)
 
 zephyr_code_relocate(FILES
-#                     src/main.cpp
                      src/app_task.cpp
                      src/battery.cpp
                      src/buzzer.cpp
@@ -95,8 +93,8 @@ zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__os_mgmt LOCATION EXTFLAS
 zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__zephyr_basic LOCATION EXTFLASH_TEXT NOCOPY)
 zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__transport LOCATION EXTFLASH_TEXT NOCOPY)
 zephyr_code_relocate(LIBRARY ..__nrf__subsys__nfc__lib LOCATION EXTFLASH_TEXT NOCOPY)
-#zephyr_code_relocate(LIBRARY subsys__bluetooth__common LOCATION EXTFLASH_TEXT NOCOPY)
-#zephyr_code_relocate(LIBRARY subsys__bluetooth__host LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__bluetooth__common LOCATION EXTFLASH_TEXT NOCOPY)
+zephyr_code_relocate(LIBRARY subsys__bluetooth__host LOCATION EXTFLASH_TEXT NOCOPY)
 #zephyr_code_relocate(LIBRARY drivers__bluetooth LOCATION EXTFLASH_TEXT NOCOPY)
 
 zephyr_code_relocate(LIBRARY drivers__ieee802154 LOCATION RAM_DATA)
@@ -112,6 +110,6 @@ zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__os_mgmt LOCATION RAM_DAT
 zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__grp__zephyr_basic LOCATION RAM_DATA)
 zephyr_code_relocate(LIBRARY subsys__mgmt__mcumgr__transport LOCATION RAM_DATA)
 zephyr_code_relocate(LIBRARY ..__nrf__subsys__nfc__lib LOCATION RAM_DATA)
-#zephyr_code_relocate(LIBRARY subsys__bluetooth__common LOCATION RAM_DATA)
-#zephyr_code_relocate(LIBRARY subsys__bluetooth__host LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__bluetooth__common LOCATION RAM_DATA)
+zephyr_code_relocate(LIBRARY subsys__bluetooth__host LOCATION RAM_DATA)
 #zephyr_code_relocate(LIBRARY drivers__bluetooth LOCATION RAM_DATA)
