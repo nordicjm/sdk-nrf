@@ -201,12 +201,9 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     # ELF_SECTION_NAME
     # HEX_INCLUDE_FILE_OUT
     # HEX_EXCLUDE_FILE_OUT
-    # BIN_INCLUDE_FILE_OUT
-    # BIN_EXCLUDE_FILE_OUT
-    set(oneValueArgs ELF_FILE_IN ELF_SECTION_NAME HEX_INCLUDE_FILE_OUT HEX_EXCLUDE_FILE_OUT #BIN_INCLUDE_FILE_OUT BIN_EXCLUDE_FILE_OUT)
-)
+    set(oneValueArgs ELF_FILE_IN ELF_SECTION_NAME HEX_INCLUDE_FILE_OUT HEX_EXCLUDE_FILE_OUT)
     set(multiValueArgs DEPENDS)
-    cmake_parse_arguments(SPLIT_ARG "" "${oneValueArgs}" "" ${ARGN})
+    cmake_parse_arguments(SPLIT_ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     check_arguments_required_all(split SPLIT_ARG ${oneValueArgs})
 
     add_custom_command(
@@ -238,36 +235,6 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       DEPENDS
       ${SPLIT_ARG_DEPENDS}
     )
-
-#    add_custom_command(
-#      OUTPUT
-#      ${SPLIT_ARG_BIN_INCLUDE_FILE_OUT}
-#
-#      COMMAND
-#      ${CMAKE_OBJCOPY}
-#      --output-target=binary
-#      -R \"${SPLIT_ARG_ELF_SECTION_NAME}\"
-#      ${SPLIT_ARG_ELF_FILE_IN}
-#      ${SPLIT_ARG_BIN_INCLUDE_FILE_OUT}
-#
-#      DEPENDS
-#      ${SPLIT_ARG_DEPENDS}
-#    )
-#
-#    add_custom_command(
-#      OUTPUT
-#      ${SPLIT_ARG_BIN_EXCLUDE_FILE_OUT}
-#
-#      COMMAND
-#      ${CMAKE_OBJCOPY}
-#      --output-target=binary
-#      -j "${SPLIT_ARG_ELF_SECTION_NAME}"
-#      ${SPLIT_ARG_ELF_FILE_IN}
-#      ${SPLIT_ARG_BIN_EXCLUDE_FILE_OUT}
-#
-#      DEPENDS
-#      ${SPLIT_ARG_DEPENDS}
-#    )
   endfunction()
 
   if (CONFIG_BUILD_S1_VARIANT AND ("${CONFIG_S1_VARIANT_IMAGE_NAME}" STREQUAL "mcuboot"))
@@ -460,18 +427,14 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
         ELF_SECTION_NAME "_EXTFLASH_TEXT_SECTION_NAME"
         HEX_INCLUDE_FILE_OUT ${PROJECT_BINARY_DIR}/internal_flash.hex
         HEX_EXCLUDE_FILE_OUT ${PROJECT_BINARY_DIR}/qspi_flash.hex
-#        BIN_INCLUDE_FILE_OUT ${PROJECT_BINARY_DIR}/internal_flash.bin
-#        BIN_EXCLUDE_FILE_OUT ${PROJECT_BINARY_DIR}/qspi_flash.bin
         DEPENDS ${app_sign_depends} ${PROJECT_BINARY_DIR}/${KERNEL_ELF_NAME}
       )
 
     add_custom_target(mcuboot_split_target
-    DEPENDS
-    ${PROJECT_BINARY_DIR}/internal_flash.hex
-    ${PROJECT_BINARY_DIR}/qspi_flash.hex
-#    ${PROJECT_BINARY_DIR}/internal_flash.bin
-#    ${PROJECT_BINARY_DIR}/qspi_flash.bin
-      )
+      DEPENDS
+      ${PROJECT_BINARY_DIR}/internal_flash.hex
+      ${PROJECT_BINARY_DIR}/qspi_flash.hex
+    )
 
     sign(
       SIGNED_BIN_FILE_IN ${PROJECT_BINARY_DIR}/internal_flash.hex
@@ -482,7 +445,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       ${sign_dependencies}
       ${rom_fixed}
       DEPENDS ${app_sign_depends} mcuboot_split_target
-      )
+    )
 
     sign(
       SIGNED_BIN_FILE_IN ${PROJECT_BINARY_DIR}/qspi_flash.hex
@@ -493,7 +456,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       ${sign_dependencies}
       ${rom_fixed}
       DEPENDS ${app_sign_depends} mcuboot_split_target
-      )
+    )
 
     add_custom_target(mcuboot_sign_target
       DEPENDS
