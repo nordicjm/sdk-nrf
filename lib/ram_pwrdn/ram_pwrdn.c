@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
+#include <zephyr/init.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/kernel.h>
@@ -219,7 +220,6 @@ static HEAP_LISTENER_RESIZE_DEFINE(heap_listener, HEAP_ID_LIBC, libc_heap_resize
 
 static int ram_power_init(void)
 {
-
 	power_down_unused_ram();
 	heap_listener_register(&heap_listener);
 
@@ -227,5 +227,22 @@ static int ram_power_init(void)
 }
 
 SYS_INIT(ram_power_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+
+#endif
+
+#ifdef CONFIG_MCUBOOT
+
+void z_arm_early_boot_init(void)
+{
+	uint8_t i = 0;
+
+	while (i < 8) {
+		nrf_vmc_ram_block_power_set(NRF_VMC, i, NRF_VMC_POWER_S0);
+		nrf_vmc_ram_block_power_set(NRF_VMC, i, NRF_VMC_POWER_S1);
+		nrf_vmc_ram_block_power_set(NRF_VMC, i, NRF_VMC_POWER_S2);
+		nrf_vmc_ram_block_power_set(NRF_VMC, i, NRF_VMC_POWER_S3);
+		++i;
+	}
+}
 
 #endif
