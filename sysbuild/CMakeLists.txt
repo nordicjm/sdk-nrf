@@ -67,7 +67,7 @@ if(SB_CONFIG_SECURE_BOOT)
 
     add_overlay_config(mcuboot "${ZEPHYR_NRF_MODULE_DIR}/subsys/pcd/pcd.conf")
   else()
-    if (SB_CONFIG_BOOTLOADER_MCUBOOT)
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
       add_overlay_config(mcuboot ${secure_boot_image_dir}/multi_image_mcuboot.conf)
 
       # Include a kconfig file which enables CONFIG_FW_INFO in the image
