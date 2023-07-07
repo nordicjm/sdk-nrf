@@ -110,25 +110,28 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
 #    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
 #    set(sign_depends ${slot} ${${slot}_image_dir}/zephyr/${${slot}_kernel_elf})
-    set(sign_depends ${slot} ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf)
-message(WARNING "here: ${${slot}_kernel_elf} means ${${slot}_image_dir}/zephyr/${${slot}_kernel_elf}, and ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf")
+    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf)
+    set(target_name ${slot})
   elseif("${slot}" STREQUAL "s0_image")
     if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-      set(tmp_image mcuboot)
+      set(target_name mcuboot)
     else()
-      set(tmp_image ${DEFAULT_IMAGE})
+      set(target_name ${DEFAULT_IMAGE})
     endif()
 
-    sysbuild_get(${tmp_image}_image_dir IMAGE ${tmp_image} VAR APPLICATION_BINARY_DIR CACHE)
-    sysbuild_get(${tmp_image}_kernel_name IMAGE ${tmp_image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+    sysbuild_get(${target_name}_image_dir IMAGE ${target_name} VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(${target_name}_kernel_name IMAGE ${target_name} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
 
-    set(slot_hex ${${tmp_image}_image_dir}/zephyr/${${tmp_image}_kernel_name}.hex)
-    set(sign_depends ${tmp_image} ${tmp_image}_hex)
+    set(slot_hex ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.hex)
+    set(sign_depends ${target_name} ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.elf)
   else()
     set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
-    set(sign_depends ${slot}_hex ${slot})
+    set(sign_depends ${slot}_hex)
+    set(target_name ${slot})
   endif()
 else()
+  set(target_name ${slot})
+
   if ("${slot}" STREQUAL "s1_image")
     # The s1_image slot is built as a child image, add the dependency and
     # path to its hex file accordingly. We cannot use the shared variables
@@ -249,16 +252,15 @@ message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depend
   # This includes the hex file (and its corresponding target) to the build.
   set_property(
     GLOBAL PROPERTY
-    ${slot}_PM_HEX_FILE
+    ${target_name}_PM_HEX_FILE
     ${signed_hex}
     )
 
   set_property(
     GLOBAL PROPERTY
-    ${slot}_PM_TARGET
+    ${target_name}_PM_TARGET
     ${slot}_signed_kernel_hex_target
     )
-
 endforeach()
 
 
