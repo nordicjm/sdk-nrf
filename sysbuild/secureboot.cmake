@@ -38,12 +38,38 @@ if(SB_CONFIG_SECURE_BOOT)
     set(DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN} "${SB_CONFIG_SECURE_BOOT_IMAGE_NAME}" PARENT_SCOPE)
   endif()
 
+  if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
+    set(image s1_image)
 
-if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-set(image s1_image)
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      set(s1_source_image mcuboot)
+      set(s1_source_dir ${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr/)
+
+      # Set corresponding values in s1 variant of mcuboot
+      set(${image}_CONFIG_BOOT_SIGNATURE_TYPE_${SB_CONFIG_SIGNATURE_TYPE} y CACHE STRING
+          "MCUBOOT signature type" FORCE
+      )
+      set(${image}_CONFIG_BOOT_SIGNATURE_KEY_FILE
+          \"${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}\" CACHE STRING
+          "Signature key file for signing" FORCE
+      )
+    else()
+      set(s1_source_image ${DEFAULT_IMAGE})
+      set(s1_source_dir ${APP_DIR})
+  endif()
+
+  get_cmake_property(sysbuild_cache CACHE_VARIABLES)
+  foreach(var_name ${sysbuild_cache})
+    if("${var_name}" MATCHES "^(${s1_source_image}_.*)$")
+      string(LENGTH "${s1_source_image}" tmplen)
+      string(SUBSTRING "${var_name}" ${tmplen} -1 tmp)
+      set(${image}${tmp} "${${var_name}}" CACHE UNINITIALIZED "" FORCE)
+    endif()
+  endforeach()
+
 ExternalZephyrProject_Add(
   APPLICATION ${image}
-  SOURCE_DIR ${APP_DIR}
+  SOURCE_DIR ${s1_source_dir}
 #  APP_TYPE MAIN
 )
   list(APPEND IMAGES "${image}")
