@@ -95,21 +95,20 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
 
     set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
-    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
-  elseif("${slot}" STREQUAL "s1_image")
-    # The s1_image slot is built as a child image, add the dependency and
-    # path to its hex file accordingly. We cannot use the shared variables
-    # from the s1 child image since its configure stage might not have executed
-    # yet.
-#    sysbuild_get(${slot}_image_dir IMAGE ${slot} VAR APPLICATION_BINARY_DIR CACHE)
-#    sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
-
-    set(slot_hex ${CMAKE_BINARY_DIR}/s1_image/zephyr/zephyr.hex)
-#    set(sign_depends s1_image_subimage)
-    set(sign_depends s1_image)
+#    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
+    set(sign_depends ${slot})
   elseif("${slot}" STREQUAL "s0_image")
-    set(slot_hex ${CMAKE_BINARY_DIR}/nrf_desktop/zephyr/zephyr.hex)
-    set(sign_depends nrf_desktop)
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      set(tmp_image mcuboot)
+    else()
+      set(tmp_image ${DEFAULT_IMAGE})
+    endif()
+
+    sysbuild_get(${tmp_image}_image_dir IMAGE ${tmp_image} VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(${tmp_image}_kernel_name IMAGE ${tmp_image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
+    set(slot_hex ${${tmp_image}_image_dir}/zephyr/${${tmp_image}_kernel_name}.hex)
+    set(sign_depends ${tmp_image})
   else()
     set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
     set(sign_depends ${slot}_hex)
@@ -133,7 +132,7 @@ endif()
   set(hash_file ${GENERATED_PATH}/${slot}_firmware.sha256)
   set(signature_file ${GENERATED_PATH}/${slot}_firmware.signature)
 
-message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}")
+message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depends}")
 
   set(hash_cmd
     ${PYTHON_EXECUTABLE}
