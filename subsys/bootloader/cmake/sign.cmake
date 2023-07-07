@@ -74,6 +74,10 @@ if (CONFIG_BUILD_S1_VARIANT OR SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
   list(APPEND slots s1_image)
 endif ()
 
+#if (SB_CONFIG_BOOTLOADER_MCUBOOT)
+#  list(APPEND slots mcuboot)
+#endif ()
+
 if (NOT "${CONFIG_SB_VALIDATION_INFO_CRYPTO_ID}" EQUAL "1")
   message(FATAL_ERROR
     "This value of SB_VALIDATION_INFO_CRYPTO_ID is not supported")
@@ -82,6 +86,14 @@ endif()
 foreach (slot ${slots})
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
+
+
+## ISSUES:
+# mcuboot targets are made but do not run automatically for s0_image
+# files are not updated once they have been generated once and e.g. configuration is changed
+# if output hex files are deleted, config is changed, signing fails due to some error
+
+
 
 if(NCS_SYSBUILD_PARTITION_MANAGER)
   # A container can be merged, in which case we should use old style below,
@@ -93,10 +105,13 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     # If slot is a target of it's own, then it means we target the hex directly and not a merged hex.
     sysbuild_get(${slot}_image_dir IMAGE ${slot} VAR APPLICATION_BINARY_DIR CACHE)
     sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+    sysbuild_get(${slot}_kernel_elf IMAGE ${slot} VAR CONFIG_KERNEL_ELF_NAME KCONFIG)
 
     set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
 #    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
-    set(sign_depends ${slot})
+#    set(sign_depends ${slot} ${${slot}_image_dir}/zephyr/${${slot}_kernel_elf})
+    set(sign_depends ${slot} ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf)
+message(WARNING "here: ${${slot}_kernel_elf} means ${${slot}_image_dir}/zephyr/${${slot}_kernel_elf}, and ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf")
   elseif("${slot}" STREQUAL "s0_image")
     if(SB_CONFIG_BOOTLOADER_MCUBOOT)
       set(tmp_image mcuboot)
@@ -108,10 +123,10 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     sysbuild_get(${tmp_image}_kernel_name IMAGE ${tmp_image} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
 
     set(slot_hex ${${tmp_image}_image_dir}/zephyr/${${tmp_image}_kernel_name}.hex)
-    set(sign_depends ${tmp_image})
+    set(sign_depends ${tmp_image} ${tmp_image}_hex)
   else()
     set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
-    set(sign_depends ${slot}_hex)
+    set(sign_depends ${slot}_hex ${slot})
   endif()
 else()
   if ("${slot}" STREQUAL "s1_image")
