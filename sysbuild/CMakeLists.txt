@@ -8,6 +8,10 @@ function(include_provision_hex)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/provision_hex.cmake)
 endfunction()
 
+function(include_packaging)
+  include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
 
@@ -41,6 +45,9 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   if(SB_CONFIG_SECURE_BOOT)
     include_provision_hex()
   endif()
+
+#temp
+include_packaging()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
