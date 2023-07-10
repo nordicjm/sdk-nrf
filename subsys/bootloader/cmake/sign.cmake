@@ -214,6 +214,15 @@ message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depend
     ${signature_file}
     )
 
+  cmake_path(GET signed_hex FILENAME signed_hex_filename)
+
+  if(NCS_SYSBUILD_PARTITION_MANAGER)
+    cmake_path(GET to_sign FILENAME to_sign_filename)
+    set(validation_comment "Creating validation for ${to_sign_filename}, storing to ${signed_hex_filename}")
+  else()
+    set(validation_comment "Creating validation for ${KERNEL_HEX_NAME}, storing to ${signed_hex_filename}")
+  endif()
+
   add_custom_command(
     OUTPUT
     ${signed_hex}
@@ -236,7 +245,7 @@ message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depend
     WORKING_DIRECTORY
     ${PROJECT_BINARY_DIR}
     COMMENT
-    "Creating validation for ${KERNEL_HEX_NAME}, storing to ${SIGNED_KERNEL_HEX_NAME}"
+    "${validation_comment}"
     USES_TERMINAL
     )
 
