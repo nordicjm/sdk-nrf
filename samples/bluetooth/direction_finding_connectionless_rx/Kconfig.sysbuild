@@ -1,0 +1,5 @@
+rsource "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
+
+config NRF_DEFAULT_BLUETOOTH
+	bool
+	default y
