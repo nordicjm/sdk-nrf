@@ -1,0 +1,5 @@
+rsource "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
+
+config NRF_DEFAULT_802154
+	bool
+	default y
