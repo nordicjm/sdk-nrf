@@ -27,6 +27,26 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
                       "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}"
     )
+
+    if(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "nrf9160dk_nrf9160_ns")
+      # MCUboot must run in secure mode on the nRF9160
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(mcuboot PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
+      else()
+        set_target_properties(mcuboot PROPERTIES BOARD nrf9160dk_nrf9160)
+      endif()
+    endif()
+  endif()
+
+  if(SB_CONFIG_SECURE_BOOT)
+    if(NOT DEFINED b0_BOARD AND "${BOARD}" STREQUAL "nrf9160dk_nrf9160_ns")
+      # b0 must run in secure mode on the nRF9160
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(b0 PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
+      else()
+        set_target_properties(b0 PROPERTIES BOARD nrf9160dk_nrf9160)
+      endif()
+    endif()
   endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 
