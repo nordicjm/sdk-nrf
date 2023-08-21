@@ -27,7 +27,7 @@ if(1)
     list(APPEND dfu_multi_image_ids 0)
 #    list(APPEND dfu_multi_image_paths "${PROJECT_BINARY_DIR}/${app_core_binary_name}")
     list(APPEND dfu_multi_image_paths "${${DEFAULT_IMAGE}_image_dir}/zephyr/${${DEFAULT_IMAGE}_kernel_name}.hex")
-    list(APPEND dfu_multi_image_targets ${DEFAULT_IMAGE})
+    list(APPEND dfu_multi_image_targets ${DEFAULT_IMAGE}_extra_byproducts)
   endif()
 
   if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET)

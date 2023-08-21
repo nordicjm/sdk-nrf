@@ -76,35 +76,14 @@ manifest:
         #
         # Please keep this list sorted alphabetically.
         name-allowlist:
-          - TraceRecorderSource
-          - canopennode
-          - chre
           - cmsis
-          - edtt
-          - fatfs
           - hal_nordic
-          - hal_st # required for ST sensors (unrelated to STM32 MCUs)
-          - hal_wurthelektronik
-          - liblc3
           - libmetal
           - littlefs
-          - loramac-node
-          - lvgl
-          - lz4
-          - mipi-sys-t
-          - nanopb
-          - net-tools
-          - nrf_hw_models
           - open-amp
-          - picolibc
-          - psa-arch-tests
           - segger
-          - tinycbor
           - tinycrypt
-          - tf-m-tests
-          - uoscore-uedhoc
           - zcbor
-          - zscilib
 
     # NCS repositories.
     #
@@ -118,15 +97,6 @@ manifest:
         ncs:
           upstream-url: https://w1.fi/cgit/hostap/
           upstream-sha: e792f38db8471f35ee94f109a4093dece8f78c6a
-          compare-by-default: false
-    - name: wfa-qt-control-app
-      repo-path: sdk-wi-fiquicktrack-controlappc
-      path: modules/lib/wfa-qt-control-app
-      revision: f3391efd16c909d78c36dc7f9c81901b268deecc
-      userdata:
-        ncs:
-          upstream-url: https://github.com/Wi-FiQuickTrack/Wi-FiQuickTrack-ControlAppC
-          upstream-sha: 1225729e8d84075f03bf9fc51eee85d84dfb0091
           compare-by-default: false
     - name: mcuboot
       repo-path: sdk-mcuboot
@@ -148,38 +118,12 @@ manifest:
       repo-path: sdk-trusted-firmware-m
       path: modules/tee/tf-m/trusted-firmware-m
       revision: 353e6214093543c1ed7ba25cda4bda6b0be55e44
-    - name: matter
-      repo-path: sdk-connectedhomeip
-      path: modules/lib/matter
-      revision: 6d0b6310ca48741d358ec06e6a175fc077982ae8
-      submodules:
-        - name: nlio
-          path: third_party/nlio/repo
-        - name: nlassert
-          path: third_party/nlassert/repo
-        - name: nlunit-test
-          path: third_party/nlunit-test/repo
-        - name: pigweed
-          path: third_party/pigweed/repo
-      userdata:
-        ncs:
-          upstream-url: https://github.com/project-chip/connectedhomeip
-          upstream-sha: 8f66f4215bc0708efc8cc73bda80620e67d8955f
-          compare-by-default: false
     - name: nrf-802154
       repo-path: sdk-nrf-802154
       path: nrf-802154
       revision: 43a0e760e7e47589739da632f852237d6331dacf
       groups:
         - nrf-802154
-    - name: dragoon
-      # Only for internal Nordic development
-      repo-path: dragoon.git
-      remote: dragoon
-      revision: f870a908c06de77fd4913370e97a92684782cf76
-      submodules: true
-      groups:
-        - dragoon
     - name: cjson
       repo-path: sdk-cjson
       path: modules/lib/cjson
@@ -188,34 +132,6 @@ manifest:
         ncs:
           upstream-url: https://github.com/DaveGamble/cJSON
           upstream-sha: d2735278ed1c2e4556f53a7a782063b31331dbf7
-          compare-by-default: false
-    - name: homekit
-      repo-path: sdk-homekit
-      revision: 77828c53c0753083e27f702801ac34cc56bc5c7b
-      groups:
-        - homekit
-    - name: find-my
-      repo-path: sdk-find-my
-      revision: 68e82297568d9c8e1d244e87858b4bd332643605
-      groups:
-        - find-my
-    - name: azure-sdk-for-c
-      repo-path: azure-sdk-for-c
-      path: modules/lib/azure-sdk-for-c
-      revision: 308c171cb4b5eed266649012a68406487ec81fb2
-      userdata:
-        ncs:
-          upstream-url: https://github.com/Azure/azure-sdk-for-c
-          upstream-sha: adc56bc6138a28b5490bce339a31a2581a072092
-          compare-by-default: false
-    - name: cirrus
-      repo-path: sdk-mcu-drivers
-      path: modules/hal/cirrus-logic
-      revision: 9f6b3812237fbb0d4157ba3584c13f1644fcbe3a
-      userdata:
-        ncs:
-          upstream-url: https://github.com/CirrusLogic/mcu-drivers
-          upstream-sha: 1be6ca7253133a21a1e9fe0fbb4656e17d63a936
           compare-by-default: false
     - name: openthread
       repo-path: sdk-openthread
@@ -226,30 +142,6 @@ manifest:
           upstream-url: https://github.com/openthread/openthread
           upstream-sha: d9abe3071c0131a4adb5d7e7451319b735e6d855
           compare-by-default: false
-
-    # Other third-party repositories.
-    - name: cmock
-      path: test/cmock
-      submodules: true
-      revision: f65066f15d8248e6dcb778efb8739904a4512087
-      remote: throwtheswitch
-    - name: memfault-firmware-sdk
-      path: modules/lib/memfault-firmware-sdk
-      revision: 0.43.3
-      remote: memfault
-    - name: ant
-      repo-path: sdk-ant
-      revision: 01087e4e6d2a9c4dec759ad6223d39e0cfb2bfa2
-      remote: ant-nrfconnect
-      groups:
-        - ant
-    - name: bsim
-      repo-path: bsim_west
-      remote: babblesim
-      revision: 384a091445c57b44ac8cbd18ebd245b47c71db94
-      import:
-        path-prefix: tools
-
 
   # West-related configuration for the nrf repository.
   self:
