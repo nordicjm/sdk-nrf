@@ -1,0 +1,1 @@
+rm -rf * && cmake -GNinja -DBOARD=nrf5340dk_nrf5340_cpuapp -DAPP_DIR=.. -DSB_CONFIG_SECURE_BOOT=y -DSB_CONFIG_SECURE_BOOT_APPCORE=y -DSB_CONFIG_NETCORE_HCI_RPMSG=y -Db0_CONF_FILE=/tmp/bb/nrf/applications/nrf_desktop/configuration/nrf5340dk_nrf5340_cpuapp/child_image/b0/prj.conf /tmp/bb/zephyr/share/sysbuild/
