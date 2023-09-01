@@ -5,6 +5,7 @@
 config SUPPORT_NETCORE
 	bool
 	default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default y if $(BOARD) = "thingy53_nrf5340_cpuapp"
 
 if SUPPORT_NETCORE
 
@@ -52,6 +53,7 @@ config NETCORE_HCI_RPMSG_NAME
 config NETCORE_HCI_RPMSG_BOARD
 	string
 	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default "thingy53_nrf5340_cpunet" if $(BOARD) = "thingy53_nrf5340_cpuapp"
 	depends on NETCORE_HCI_RPMSG
 	help
 	  Remote board when building this sample.
@@ -60,10 +62,12 @@ config NETCORE_HCI_RPMSG_BOARD
 config NETCORE_HCI_RPMSG_DOMAIN
 	string
 	default "CPUNET" if NETCORE_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default "CPUNET" if NETCORE_HCI_RPMSG_BOARD = "thingy53_nrf5340_cpunet"
 
 config NETCORE_HCI_RPMSG_DOMAIN_APP
 	bool
 	default y if NETCORE_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default y if NETCORE_HCI_RPMSG_BOARD = "thingy53_nrf5340_cpunet"
 
 config NETCORE_802154_RPMSG_NAME
 	string
@@ -75,6 +79,7 @@ config NETCORE_802154_RPMSG_NAME
 config NETCORE_802154_RPMSG_BOARD
 	string
 	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default "thingy53_nrf5340_cpunet" if $(BOARD) = "thingy53_nrf5340_cpuapp"
 	depends on NETCORE_802154_RPMSG
 	help
 	  Remote board when building this sample.
@@ -83,9 +88,11 @@ config NETCORE_802154_RPMSG_BOARD
 config NETCORE_802154_RPMSG_DOMAIN
 	string
 	default "CPUNET" if NETCORE_802154_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default "CPUNET" if NETCORE_802154_RPMSG_BOARD = "thingy53_nrf5340_cpunet"
 
 config NETCORE_802154_RPMSG_DOMAIN_APP
 	bool
 	default y if NETCORE_802154_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default y if NETCORE_802154_RPMSG_BOARD = "thingy53_nrf5340_cpunet"
 
 endif
