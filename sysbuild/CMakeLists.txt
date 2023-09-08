@@ -4,9 +4,8 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-function(include_provision_hex)
-  include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/provision_hex.cmake)
-endfunction()
+#function(include_provision_hex)
+#endfunction()
 
 function(include_packaging)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
@@ -38,7 +37,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     endif()
   endif()
 
-  if(SB_CONFIG_SECURE_BOOT)
+  if(SB_CONFIG_SECURE_BOOT_APPCORE)
     if(NOT DEFINED b0_BOARD AND "${BOARD}" STREQUAL "nrf9160dk_nrf9160_ns")
       # b0 must run in secure mode on the nRF9160
       if(DEFINED BOARD_REVISION)
@@ -57,14 +56,28 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   set(DOMAIN_APP_APP ${DEFAULT_IMAGE})
 
   # Run partition manager for each image before running CMake.
-  set(domain ${SB_CONFIG_SECURE_BOOT_DOMAIN})
-  if(DEFINED domain AND NOT domain STREQUAL APP)
-    set(partition_manager_target partition_manager_${domain})
+  if(SB_CONFIG_SECURE_BOOT_NETCORE)
+    set(domain CPUNET)
+#    if(DEFINED domain AND NOT domain STREQUAL APP)
+      set(partition_manager_target partition_manager_${domain})
+#    endif()
+
+    include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/provision_hex_sysbuild_netcore.cmake)
   endif()
 
-  if(SB_CONFIG_SECURE_BOOT)
-    include_provision_hex()
+  if(SB_CONFIG_SECURE_BOOT_APPCORE)
+    set(domain APP)
+#    if(DEFINED domain AND NOT domain STREQUAL APP)
+#      set(partition_manager_target partition_manager_${domain})
+#    endif()
+      set(partition_manager_target)
+
+    include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/provision_hex_sysbuild_appcore.cmake)
   endif()
+
+#  if(SB_CONFIG_SECURE_BOOT)
+#    include_provision_hex()
+#  endif()
 
 #temp
 include_packaging()
@@ -81,9 +94,9 @@ set(NCS_SYSBUILD_PARTITION_MANAGER TRUE PARENT_SCOPE)
 
 include(${CMAKE_CURRENT_LIST_DIR}/extensions.cmake)
 
-if(SB_CONFIG_SECURE_BOOT)
   set(secure_boot_image_dir ${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/image)
-  if(SB_CONFIG_SECURE_BOOT_NETCORE)
+
+if(SB_CONFIG_SECURE_BOOT_NETCORE)
 if(SB_CONFIG_NETCORE_HCI_RPMSG)
     add_overlay_config(
       ${SB_CONFIG_NETCORE_HCI_RPMSG_NAME} # ToDo: Create a common Kconfig setting
@@ -101,8 +114,11 @@ elseif(SB_CONFIG_NETCORE_802154_RPMSG)
       "${secure_boot_image_dir}/secure_boot.conf"
     )
 endif()
+
     add_overlay_config(mcuboot "${ZEPHYR_NRF_MODULE_DIR}/subsys/pcd/pcd.conf")
-  else()
+endif()
+
+if(SB_CONFIG_SECURE_BOOT_APPCORE)
     if(SB_CONFIG_BOOTLOADER_MCUBOOT)
       add_overlay_config(mcuboot ${secure_boot_image_dir}/multi_image_mcuboot.conf)
 
@@ -110,8 +126,8 @@ endif()
       # which is booted by B0.
       add_overlay_config(mcuboot ${secure_boot_image_dir}/fw_info.conf)
     endif()
-  endif()
 endif()
+
 
 include(${CMAKE_CURRENT_LIST_DIR}/netcore.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/secureboot.cmake)

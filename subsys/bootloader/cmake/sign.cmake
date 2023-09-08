@@ -4,7 +4,13 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
+#set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
+
+#if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET AND NCS_SYSBUILD_PARTITION_MANAGER)
+#set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated_CPUNET)
+#endif()
+
+set(GENERATED_PATH ${APPLICATION_BINARY_DIR}/nrf/subsys/bootloader/generated)
 
 # This is needed for make, ninja is able to resolve and create the path but make
 # is not able to resolve it.
@@ -37,6 +43,7 @@ else ()
 endif()
 
 if (CONFIG_SB_PRIVATE_KEY_PROVIDED)
+#if(NOT TARGET signature_public_key_file_target)
   add_custom_command(
     OUTPUT
     ${SIGNATURE_PUBLIC_KEY_FILE}
@@ -50,29 +57,43 @@ if (CONFIG_SB_PRIVATE_KEY_PROVIDED)
     ${PROJECT_BINARY_DIR}
     USES_TERMINAL
     )
-endif()
 
 # Public key file target is required for all signing options
 add_custom_target(
-    signature_public_key_file_target
+    ${main_app}_signature_public_key_file_target
     DEPENDS
     ${SIGNATURE_PUBLIC_KEY_FILE}
   )
+#endif()
+endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/../cmake/bl_validation_magic.cmake)
 
 set(slots s0_image)
-if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET AND NOT NCS_SYSBUILD_PARTITION_MANAGER)
-  list(APPEND slots app)
-endif()
+#if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET AND NOT NCS_SYSBUILD_PARTITION_MANAGER)
+#  list(APPEND slots app)
+#endif()
 
-if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL "CPUNET")
-  set(slots ${DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN}})
-endif()
+#if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL "CPUNET")
+#  set(slots ${DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN}})
+#endif()
+
+#if(NCS_SYSBUILD_PARTITION_MANAGER AND SB_CONFIG_SECURE_BOOT_NETCORE)
+#  list(APPEND slots ${DOMAIN_APP_CPUNET})
+#endif()
 
 if (CONFIG_BUILD_S1_VARIANT OR SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
   list(APPEND slots s1_image)
 endif ()
+
+
+if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET AND NCS_SYSBUILD_PARTITION_MANAGER)
+#  set(slots app)
+  set(slots)
+  list(APPEND slots ${DOMAIN_APP_CPUNET})
+message(WARNING "Slots: ${slots}")
+endif()
+
 
 #if (SB_CONFIG_BOOTLOADER_MCUBOOT)
 #  list(APPEND slots mcuboot)
@@ -130,6 +151,7 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     set(target_name ${slot})
   endif()
 else()
+message(WARNING "never runs")
   set(target_name ${slot})
 
   if ("${slot}" STREQUAL "s1_image")
@@ -254,7 +276,7 @@ message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depend
     DEPENDS
     ${signed_hex}
     ${slot}_signature_file_target
-    signature_public_key_file_target
+    ${main_app}_signature_public_key_file_target
     )
 
   # Set hex file and target for the ${slot) (s0/s1) container partition.
