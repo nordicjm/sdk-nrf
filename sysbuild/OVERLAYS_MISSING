@@ -1,0 +1,40 @@
+        
+        
+if (CONFIG_NCS_INCLUDE_RPMSG_CHILD_IMAGE OR CONFIG_NCS_SAMPLE_EMPTY_NET_CORE_CHILD_IMAGE)
+  if (CONFIG_NCS_SAMPLE_MCUMGR_BT_OTA_DFU_SPEEDUP)
+    # By passing this value we don't require the user to pass any overlay files to the
+    # network core child image. Bluetooth buffer sizes are aligned automatically.
+    if (CONFIG_NCS_SAMPLE_HCI_RPMSG_CHILD_IMAGE OR CONFIG_NCS_SAMPLE_MULTIPROTOCOL_RPMSG_CHILD_IMAGE)
+      add_overlay_config(
+        ${CHILD_IMAGE_NAME}
+        ${CMAKE_CURRENT_LIST_DIR}/common/mcumgr_bt_ota_dfu/rpmsg_child_image_overlay.conf
+      )
+    endif()
+  endif()
+
+  
+  
+  
+    if (CONFIG_BT_MESH)
+      # Inject this configuration from the parent image to enable
+      # the necessary amount of advertising sets in the Bluetooth controller
+      # on the network core required by the Bluetooth mesh.
+      add_overlay_config(
+        ${CHILD_IMAGE_NAME}
+        "${ZEPHYR_NRF_MODULE_DIR}/subsys/bluetooth/mesh/hci_rpmsg_child_image_overlay.conf"
+      )
+    endif()
+
+    
+    
+  
+  # For devices with USB then a USB CDC node in mcuboot is required.
+  # As USB CDC is generally needed for this mcuboot use-case it should be
+  # considered if this solution could be better generalized.
+  if (CONFIG_MCUBOOT_USB_SUPPORT)
+    add_overlay_dts(
+      mcuboot
+      ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/usb.overlay
+      )
+  endif()
+

@@ -12,6 +12,7 @@
 
 function(ncs_secure_boot_mcuboot_sign application application_name bin_files signed_targets)
   set(keyfile "${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}")
+#  set(keyfile_enc "${CONFIG_}")
 
   # Find imgtool. Even though west is installed, imgtool might not be.
   # The user may also have a custom manifest which doesn't include
@@ -60,6 +61,14 @@ function(ncs_secure_boot_mcuboot_sign application application_name bin_files sig
     list(APPEND bin_files ${output}.bin)
     set(bin_files ${bin_files} PARENT_SCOPE)
 
+#    if(NOT "${keyfile_enc}" STREQUAL "")
+#      list(APPEND encrypted_args --bin --sbin ${output}.signed.encrypted.bin)
+#      list(APPEND byproducts ${output}.signed.encrypted.bin)
+#      set(BYPRODUCT_KERNEL_SIGNED_ENCRYPTED_BIN_NAME "${output}.signed.encrypted.bin"
+#          CACHE FILEPATH "Signed and encrypted kernel bin file" FORCE
+#      )
+#    endif()
+
       add_custom_command(
         OUTPUT
         ${output}.bin # Signed hex with IMAGE_MAGIC located at secondary slot
@@ -100,6 +109,14 @@ function(ncs_secure_boot_mcuboot_sign application application_name bin_files sig
         ${application_image_dir}/zephyr/.config
         ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex
         )
+
+#    if(NOT "${keyfile_enc}" STREQUAL "")
+#      list(APPEND encrypted_args --hex --shex ${output}.signed.encrypted.hex)
+#      list(APPEND byproducts ${output}.signed.encrypted.hex)
+#      set(BYPRODUCT_KERNEL_SIGNED_ENCRYPTED_HEX_NAME "${output}.signed.encrypted.hex"
+#          CACHE FILEPATH "Signed and encrypted kernel hex file" FORCE
+#      )
+#    endif()
   endif()
 
   # Add the west sign calls and their byproducts to the post-processing
@@ -119,6 +136,11 @@ function(ncs_secure_boot_mcuboot_sign application application_name bin_files sig
     list(APPEND signed_targets ${application}_signed_packaged_target)
     set(signed_targets ${signed_targets} PARENT_SCOPE)
   endif()
+
+#  if(encrypted_args)
+#    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+#      ${imgtool_sign} ${encrypted_args} ${imgtool_args} --encrypt "${keyfile_enc}")
+#  endif()
 endfunction()
 
 if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT)

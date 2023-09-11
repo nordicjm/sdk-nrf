@@ -91,6 +91,7 @@ function(partition_manager)
       dynamic_partition_argument
       "--flash_primary-dynamic-partition;${dynamic_partition}"
       )
+# Network core should not have static PM file provided - need to check that this is right way to handle it
     set(static_configuration)
   endif()
 

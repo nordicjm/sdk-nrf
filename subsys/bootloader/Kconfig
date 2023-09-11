@@ -11,6 +11,7 @@ config BUILD_S1_VARIANT
 	# option has to be set when building MCUBoot (or any other child image
 	# which will be stored in S0 and S1) itself.
 	bool "Build S1 variant of specified image"
+	depends on !SYSBUILD
 	help
 	  Build upgrade candidate of image for alternative slot S1.
 

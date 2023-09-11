@@ -1,0 +1,1 @@
+rm -rf * && cmake -GNinja -DBOARD=nrf52840dk_nrf52840 -DAPP_DIR=.. -DSB_CONFIG_SECURE_BOOT=y -Db0_CONF_FILE=/tmp/bb/nrf/applications/nrf_desktop/configuration/nrf52840dk_nrf52840/child_image/b0/prj.conf /tmp/bb/zephyr/share/sysbuild/
