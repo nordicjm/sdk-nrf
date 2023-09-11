@@ -71,9 +71,13 @@ if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL
   set(slots ${domain_app})
 endif()
 
-if (CONFIG_BUILD_S1_VARIANT)
+if (CONFIG_BUILD_S1_VARIANT OR SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
   list(APPEND slots s1_image)
 endif ()
+
+if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL "APP" AND SB_CONFIG_BOOTLOADER_MCUBOOT)
+  list(APPEND slots mcuboot)
+endif()
 
 if (NOT "${CONFIG_SB_VALIDATION_INFO_CRYPTO_ID}" EQUAL "1")
   message(FATAL_ERROR
@@ -83,6 +87,14 @@ endif()
 foreach (slot ${slots})
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
+
+
+## ISSUES:
+# mcuboot targets are made but do not run automatically for s0_image
+# files are not updated once they have been generated once and e.g. configuration is changed
+# if output hex files are deleted, config is changed, signing fails due to some error
+
+
 
 if(NCS_SYSBUILD_PARTITION_MANAGER)
   # A container can be merged, in which case we should use old style below,
@@ -94,14 +106,33 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     # If slot is a target of it's own, then it means we target the hex directly and not a merged hex.
     sysbuild_get(${slot}_image_dir IMAGE ${slot} VAR APPLICATION_BINARY_DIR CACHE)
     sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+    sysbuild_get(${slot}_kernel_elf IMAGE ${slot} VAR CONFIG_KERNEL_ELF_NAME KCONFIG)
 
     set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
-    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
+#    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
+#    set(sign_depends ${slot} ${${slot}_image_dir}/zephyr/${${slot}_kernel_elf})
+    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf)
+    set(target_name ${slot})
+  elseif("${slot}" STREQUAL "s0_image")
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      set(target_name mcuboot)
+    else()
+      set(target_name ${DEFAULT_IMAGE})
+    endif()
+
+    sysbuild_get(${target_name}_image_dir IMAGE ${target_name} VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(${target_name}_kernel_name IMAGE ${target_name} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
+    set(slot_hex ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.hex)
+    set(sign_depends ${target_name} ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.elf)
   else()
     set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
     set(sign_depends ${slot}_hex)
+    set(target_name ${slot})
   endif()
 else()
+  set(target_name ${slot})
+
   if ("${slot}" STREQUAL "s1_image")
     # The s1_image slot is built as a child image, add the dependency and
     # path to its hex file accordingly. We cannot use the shared variables
@@ -119,6 +150,8 @@ endif()
   set(to_sign ${slot_hex})
   set(hash_file ${GENERATED_PATH}/${slot}_firmware.sha256)
   set(signature_file ${GENERATED_PATH}/${slot}_firmware.signature)
+
+message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depends}")
 
   set(hash_cmd
     ${PYTHON_EXECUTABLE}
@@ -182,6 +215,15 @@ endif()
     ${signature_file}
     )
 
+  cmake_path(GET signed_hex FILENAME signed_hex_filename)
+
+  if(NCS_SYSBUILD_PARTITION_MANAGER)
+    cmake_path(GET to_sign FILENAME to_sign_filename)
+    set(validation_comment "Creating validation for ${to_sign_filename}, storing to ${signed_hex_filename}")
+  else()
+    set(validation_comment "Creating validation for ${KERNEL_HEX_NAME}, storing to ${signed_hex_filename}")
+  endif()
+
   add_custom_command(
     OUTPUT
     ${signed_hex}
@@ -204,7 +246,7 @@ endif()
     WORKING_DIRECTORY
     ${PROJECT_BINARY_DIR}
     COMMENT
-    "Creating validation for ${KERNEL_HEX_NAME}, storing to ${SIGNED_KERNEL_HEX_NAME}"
+    "${validation_comment}"
     USES_TERMINAL
     )
 
@@ -220,16 +262,15 @@ endif()
   # This includes the hex file (and its corresponding target) to the build.
   set_property(
     GLOBAL PROPERTY
-    ${slot}_PM_HEX_FILE
+    ${target_name}_PM_HEX_FILE
     ${signed_hex}
     )
 
   set_property(
     GLOBAL PROPERTY
-    ${slot}_PM_TARGET
+    ${target_name}_PM_TARGET
     ${slot}_signed_kernel_hex_target
     )
-
 endforeach()
 
 

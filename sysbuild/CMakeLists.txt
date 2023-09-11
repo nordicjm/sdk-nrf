@@ -25,6 +25,11 @@ function(include_provision_hex)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/provision_hex.cmake)
 endfunction()
 
+function(include_packaging)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/b0_mcuboot_signing.cmake)
+  include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
@@ -34,6 +39,18 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       set_config_bool(${image} CONFIG_PARTITION_MANAGER_ENABLED y)
     else()
       set_config_bool(${image} CONFIG_PARTITION_MANAGER_ENABLED n)
+    endif()
+
+    if(SB_CONFIG_BUILD_OUTPUT_BIN)
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_BIN y)
+    else()
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_BIN n)
+    endif()
+
+    if(SB_CONFIG_BUILD_OUTPUT_HEX)
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX y)
+    else()
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX n)
     endif()
   endforeach()
 
@@ -52,13 +69,48 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   endif()
 
   if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+    string(LENGTH "${BOARD}" board_len)
+    math(EXPR board_len "${board_len} - 3")
+    string(SUBSTRING "${BOARD}" ${board_len} 3 ns_board_check)
+
+    if("${ns_board_check}" STREQUAL "_ns")
+      # Configure MCUboot before application so that TF-M can read MCUboot configuration
+      sysbuild_add_dependencies(CONFIGURE ${DEFAULT_IMAGE} mcuboot)
+
+      # Configure MCUBoot to be able to boot TFM
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/tfm.conf
+        )
+
+      # Add fault injection protection to MCUBOOT
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/fih_low_enable.conf
+      )
+    endif()
+
+    set(imgtool_extra)
+    if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+      set(imgtool_extra " --security-counter ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE}")
+
+      set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION=${SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION}\n")
+      set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS=${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS}\n")
+      set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE=${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE}\n")
+
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/hw_counters.conf
+      )
+    endif()
+
     set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
-                      "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}"
+                      "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}${imgtool_extra}"
     )
 
     if(NOT DEFINED mcuboot_BOARD AND DEFINED board_secure)
       # MCUboot must run in secure mode on the nRF9160/nRF5340
-        set_target_properties(mcuboot PROPERTIES BOARD ${board_secure})
+      set_target_properties(mcuboot PROPERTIES BOARD ${board_secure})
     endif()
   endif()
 
@@ -71,8 +123,16 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         set_target_properties(s1_image PROPERTIES BOARD ${board_secure})
       endif()
     endif()
+
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/sysbuild/mcuboot_enable_secure_bootloader.overlay
+        )
+    endif()
   elseif(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
     if(SB_CONFIG_NETCORE_APP_UPDATE)
+#What if a user wants 3?
       set_config_bool(mcuboot CONFIG_PCD_APP y)
       set_property(TARGET mcuboot APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=2\n")
 
@@ -93,6 +153,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   cmake_parse_arguments(POST_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
 
+set(SYSBUILD y)
+
   set_property(GLOBAL PROPERTY DOMAIN_APP_APP ${DEFAULT_IMAGE})
 
   # Run partition manager for each image before running CMake.
@@ -101,9 +163,12 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     set(partition_manager_target partition_manager_${domain})
   endif()
 
-  if(SB_CONFIG_SECURE_BOOT)
+  if(SB_CONFIG_SECURE_BOOT OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
     include_provision_hex()
   endif()
+
+#temp
+include_packaging()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)

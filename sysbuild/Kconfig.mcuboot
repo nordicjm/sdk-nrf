@@ -1,0 +1,41 @@
+# Copyright (c) 2023 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+
+if BOOTLOADER_MCUBOOT
+
+menuconfig MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION
+	bool "Downgrade prevention using hardware security counters"
+        depends on ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "nrf5340dk_nrf5340_cpuapp_ns" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns" || $(BOARD) = "nrf9160dk_nrf9160" || $(BOARD) = "nrf9160dk_nrf9160_ns" || $(BOARD) = "thingy91_nrf9160" || $(BOARD) = "thingy91_nrf9160_ns")
+	help
+	  This option can be enabled by the application and will ensure
+	  that the MCUBOOT_HW_DOWNGRADE_PREVENTION Kconfig option is
+	  enabled in the MCUboot image.
+
+if MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION
+
+config MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS
+	int "Number of available hardware counter slots"
+	default 240
+	range 2 300
+	help
+	  When MCUBOOT_HW_DOWNGRADE_PREVENTION is enabled, MCUboot will use
+	  one hardware counter for each updatable image (UPDATEABLE_IMAGE_NUMBER).
+	  This configuration specifies how many counter slots will be allocated
+	  for each hardware counter. The hardware counters are stored in OTP storage.
+	  The rationale for the default number (240): Assume one update a month for
+	  10 years, then double that value just in case. This default fits
+	  comfortably within the OTP region of UICR.
+
+config MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE
+	int "Security counter value"
+	default 1
+	range 1 65535
+	help
+	  The security counter value for this image.
+	  This is the value that will be passed to the --security-counter
+	  parameter of imgtool.py
+
+endif # MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION
+
+endif # BOOTLOADER_MCUBOOT

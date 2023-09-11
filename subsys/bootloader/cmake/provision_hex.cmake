@@ -11,10 +11,21 @@ set_ifndef(partition_manager_target partition_manager)
 
 if(NCS_SYSBUILD_PARTITION_MANAGER)
   # Get the main app of the domain that secure boot should handle.
-  get_property(main_app GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN})
-  ExternalProject_Get_Property(${main_app} BINARY_DIR)
-  import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
-  sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${main_app} VAR APPLICATION_CONFIG_DIR CACHE)
+
+  if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
+    ExternalProject_Get_Property(mcuboot BINARY_DIR)
+    import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+    sysbuild_get(APPLICATION_CONFIG_DIR IMAGE mcuboot VAR APPLICATION_CONFIG_DIR CACHE)
+  elseif(DEFINED SB_CONFIG_SECURE_BOOT_DOMAIN)
+    get_property(main_app GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN})
+    ExternalProject_Get_Property(${main_app} BINARY_DIR)
+    import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+    sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${main_app} VAR APPLICATION_CONFIG_DIR CACHE)
+  else()
+    ExternalProject_Get_Property(${DEFAULT_IMAGE} BINARY_DIR)
+    import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+    sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${DEFAULT_IMAGE} VAR APPLICATION_CONFIG_DIR CACHE)
+  endif()
 endif()
 
 if (CONFIG_NCS_IS_VARIANT_IMAGE)
@@ -82,8 +93,10 @@ if(CONFIG_SECURE_BOOT)
     endif()
 endif()
 
-if(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+if(NOT SYSBUILD AND CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
   set(mcuboot_counters_slots --mcuboot-counters-slots ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS})
+elseif(SYSBUILD AND SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+  set(mcuboot_counters_slots --mcuboot-counters-slots ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS})
 endif()
 
 if(CONFIG_SECURE_BOOT)
@@ -111,7 +124,7 @@ add_custom_command(
   "Creating data to be provisioned to the Bootloader, storing to ${PROVISION_HEX_NAME}"
   USES_TERMINAL
   )
-elseif(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+elseif(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
 add_custom_command(
   OUTPUT
   ${PROVISION_HEX}
@@ -135,7 +148,7 @@ add_custom_command(
 endif()
 
 
-if(CONFIG_SECURE_BOOT OR CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+if(CONFIG_SECURE_BOOT OR CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
   add_custom_target(
     provision_target
     DEPENDS
@@ -163,5 +176,4 @@ if(CONFIG_SECURE_BOOT OR CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
       provision_target
       )
   endif()
-
 endif()
