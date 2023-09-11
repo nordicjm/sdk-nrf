@@ -39,6 +39,7 @@ config SECURE_BOOT_IMAGE_NAME
 config SECURE_BOOT_BOARD
 	string
 	default "nrf5340dk_nrf5340_cpunet" if SECURE_BOOT_NETCORE && $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default "thingy53_nrf5340_cpunet" if SECURE_BOOT_NETCORE && $(BOARD) = "thingy53_nrf5340_cpuapp"
 	help
 	  Remote board when building this sample.
 	  If not set, the board given to sysbuild is used.
@@ -49,5 +50,11 @@ config SECURE_BOOT_DOMAIN
 	default "APP"
 	help
 	  Internal build system domain name used for first stage bootloader.
+
+config SECURE_BOOT_BUILD_S1_VARIANT_IMAGE
+	bool
+	default y if SECURE_BOOT_APPCORE
+	help
+	  Will build an S1 variant image for the second slot.
 
 endif
