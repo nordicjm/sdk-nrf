@@ -39,6 +39,8 @@ manifest:
       url-base: https://github.com/BabbleSim
     - name: bosch
       url-base: https://github.com/boschsensortec
+    - name: mine
+      url-base: https://github.com/nordicjm
 
   # If not otherwise specified, the projects below should be obtained
   # from the ncs remote.
@@ -61,7 +63,8 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
       repo-path: sdk-zephyr
-      revision: c991ee360e64a82bb0f396d3c731654905239e02
+      revision: sysbuild_app_start_p3
+      remote: mine
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
@@ -128,8 +131,9 @@ manifest:
           compare-by-default: true
     - name: mcuboot
       repo-path: sdk-mcuboot
-      revision: e768dd2aa390bc37a19973ce88b442908c31dc0d
+      revision: sysbuild_app_start_p3
       path: bootloader/mcuboot
+      remote: mine
     - name: qcbor
       url: https://github.com/laurencelundblade/QCBOR.git
       revision: 751d36583a9ce1a640900c57e13c9b6b8f3a2ba2
