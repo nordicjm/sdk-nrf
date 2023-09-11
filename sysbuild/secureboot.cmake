@@ -18,6 +18,9 @@ if(SB_CONFIG_SECURE_BOOT)
       IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
     )
 
+    # Can we do this in a more clever way ?
+    # Should adding of hci_rpmasg be a downstream feature, or could we perhaps
+    # overload upstream image adding.
     if(NOT "CPUNET" IN_LIST PM_DOMAINS)
       list(APPEND PM_DOMAINS CPUNET)
     endif()
@@ -39,12 +42,16 @@ if(SB_CONFIG_SECURE_BOOT)
     ExternalZephyrProject_Add(
       APPLICATION b0
       SOURCE_DIR ${secure_boot_source_dir}
+#      BOARD ${SB_CONFIG_SECURE_BOOT_BOARD}
       BUILD_ONLY true
     )
     set_target_properties(${SB_CONFIG_SECURE_BOOT_IMAGE_NAME} PROPERTIES
       IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
     )
 
+    # Can we do this in a more clever way ?
+    # Should adding of hci_rpmasg be a downstream feature, or could we perhaps
+    # overload upstream image adding.
     if(NOT "APP" IN_LIST PM_DOMAINS)
       list(APPEND PM_DOMAINS APP)
     endif()

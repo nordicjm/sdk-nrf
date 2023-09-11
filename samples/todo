@@ -1,0 +1,13 @@
+./peripheral/radio_test/child_image
+./peripheral/802154_phy_test/child_image
+./bluetooth/peripheral_hids_mouse/child_image
+
+./bluetooth/direct_test_mode/child_image
+./bluetooth/central_uart/child_image
+
+./matter/window_covering/child_image
+./matter/thermostat/child_image
+./matter/template/child_image
+./matter/lock/child_image
+./matter/light_switch/child_image
+./matter/light_bulb/child_image

@@ -198,6 +198,11 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   endif()
 
   if(SB_CONFIG_SECURE_BOOT)
+    if(NOT SB_CONFIG_SECURE_BOOT_APPCORE AND NOT SB_CONFIG_SECURE_BOOT_NETCORE)
+      # Error out early, this shortcuts to a later error which complains that the secure boot image name is missing
+      message(FATAL_ERROR "Error: No secure boot options have been selected, at least one core must be selected for secure boot to function.")
+    endif()
+
     if(SB_CONFIG_SECURE_BOOT_APPCORE)
       if(NOT DEFINED b0_BOARD AND DEFINED board_secure)
         # b0 must run in secure mode on the nRF9160/nRF5340
@@ -213,6 +218,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
           mcuboot
           ${ZEPHYR_NRF_MODULE_DIR}/sysbuild/mcuboot_enable_secure_bootloader.overlay
           )
+
         add_overlay_config(
           mcuboot
           ${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr/external_crypto.conf
@@ -277,6 +283,9 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   # Set PM variables up that applications need prior to PM having ran
   get_property(PM_MCUBOOT_PRIMARY_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_SIZE)
   get_property(PM_MCUBOOT_PAD_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PAD_SIZE)
+
+# IS THIS NEEDED?
+  get_property(PM_BT_FAST_PAIR_ADDRESS TARGET partition_manager PROPERTY PM_BT_FAST_PAIR_ADDRESS)
 
   if(SB_CONFIG_SUPPORT_NETCORE AND NOT SB_CONFIG_NETCORE_EMPTY)
     get_property(PM_MCUBOOT_PRIMARY_1_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_1_SIZE)

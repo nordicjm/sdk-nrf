@@ -76,6 +76,7 @@ function(b0_sign_image slot)
   sysbuild_get(${slot}_fw_info_magic_compatibility_id IMAGE ${slot} VAR CONFIG_FW_INFO_MAGIC_COMPATIBILITY_ID KCONFIG)
   sysbuild_get(${slot}_fw_info_magic_common IMAGE ${slot} VAR CONFIG_FW_INFO_MAGIC_COMMON KCONFIG)
   sysbuild_get(${slot}_sb_validation_info_magic IMAGE ${slot} VAR CONFIG_SB_VALIDATION_INFO_MAGIC KCONFIG)
+#  sysbuild_get(${slot}_sb_validation_pointer_magic IMAGE ${slot} VAR CONFIG_SB_VALIDATION_POINTER_MAGIC KCONFIG)
 
   math(EXPR
     MAGIC_COMPATIBILITY_VALIDATION_INFO
@@ -86,6 +87,7 @@ function(b0_sign_image slot)
     )
 
   set(VALIDATION_INFO_MAGIC    "${${slot}_fw_info_magic_common},${${slot}_sb_validation_info_magic},${MAGIC_COMPATIBILITY_VALIDATION_INFO}")
+#  set(VALIDATION_POINTER_MAGIC "${${slot}_fw_info_magic_common},${${slot}_sb_validation_pointer_magic},${MAGIC_COMPATIBILITY_VALIDATION_INFO}")
 
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
@@ -200,8 +202,12 @@ function(b0_sign_image slot)
     )
 
   cmake_path(GET signed_hex FILENAME signed_hex_filename)
+#  if(NCS_SYSBUILD_PARTITION_MANAGER)
   cmake_path(GET to_sign FILENAME to_sign_filename)
   set(validation_comment "Creating validation for ${to_sign_filename}, storing to ${signed_hex_filename}")
+#  else()
+#    set(validation_comment "Creating validation for ${KERNEL_HEX_NAME}, storing to ${signed_hex_filename}")
+#  endif()
 
   add_custom_command(
     OUTPUT

@@ -131,6 +131,11 @@ function(zephyr_mcuboot_tasks)
     set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
       ${imgtool_sign} ${imgtool_args} ${unconfirmed_args})
 
+#    if(CONFIG_MCUBOOT_GENERATE_CONFIRMED_IMAGE)
+#      list(APPEND confirmed_args --bin --sbin ${output}.signed.confirmed.bin)
+#      list(APPEND byproducts ${output}.signed.confirmed.bin)
+#    endif()
+#
     if(NOT "${keyfile_enc}" STREQUAL "")
       if(CONFIG_BUILD_WITH_TFM)
         # TF-M does not generate a bin file, so use the hex file as an input
@@ -167,6 +172,11 @@ function(zephyr_mcuboot_tasks)
     set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
       ${imgtool_sign} ${imgtool_args} ${unconfirmed_args})
 
+#    if(CONFIG_MCUBOOT_GENERATE_CONFIRMED_IMAGE)
+#      list(APPEND confirmed_args --hex --shex ${output}.signed.confirmed.hex)
+#      list(APPEND byproducts ${output}.signed.confirmed.hex)
+#    endif()
+
     if(NOT "${keyfile_enc}" STREQUAL "")
       set(unconfirmed_args ${input}.hex ${output}.encrypted.hex)
       list(APPEND byproducts ${output}.encrypted.hex)
@@ -176,6 +186,11 @@ function(zephyr_mcuboot_tasks)
         ${imgtool_sign} ${imgtool_args} --encrypt "${keyfile_enc}" ${unconfirmed_args})
     endif()
   endif()
+
+#  if(confirmed_args)
+#    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+#      ${west_sign} ${confirmed_args} ${imgtool_args} --pad --confirm)
+#  endif()
 
   set_property(GLOBAL APPEND PROPERTY extra_post_build_byproducts ${byproducts})
 endfunction()
