@@ -13,6 +13,16 @@ tests:
       - thingy53_nrf5340_cpuapp_ns
       - nrf5340dk_nrf5340_cpuapp
     tags: ci_build
+# does not work becuase of network core update support in PM lacking
+#  applications.machine_learning.zdebug.sysbuild:
+#    build_only: true
+#    sysbuild: true
+#    platform_allow: >
+#      nrf52840dk_nrf52840 nrf5340dk_nrf5340_cpuapp
+#    integration_platforms:
+#      - nrf52840dk_nrf52840
+#      - nrf5340dk_nrf5340_cpuapp
+#    tags: ci_build sysbuild
   applications.machine_learning.zdebug_nus:
     build_only: true
     platform_allow: nrf52840dk_nrf52840
