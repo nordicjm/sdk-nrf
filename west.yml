@@ -63,7 +63,8 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
       repo-path: sdk-zephyr
-      revision: pull/1276/head
+      revision: hacks_xip_3image
+      remote: mine
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
@@ -92,7 +93,8 @@ manifest:
     # changes.
     - name: mcuboot
       repo-path: sdk-mcuboot
-      revision: eafdae91cb0d357a0ee81014a8101abdc1917dbb
+      revision: hacks_xip_3image
+      remote: mine
       path: bootloader/mcuboot
     - name: qcbor
       url: https://github.com/laurencelundblade/QCBOR.git
@@ -128,12 +130,6 @@ manifest:
           upstream-url: https://github.com/project-chip/connectedhomeip
           upstream-sha: 8f66f4215bc0708efc8cc73bda80620e67d8955f
           compare-by-default: false
-    - name: nrf-802154
-      repo-path: sdk-nrf-802154
-      path: nrf-802154
-      revision: 73571fc9ec07725ae4979911bf4e306d4b9c0a19
-      groups:
-        - nrf-802154
     - name: cjson
       repo-path: sdk-cjson
       path: modules/lib/cjson
