@@ -21,6 +21,16 @@ tests:
       - nrf52840gmouse_nrf52840
       - nrf5340dk_nrf5340_cpuapp
     tags: bluetooth ci_build
+  applications.nrf_desktop.zdebug.sysbuild:
+    build_only: true
+    sysbuild: true
+    platform_allow: nrf5340dk_nrf5340_cpuapp
+    integration_platforms:
+      - nrf5340dk_nrf5340_cpuapp
+    tags: bluetooth ci_build sysbuild
+    extra_args: SB_CONFIG_NETCORE_HCI_RPMSG=y
+                SB_CONFIG_SECURE_BOOT=y
+                SB_CONFIG_SECURE_BOOT_APPCORE=y
   applications.nrf_desktop.zdebug_wwcb:
     build_only: true
     platform_allow: nrf52840dk_nrf52840
