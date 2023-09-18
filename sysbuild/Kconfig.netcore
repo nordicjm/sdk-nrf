@@ -5,6 +5,7 @@
 config SUPPORT_NETCORE
 	bool
 	default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default y if $(BOARD) = "thingy53_nrf5340_cpuapp"
 
 if SUPPORT_NETCORE
 
@@ -24,8 +25,8 @@ config NRF_DEFAULT_802154
 
 choice NETCORE
 	prompt "Netcore image"
-	default NETCORE_HCI_RPMSG if NRF_DEFAULT_BLUETOOTH && $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
-	default NETCORE_802154_RPMSG if NRF_DEFAULT_802154 && $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default NETCORE_HCI_RPMSG if NRF_DEFAULT_BLUETOOTH && ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp")
+	default NETCORE_802154_RPMSG if NRF_DEFAULT_802154 && ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp")
 	default NETCORE_NONE
 	depends on SUPPORT_NETCORE
 
@@ -58,6 +59,7 @@ config NETCORE_HCI_RPMSG_NAME
 config NETCORE_HCI_RPMSG_BOARD
 	string
 	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default "thingy53_nrf5340_cpunet" if $(BOARD) = "thingy53_nrf5340_cpuapp"
 	depends on NETCORE_HCI_RPMSG
 	help
 	  Remote board when building this sample.
@@ -65,11 +67,11 @@ config NETCORE_HCI_RPMSG_BOARD
 
 config NETCORE_HCI_RPMSG_DOMAIN
 	string
-	default "CPUNET" if NETCORE_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default "CPUNET" if (NETCORE_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet" || NETCORE_HCI_RPMSG_BOARD = "thingy53_nrf5340_cpunet")
 
 config NETCORE_HCI_RPMSG_DOMAIN_APP
 	bool
-	default y if NETCORE_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default y if (NETCORE_HCI_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet" || NETCORE_HCI_RPMSG_BOARD = "thingy53_nrf5340_cpunet")
 
 config NETCORE_802154_RPMSG_NAME
 	string
@@ -81,6 +83,7 @@ config NETCORE_802154_RPMSG_NAME
 config NETCORE_802154_RPMSG_BOARD
 	string
 	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+	default "thingy53_nrf5340_cpunet" if $(BOARD) = "thingy53_nrf5340_cpuapp"
 	depends on NETCORE_802154_RPMSG
 	help
 	  Remote board when building this sample.
@@ -88,10 +91,18 @@ config NETCORE_802154_RPMSG_BOARD
 
 config NETCORE_802154_RPMSG_DOMAIN
 	string
-	default "CPUNET" if NETCORE_802154_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default "CPUNET" if (NETCORE_802154_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet" || NETCORE_802154_RPMSG_BOARD = "thingy53_nrf5340_cpunet")
 
 config NETCORE_802154_RPMSG_DOMAIN_APP
 	bool
-	default y if NETCORE_802154_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet"
+	default y if (NETCORE_802154_RPMSG_BOARD = "nrf5340dk_nrf5340_cpunet" || NETCORE_802154_RPMSG_BOARD = "thingy53_nrf5340_cpunet")
+
+config NETCORE_APP_UPDATE
+	bool "Network core updates"
+	depends on BOOTLOADER_MCUBOOT
+	depends on SECURE_BOOT_NETCORE
+	help
+	  Enabling this will add support for network core updates from the application core,
+	  requires b0n for network core and MCUboot for application core.
 
 endif

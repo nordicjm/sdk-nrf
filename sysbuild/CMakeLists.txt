@@ -65,13 +65,28 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         set_target_properties(b0 PROPERTIES BOARD nrf9160dk_nrf9160)
       endif()
 
-  if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-      if(DEFINED BOARD_REVISION)
-        set_target_properties(s1_image PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
-      else()
-        set_target_properties(s1_image PROPERTIES BOARD nrf9160dk_nrf9160)
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        if(DEFINED BOARD_REVISION)
+          set_target_properties(s1_image PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
+        else()
+          set_target_properties(s1_image PROPERTIES BOARD nrf9160dk_nrf9160)
+        endif()
       endif()
-endif()
+    endif()
+
+    if(SB_CONFIG_NETCORE_APP_UPDATE)
+#What if a user wants 3?
+      set_config_bool(mcuboot CONFIG_PCD_APP y)
+      set_property(TARGET mcuboot APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=2\n")
+
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/subsys/partition_manager/ext_flash_mcuboot_secondary.conf
+        )
+      add_overlay_dts(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
+        )
     endif()
   endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)

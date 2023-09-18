@@ -91,6 +91,8 @@ function(partition_manager)
       dynamic_partition_argument
       "--flash_primary-dynamic-partition;${dynamic_partition}"
       )
+# Network core should not have static PM file provided - need to check that this is right way to handle it
+    set(static_configuration)
   endif()
 
   if (DEFINED PM_DOMAIN)
@@ -537,41 +539,26 @@ if(ext_flash_enabled)
     )
 endif()
 
-# Start - Code related to network core update. Multi image updates are part of NCSDK-17807
-## If simultaneous updates of the network core and application core is supported
-## we add a region which is used to emulate flash. In reality this data is being
-## placed in RAM. This is used to bank the network core update in RAM while
-## the application core update is banked in flash. This works since the nRF53
-## application core has 512kB of RAM and the network core only has 256kB of flash
-#get_shared(
-#  mcuboot_NRF53_MULTI_IMAGE_UPDATE
-#  IMAGE mcuboot
-#  PROPERTY NRF53_MULTI_IMAGE_UPDATE
-#  )
-#
-#get_shared(
-#  mcuboot_NRF53_RECOVERY_NETWORK_CORE
-#  IMAGE mcuboot
-#  PROPERTY NRF53_RECOVERY_NETWORK_CORE
-#  )
-#
-#if ((DEFINED mcuboot_NRF53_MULTI_IMAGE_UPDATE) OR (DEFINED mcuboot_NRF53_RECOVERY_NETWORK_CORE))
-#  # This region will contain the 'mcuboot_secondary' partition, and the banked
-#  # updates for the network core will be stored here.
-#  get_shared(ram_flash_label IMAGE mcuboot PROPERTY RAM_FLASH_LABEL)
-#  get_shared(ram_flash_addr IMAGE mcuboot PROPERTY RAM_FLASH_ADDR)
-#  get_shared(ram_flash_size IMAGE mcuboot PROPERTY RAM_FLASH_SIZE)
-#
-#  add_region(
-#    NAME ram_flash
-#    SIZE ${ram_flash_size}
-#    BASE ${ram_flash_addr}
-#    PLACEMENT start_to_end
-#    DEVICE ${ram_flash_label}
-#    DEFAULT_DRIVER_KCONFIG CONFIG_FLASH_SIMULATOR
-#    )
-#endif()
-# end - Code related to network core update. Multi image updates are part of NCSDK-17807
+# If simultaneous updates of the network core and application core is supported
+# we add a region which is used to emulate flash. In reality this data is being
+# placed in RAM. This is used to bank the network core update in RAM while
+# the application core update is banked in flash. This works since the nRF53
+# application core has 512kB of RAM and the network core only has 256kB of flash
+if(SB_CONFIG_NETCORE_APP_UPDATE)
+  # This region will contain the 'mcuboot_secondary' partition, and the banked
+  # updates for the network core will be stored here.
+  sysbuild_get(ram_flash_addr IMAGE mcuboot VAR RAM_FLASH_ADDR CACHE)
+  sysbuild_get(ram_flash_size IMAGE mcuboot VAR RAM_FLASH_SIZE CACHE)
+
+  add_region(
+    NAME ram_flash
+    SIZE ${ram_flash_size}
+    BASE ${ram_flash_addr}
+    PLACEMENT start_to_end
+    DEVICE nordic_ram_flash_controller
+    DEFAULT_DRIVER_KCONFIG CONFIG_FLASH_SIMULATOR
+    )
+endif()
 
 # Do per domain, end with main app domain.
 partition_manager(IN_FILES ${input_files} REGIONS ${regions})
