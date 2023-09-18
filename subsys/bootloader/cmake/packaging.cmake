@@ -47,9 +47,7 @@ message(WARNING " IMAGE_IDS ${dfu_multi_image_ids} IMAGE_PATHS ${dfu_multi_image
   dfu_multi_image_package(dfu_multi_image_pkg
     IMAGE_IDS ${dfu_multi_image_ids}
     IMAGE_PATHS ${dfu_multi_image_paths}
-#    OUTPUT ${PROJECT_BINARY_DIR}/dfu_multi_image.bin
-    OUTPUT /tmp/dfu_multi_image.bin
+    OUTPUT ${PROJECT_BINARY_DIR}/dfu_multi_image.bin
+    DEPENDS ${dfu_multi_image_targets}
     )
-
-  add_dependencies(dfu_multi_image_pkg ${dfu_multi_image_targets})
 endif()
