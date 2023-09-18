@@ -39,6 +39,8 @@ manifest:
       url-base: https://github.com/BabbleSim
     - name: bosch
       url-base: https://github.com/boschsensortec
+    - name: mine
+      url-base: https://github.com/nordicjm
 
   # If not otherwise specified, the projects below should be obtained
   # from the ncs remote.
@@ -128,8 +130,9 @@ manifest:
           compare-by-default: true
     - name: mcuboot
       repo-path: sdk-mcuboot
-      revision: eafdae91cb0d357a0ee81014a8101abdc1917dbb
+      revision: sysbuild_app_start_p2
       path: bootloader/mcuboot
+      remote: mine
     - name: qcbor
       url: https://github.com/laurencelundblade/QCBOR.git
       revision: b0e7033268e88c9f27146fa9a1415ef4c19ebaff
