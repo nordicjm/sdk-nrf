@@ -391,14 +391,11 @@ list(APPEND input_files  ${${DEFAULT_IMAGE}_input_files})
 list(APPEND header_files ${${DEFAULT_IMAGE}_binary_dir}/${generated_path}/pm_config.h)
 
 if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-#sysbuild_get(${DEFAULT_IMAGE}_s1_input_files IMAGE ${DEFAULT_IMAGE}_s1 VAR PM_YML_FILES CACHE)
-#sysbuild_get(${DEFAULT_IMAGE}_s1_binary_dir  IMAGE ${DEFAULT_IMAGE}_s1 VAR ZEPHYR_BINARY_DIR CACHE)
-sysbuild_get(s1_image_input_files IMAGE s1_image VAR PM_YML_FILES CACHE)
-sysbuild_get(s1_image_binary_dir  IMAGE s1_image VAR ZEPHYR_BINARY_DIR CACHE)
-list(APPEND prefixed_images ":s1_image")
-list(APPEND input_files  ${s1_image_input_files})
-list(APPEND header_files ${s1_image_binary_dir}/${generated_path}/pm_config.h)
+  sysbuild_get(s1_image_binary_dir  IMAGE s1_image VAR ZEPHYR_BINARY_DIR CACHE)
+  list(APPEND prefixed_images ":s1_image")
+  list(APPEND header_files ${s1_image_binary_dir}/${generated_path}/pm_config.h)
 endif()
+
 foreach (image ${IMAGES})
   set(domain)
   # Special handling of `app_image` as this must be added as `:app` for historic reasons.
@@ -436,11 +433,6 @@ endforeach()
 #endforeach()
 
 list(APPEND input_files  ${${DEFAULT_IMAGE}_binary_dir}/${generated_path}/pm.yml)
-
-if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-#list(APPEND input_files  ${${DEFAULT_IMAGE}_s1_binary_dir}/${generated_path}/pm.yml)
-list(APPEND input_files  ${s1_image_binary_dir}/${generated_path}/pm.yml)
-endif()
 
 foreach (d ${PM_DOMAINS})
   foreach (image ${PM_${d}_IMAGES})
