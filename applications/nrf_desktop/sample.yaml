@@ -21,7 +21,7 @@ tests:
       - nrf52840gmouse_nrf52840
       - nrf5340dk_nrf5340_cpuapp
     tags: bluetooth ci_build
-  applications.nrf_desktop.zdebug.sysbuild:
+  applications.nrf_desktop.zdebug.sysbuild1:
     build_only: true
     sysbuild: true
     platform_allow: nrf5340dk_nrf5340_cpuapp
@@ -31,6 +31,37 @@ tests:
     extra_args: SB_CONFIG_NETCORE_HCI_RPMSG=y
                 SB_CONFIG_SECURE_BOOT=y
                 SB_CONFIG_SECURE_BOOT_APPCORE=y
+  applications.nrf_desktop.zdebug.sysbuild2:
+    build_only: true
+    sysbuild: true
+    platform_allow: nrf52833dongle_nrf52833 nrf52833dk_nrf52833
+    integration_platforms:
+      - nrf52833dongle_nrf52833
+      - nrf52833dk_nrf52833
+    tags: bluetooth ci_build sysbuild
+    extra_args: SB_CONFIG_BOOTLOADER_MCUBOOT=y
+  applications.nrf_desktop.zdebug.sysbuild3:
+    build_only: true
+    sysbuild: true
+    platform_allow: nrf52840dk_nrf52840 nrf52840dongle_nrf52840 nrf52840gmouse_nrf52840
+    integration_platforms:
+      - nrf52840dk_nrf52840
+      - nrf52840dongle_nrf52840
+      - nrf52840gmouse_nrf52840
+    tags: bluetooth ci_build sysbuild
+    extra_args: SB_CONFIG_SECURE_BOOT=y
+  applications.nrf_desktop.zdebug.sysbuild4:
+    build_only: true
+    sysbuild: true
+    platform_allow: >
+      nrf52dmouse_nrf52832 nrf52kbd_nrf52832 nrf52810dmouse_nrf52810 nrf52820dongle_nrf52820 nrf52833dk_nrf52820
+    integration_platforms:
+      - nrf52dmouse_nrf52832
+      - nrf52kbd_nrf52832
+      - nrf52810dmouse_nrf52810
+      - nrf52820dongle_nrf52820
+      - nrf52833dk_nrf52820
+    tags: bluetooth ci_build sysbuild
   applications.nrf_desktop.zdebug_wwcb:
     build_only: true
     platform_allow: nrf52840dk_nrf52840
