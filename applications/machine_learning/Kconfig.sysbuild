@@ -5,10 +5,16 @@
 #
 
 choice BOOTLOADER
-        default BOOTLOADER_MCUBOOT if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+        default BOOTLOADER_MCUBOOT if $(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns"
 endchoice
 
 config NRF_DEFAULT_BLUETOOTH
-        default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
+        default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns"
+
+config SECURE_BOOT
+        default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns"
+
+config NETCORE_APP_UPDATE
+        default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns"
 
 source "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
