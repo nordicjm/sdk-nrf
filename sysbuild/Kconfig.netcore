@@ -4,8 +4,7 @@
 
 config SUPPORT_NETCORE
 	bool
-	default y if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
-	default y if $(BOARD) = "thingy53_nrf5340_cpuapp"
+	default y if ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "nrf5340dk_nrf5340_cpuapp_ns" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns")
 
 if SUPPORT_NETCORE
 
@@ -25,8 +24,8 @@ config NRF_DEFAULT_802154
 
 choice NETCORE
 	prompt "Netcore image"
-	default NETCORE_HCI_RPMSG if NRF_DEFAULT_BLUETOOTH && ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp")
-	default NETCORE_802154_RPMSG if NRF_DEFAULT_802154 && ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp")
+	default NETCORE_HCI_RPMSG if NRF_DEFAULT_BLUETOOTH && ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "nrf5340dk_nrf5340_cpuapp_ns" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns")
+	default NETCORE_802154_RPMSG if NRF_DEFAULT_802154 && ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "nrf5340dk_nrf5340_cpuapp_ns" || $(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns")
 	default NETCORE_NONE
 	depends on SUPPORT_NETCORE
 
@@ -58,8 +57,8 @@ config NETCORE_HCI_RPMSG_NAME
 
 config NETCORE_HCI_RPMSG_BOARD
 	string
-	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
-	default "thingy53_nrf5340_cpunet" if $(BOARD) = "thingy53_nrf5340_cpuapp"
+	default "nrf5340dk_nrf5340_cpunet" if ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "nrf5340dk_nrf5340_cpuapp_ns")
+	default "thingy53_nrf5340_cpunet" if ($(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns")
 	depends on NETCORE_HCI_RPMSG
 	help
 	  Remote board when building this sample.
@@ -82,8 +81,8 @@ config NETCORE_802154_RPMSG_NAME
 
 config NETCORE_802154_RPMSG_BOARD
 	string
-	default "nrf5340dk_nrf5340_cpunet" if $(BOARD) = "nrf5340dk_nrf5340_cpuapp"
-	default "thingy53_nrf5340_cpunet" if $(BOARD) = "thingy53_nrf5340_cpuapp"
+	default "nrf5340dk_nrf5340_cpunet" if ($(BOARD) = "nrf5340dk_nrf5340_cpuapp" || $(BOARD) = "nrf5340dk_nrf5340_cpuapp_ns")
+	default "thingy53_nrf5340_cpunet" if ($(BOARD) = "thingy53_nrf5340_cpuapp" || $(BOARD) = "thingy53_nrf5340_cpuapp_ns")
 	depends on NETCORE_802154_RPMSG
 	help
 	  Remote board when building this sample.
