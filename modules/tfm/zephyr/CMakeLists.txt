@@ -46,11 +46,16 @@ endif()
 
 if (CONFIG_BOOTLOADER_MCUBOOT AND NOT CONFIG_PM_EXTERNAL_FLASH_MCUBOOT_SECONDARY)
   # Configure the secondary partition to be non-secure
-  set_property(TARGET zephyr_property_target
-    APPEND PROPERTY TFM_CMAKE_OPTIONS
-#	-DNRF_NS_SECONDARY=$<TARGET_PROPERTY:partition_manager,PM_mcuboot_secondary_IS_ENABLED>
-	-DNRF_NS_SECONDARY=y
-  )
+  if(SYSBUILD)
+    set_property(TARGET zephyr_property_target
+      APPEND PROPERTY TFM_CMAKE_OPTIONS -DNRF_NS_SECONDARY=y
+    )
+  else()
+    set_property(TARGET zephyr_property_target
+      APPEND PROPERTY TFM_CMAKE_OPTIONS
+      -DNRF_NS_SECONDARY=$<TARGET_PROPERTY:partition_manager,PM_mcuboot_secondary_IS_ENABLED>
+    )
+  endif()
 endif()
 
 if (CONFIG_TFM_HW_INIT_RESET_ON_BOOT)
@@ -239,5 +244,7 @@ set_property(TARGET zephyr_property_target
     -DPROJECT_CONFIG_HEADER_FILE=${CMAKE_CURRENT_BINARY_DIR}/tfm_config.h
 )
 
-# Use NCS TF-M signing script
-set_target_properties(zephyr_property_target PROPERTIES SIGNING_SCRIPT ${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/tfm_signing.cmake)
+if(SYSBUILD)
+  # Use NCS TF-M signing script
+  set_target_properties(zephyr_property_target PROPERTIES SIGNING_SCRIPT ${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/tfm_signing.cmake)
+endif()
