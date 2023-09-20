@@ -12,10 +12,10 @@ tests:
   applications.serial_lte_modem.sysbuild:
     build_only: true
     sysbuild: true
-    extra_args: EXTRA_CONF_FILE=overlay-native_tls.conf
-    platform_allow: nrf9160dk_nrf9160_ns
+    platform_allow: nrf9160dk_nrf9160_ns thingy91_nrf9160_ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
+      - thingy91_nrf9160_ns
     tags: ci_build sysbuild
   applications.serial_lte_modem.native_tls:
     build_only: true
@@ -30,9 +30,10 @@ tests:
     build_only: true
     sysbuild: true
     extra_args: EXTRA_CONF_FILE=overlay-native_tls.conf
-    platform_allow: nrf9160dk_nrf9160_ns
+    platform_allow: nrf9160dk_nrf9160_ns thingy91_nrf9160_ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
+      - thingy91_nrf9160_ns
     tags: ci_build sysbuild
   applications.serial_lte_modem.lwm2m_carrier:
     build_only: true
@@ -47,7 +48,8 @@ tests:
     build_only: true
     sysbuild: true
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
-    platform_allow: nrf9160dk_nrf9160_ns
+    platform_allow: nrf9160dk_nrf9160_ns thingy91_nrf9160_ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
+      - thingy91_nrf9160_ns
     tags: ci_build sysbuild
