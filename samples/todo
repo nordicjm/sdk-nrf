@@ -18,8 +18,6 @@
 ./bluetooth/peripheral_hids_mouse/child_image
 ./bluetooth/peripheral_hids_keyboard/child_image
 ./bluetooth/peripheral_fast_pair/child_image
-./bluetooth/nrf_dm/child_image
-./bluetooth/multiple_adv_sets/child_image
 
 ./bluetooth/direct_test_mode/child_image
 ./bluetooth/central_uart/child_image
