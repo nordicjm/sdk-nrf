@@ -9,11 +9,7 @@
 ./cellular/nrf_cloud_rest_fota/child_image
 ./cellular/nrf_cloud_multi_service/child_image
 ./cellular/https_client/child_image
-./cellular/ciphersuites/child_image
-./bluetooth/throughput/child_image
 ./bluetooth/peripheral_status/child_image
-./bluetooth/peripheral_power_profiling/child_image
-./bluetooth/peripheral_mds/child_image
 ./bluetooth/peripheral_hr_coded/child_image
 ./bluetooth/peripheral_hids_mouse/child_image
 
