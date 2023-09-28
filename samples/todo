@@ -16,8 +16,6 @@
 ./bluetooth/peripheral_mds/child_image
 ./bluetooth/peripheral_hr_coded/child_image
 ./bluetooth/peripheral_hids_mouse/child_image
-./bluetooth/peripheral_hids_keyboard/child_image
-./bluetooth/peripheral_fast_pair/child_image
 
 ./bluetooth/direct_test_mode/child_image
 ./bluetooth/central_uart/child_image
