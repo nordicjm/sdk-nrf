@@ -20,13 +20,6 @@
 ./bluetooth/peripheral_fast_pair/child_image
 ./bluetooth/nrf_dm/child_image
 ./bluetooth/multiple_adv_sets/child_image
-./bluetooth/mesh/silvair_enocean/child_image
-./bluetooth/mesh/sensor_server/child_image
-./bluetooth/mesh/light_switch/child_image
-./bluetooth/mesh/light_dimmer/child_image
-./bluetooth/mesh/light_ctrl/child_image
-./bluetooth/mesh/light/child_image
-./bluetooth/direction_finding_peripheral/child_image
 
 ./bluetooth/direct_test_mode/child_image
 ./bluetooth/central_uart/child_image
