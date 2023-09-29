@@ -4,8 +4,7 @@
   include(${ZEPHYR_BASE}/../nrf/cmake/fw_zip.cmake)
   include(${ZEPHYR_BASE}/../nrf/cmake/dfu_multi_image.cmake)
 
-#if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD)
-if(1)
+if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD)
 # IMAGE_IDS 0;1
 # IMAGE_PATHS /tmp/bb/nrf/applications/matter_weather_station/_BB/zephyr/app_update.bin;
 # /tmp/bb/nrf/applications/matter_weather_station/_BB/zephyr/net_core_app_update.bin
@@ -18,25 +17,28 @@ if(1)
 #KERNEL_BIN_NAME
 #message(FATAL_ERROR "${DEFAULT_IMAGE}")
 #message(FATAL_ERROR "${IMAGES}")
-    sysbuild_get(${DEFAULT_IMAGE}_image_dir IMAGE ${DEFAULT_IMAGE} VAR APPLICATION_BINARY_DIR CACHE)
-    sysbuild_get(${DEFAULT_IMAGE}_kernel_name IMAGE ${DEFAULT_IMAGE} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
 #    sysbuild_get(${slot}_kernel_elf IMAGE ${slot} VAR CONFIG_KERNEL_ELF_NAME KCONFIG)
 #
-#  if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP)
-if(1)
+  if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP)
+    sysbuild_get(${DEFAULT_IMAGE}_image_dir IMAGE ${DEFAULT_IMAGE} VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(${DEFAULT_IMAGE}_kernel_name IMAGE ${DEFAULT_IMAGE} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
     list(APPEND dfu_multi_image_ids 0)
 #    list(APPEND dfu_multi_image_paths "${PROJECT_BINARY_DIR}/${app_core_binary_name}")
-    list(APPEND dfu_multi_image_paths "${${DEFAULT_IMAGE}_image_dir}/zephyr/${${DEFAULT_IMAGE}_kernel_name}.hex")
+    list(APPEND dfu_multi_image_paths "${${DEFAULT_IMAGE}_image_dir}/zephyr/${${DEFAULT_IMAGE}_kernel_name}.signed.bin")
     list(APPEND dfu_multi_image_targets ${DEFAULT_IMAGE}_extra_byproducts)
   endif()
 
-  if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET)
+  if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET)
+    sysbuild_get(${DOMAIN_APP_CPUNET}_image_dir IMAGE ${DOMAIN_APP_CPUNET} VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(${DOMAIN_APP_CPUNET}_kernel_name IMAGE ${DOMAIN_APP_CPUNET} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
     list(APPEND dfu_multi_image_ids 1)
-    list(APPEND dfu_multi_image_paths "${PROJECT_BINARY_DIR}/${net_core_binary_name}")
-    list(APPEND dfu_multi_image_targets net_core_app_sign_target)
+    list(APPEND dfu_multi_image_paths "${${DOMAIN_APP_CPUNET}_image_dir}/zephyr/${${DOMAIN_APP_CPUNET}_kernel_name}.signed.bin")
+    list(APPEND dfu_multi_image_targets ${DOMAIN_APP_CPUNET}_extra_byproducts)
   endif()
 
-  if (CONFIG_DFU_MULTI_IMAGE_PACKAGE_MCUBOOT)
+  if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_MCUBOOT)
     list(APPEND dfu_multi_image_ids -2 -1)
     list(APPEND dfu_multi_image_paths "${s0_bin_path}" "${s1_bin_path}")
     list(APPEND dfu_multi_image_targets signed_s0_target signed_s1_target)

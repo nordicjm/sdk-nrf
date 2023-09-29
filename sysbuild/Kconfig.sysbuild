@@ -32,3 +32,4 @@ endif
 
 rsource "Kconfig.netcore"
 rsource "Kconfig.secureboot"
+rsource "Kconfig.dfu"
