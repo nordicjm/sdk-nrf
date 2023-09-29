@@ -14,5 +14,3 @@
 ./matter/lock/child_image
 ./matter/light_switch/child_image
 ./matter/light_bulb/child_image
-./wifi/sr_coex/child_image
-./wifi/provisioning/child_image
