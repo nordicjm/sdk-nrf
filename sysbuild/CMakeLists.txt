@@ -8,6 +8,10 @@ function(include_provision_hex)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/provision_hex.cmake)
 endfunction()
 
+function(include_packaging)
+  include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
 
@@ -23,6 +27,115 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
                       "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}"
     )
+
+    if(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "nrf9160dk_nrf9160_ns")
+      # MCUboot must run in secure mode on the nRF9160
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(mcuboot PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
+      else()
+        set_target_properties(mcuboot PROPERTIES BOARD nrf9160dk_nrf9160)
+      endif()
+    elseif(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "thingy91_nrf9160_ns")
+      # MCUboot must run in secure mode on the nRF9160
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(mcuboot PROPERTIES BOARD thingy91_nrf9160@${BOARD_REVISION})
+      else()
+        set_target_properties(mcuboot PROPERTIES BOARD thingy91_nrf9160)
+      endif()
+    elseif(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "nrf5340_nrf5340_cpuapp_ns")
+      # MCUboot must run in secure mode on the nRF5340
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(mcuboot PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp@${BOARD_REVISION})
+      else()
+        set_target_properties(mcuboot PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp)
+      endif()
+    elseif(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "thingy53_nrf5340_cpuapp_ns")
+      # MCUboot must run in secure mode on the nRF5340
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(mcuboot PROPERTIES BOARD thingy53_nrf5340_cpuapp@${BOARD_REVISION})
+      else()
+        set_target_properties(mcuboot PROPERTIES BOARD thingy53_nrf5340_cpuapp)
+      endif()
+    endif()
+  endif()
+
+  if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
+    if(NOT DEFINED b0_BOARD AND "${BOARD}" STREQUAL "nrf9160dk_nrf9160_ns")
+      # b0 must run in secure mode on the nRF9160
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(b0 PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
+      else()
+        set_target_properties(b0 PROPERTIES BOARD nrf9160dk_nrf9160)
+      endif()
+
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        if(DEFINED BOARD_REVISION)
+          set_target_properties(s1_image PROPERTIES BOARD nrf9160dk_nrf9160@${BOARD_REVISION})
+        else()
+          set_target_properties(s1_image PROPERTIES BOARD nrf9160dk_nrf9160)
+        endif()
+      endif()
+    elseif(NOT DEFINED b0_BOARD AND "${BOARD}" STREQUAL "thingy91_nrf9160_ns")
+      # b0 must run in secure mode on the nRF9160
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(b0 PROPERTIES BOARD thingy91_nrf9160@${BOARD_REVISION})
+      else()
+        set_target_properties(b0 PROPERTIES BOARD thingy91_nrf9160)
+      endif()
+
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        if(DEFINED BOARD_REVISION)
+          set_target_properties(s1_image PROPERTIES BOARD thingy91_nrf9160@${BOARD_REVISION})
+        else()
+          set_target_properties(s1_image PROPERTIES BOARD thingy91_nrf9160)
+        endif()
+      endif()
+    elseif(NOT DEFINED b0_BOARD AND "${BOARD}" STREQUAL "nrf5340dk_nrf5340_cpuapp_ns")
+      # b0 must run in secure mode on the nRF5340
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(b0 PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp@${BOARD_REVISION})
+      else()
+        set_target_properties(b0 PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp)
+      endif()
+
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        if(DEFINED BOARD_REVISION)
+          set_target_properties(s1_image PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp@${BOARD_REVISION})
+        else()
+          set_target_properties(s1_image PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp)
+        endif()
+      endif()
+    elseif(NOT DEFINED b0_BOARD AND "${BOARD}" STREQUAL "thingy53_nrf5340_cpuapp_ns")
+      # b0 must run in secure mode on the nRF5340
+      if(DEFINED BOARD_REVISION)
+        set_target_properties(b0 PROPERTIES BOARD thingy53_nrf5340_cpuapp@${BOARD_REVISION})
+      else()
+        set_target_properties(b0 PROPERTIES BOARD thingy53_nrf5340_cpuapp)
+      endif()
+
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        if(DEFINED BOARD_REVISION)
+          set_target_properties(s1_image PROPERTIES BOARD thingy53_nrf5340_cpuapp@${BOARD_REVISION})
+        else()
+          set_target_properties(s1_image PROPERTIES BOARD thingy53_nrf5340_cpuapp)
+        endif()
+      endif()
+    endif()
+  elseif(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
+    if(SB_CONFIG_NETCORE_APP_UPDATE)
+#What if a user wants 3?
+      set_config_bool(mcuboot CONFIG_PCD_APP y)
+      set_property(TARGET mcuboot APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=2\n")
+
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/subsys/partition_manager/ext_flash_mcuboot_secondary.conf
+        )
+      add_overlay_dts(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
+        )
+    endif()
   endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 
@@ -42,6 +155,9 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     include_provision_hex()
   endif()
 
+#temp
+include_packaging()
+
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
@@ -57,6 +173,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/extensions.cmake)
 if(SB_CONFIG_SECURE_BOOT)
   set(secure_boot_image_dir ${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/image)
   if(SB_CONFIG_SECURE_BOOT_NETCORE)
+if(SB_CONFIG_NETCORE_HCI_RPMSG)
     add_overlay_config(
       ${SB_CONFIG_NETCORE_HCI_RPMSG_NAME} # ToDo: Create a common Kconfig setting
                                           # which can then default to the exact
@@ -64,10 +181,26 @@ if(SB_CONFIG_SECURE_BOOT)
                                           # hci, mpsl, thread, etc.
       "${secure_boot_image_dir}/secure_boot.conf"
     )
-
+elseif(SB_CONFIG_NETCORE_802154_RPMSG)
+    add_overlay_config(
+      ${SB_CONFIG_NETCORE_802154_RPMSG_NAME} # ToDo: Create a common Kconfig setting
+                                          # which can then default to the exact
+                                          # remote image selected, as to work for
+                                          # hci, mpsl, thread, etc.
+      "${secure_boot_image_dir}/secure_boot.conf"
+    )
+elseif(SB_CONFIG_NETCORE_EMPTY)
+    add_overlay_config(
+      ${SB_CONFIG_NETCORE_EMPTY_NAME} # ToDo: Create a common Kconfig setting
+                                          # which can then default to the exact
+                                          # remote image selected, as to work for
+                                          # hci, mpsl, thread, etc.
+      "${secure_boot_image_dir}/secure_boot.conf"
+    )
+endif()
     add_overlay_config(mcuboot "${ZEPHYR_NRF_MODULE_DIR}/subsys/pcd/pcd.conf")
   else()
-    if (SB_CONFIG_BOOTLOADER_MCUBOOT)
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
       add_overlay_config(mcuboot ${secure_boot_image_dir}/multi_image_mcuboot.conf)
 
       # Include a kconfig file which enables CONFIG_FW_INFO in the image
