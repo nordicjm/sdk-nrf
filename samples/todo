@@ -1,9 +1,6 @@
-./zigbee/ncp/child_image
-./zigbee/light_switch/child_image
 ./tfm/tfm_psa_template/child_image
 ./peripheral/radio_test/child_image
 ./peripheral/802154_phy_test/child_image
-./net/aws_iot/child_image
 ./bluetooth/peripheral_status/child_image
 ./bluetooth/peripheral_hr_coded/child_image
 ./bluetooth/peripheral_hids_mouse/child_image
