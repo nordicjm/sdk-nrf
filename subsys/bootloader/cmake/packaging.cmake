@@ -19,25 +19,22 @@ if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD)
 #message(FATAL_ERROR "${IMAGES}")
 #    sysbuild_get(${slot}_kernel_elf IMAGE ${slot} VAR CONFIG_KERNEL_ELF_NAME KCONFIG)
 #
-  if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP)
+  if(SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP)
     sysbuild_get(${DEFAULT_IMAGE}_image_dir IMAGE ${DEFAULT_IMAGE} VAR APPLICATION_BINARY_DIR CACHE)
     sysbuild_get(${DEFAULT_IMAGE}_kernel_name IMAGE ${DEFAULT_IMAGE} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
 
     list(APPEND dfu_multi_image_ids 0)
-#    list(APPEND dfu_multi_image_paths "${PROJECT_BINARY_DIR}/${app_core_binary_name}")
     list(APPEND dfu_multi_image_paths "${${DEFAULT_IMAGE}_image_dir}/zephyr/${${DEFAULT_IMAGE}_kernel_name}.signed.bin")
     list(APPEND dfu_multi_image_targets ${DEFAULT_IMAGE}_extra_byproducts)
   endif()
 
-  if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET)
-    sysbuild_get(${DOMAIN_APP_CPUNET}_image_dir IMAGE ${DOMAIN_APP_CPUNET} VAR APPLICATION_BINARY_DIR CACHE)
-    sysbuild_get(${DOMAIN_APP_CPUNET}_kernel_name IMAGE ${DOMAIN_APP_CPUNET} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
-
+  if(SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET)
     list(APPEND dfu_multi_image_ids 1)
-    list(APPEND dfu_multi_image_paths "${${DOMAIN_APP_CPUNET}_image_dir}/zephyr/${${DOMAIN_APP_CPUNET}_kernel_name}.signed.bin")
-    list(APPEND dfu_multi_image_targets ${DOMAIN_APP_CPUNET}_extra_byproducts)
+    list(APPEND dfu_multi_image_paths "${PROJECT_BINARY_DIR}/signed_by_b0_${DOMAIN_APP_CPUNET}.bin")
+    list(APPEND dfu_multi_image_targets ${DOMAIN_APP_CPUNET}_extra_byproducts ${DOMAIN_APP_CPUNET}_signed_kernel_hex_target)
   endif()
 
+#TODO:
   if (SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_MCUBOOT)
     list(APPEND dfu_multi_image_ids -2 -1)
     list(APPEND dfu_multi_image_paths "${s0_bin_path}" "${s1_bin_path}")
