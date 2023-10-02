@@ -9,6 +9,7 @@ function(include_provision_hex)
 endfunction()
 
 function(include_packaging)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/sign_thing2.cmake)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
 endfunction()
 
@@ -42,7 +43,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       else()
         set_target_properties(mcuboot PROPERTIES BOARD thingy91_nrf9160)
       endif()
-    elseif(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "nrf5340_nrf5340_cpuapp_ns")
+    elseif(NOT DEFINED mcuboot_BOARD AND "${BOARD}" STREQUAL "nrf5340dk_nrf5340_cpuapp_ns")
       # MCUboot must run in secure mode on the nRF5340
       if(DEFINED BOARD_REVISION)
         set_target_properties(mcuboot PROPERTIES BOARD nrf5340dk_nrf5340_cpuapp@${BOARD_REVISION})
