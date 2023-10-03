@@ -43,15 +43,17 @@ function(ncs_secure_boot_mcuboot_sign)
 message(WARNING "Dir: ${mcuboot_image_dir}")
 
   # Basic 'west sign' command and output format independent arguments.
-  set(west_sign ${WEST} sign --force
-    --tool imgtool
-    --tool-path "${imgtool_path}"
-    --build-dir "${mcuboot_image_dir}")
+#  set(west_sign ${WEST} sign --force
+#    --tool imgtool
+#    --tool-path "${imgtool_path}"
+#    --build-dir "${mcuboot_image_dir}")
+  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size 0x70000 --pad-header --header-size 0x200)
 
-set(imgtool_args -- --pad-header --version 1.2.3 --header-size 0x200)
+
+#set(imgtool_args -- --pad-header --version 1.2.3 --header-size 0x200)
 
   if(NOT "${keyfile}" STREQUAL "")
-    set(imgtool_extra --key "${keyfile}" ${imgtool_extra})
+    set(imgtool_extra -k "${keyfile}" ${imgtool_extra})
   endif()
 
   # Extensionless prefix of any output file.
@@ -68,7 +70,7 @@ set(imgtool_args -- --pad-header --version 1.2.3 --header-size 0x200)
   # Set up .bin outputs.
 #  if(CONFIG_BUILD_OUTPUT_BIN)
 if(1)
-    list(APPEND unconfirmed_args --bin --sbin ${output}.signed.bin)
+    list(APPEND unconfirmed_args ${mcuboot_image_dir}/zephyr/zephyr.bin ${output}.signed.bin)
     list(APPEND byproducts ${output}.signed.bin)
 #    zephyr_runner_file(bin ${output}.signed.bin)
 #    set(BYPRODUCT_KERNEL_SIGNED_BIN_NAME "${output}.signed.bin"
@@ -103,7 +105,7 @@ mcuboot_extra_byproducts
 #  if(CONFIG_BUILD_OUTPUT_HEX)
 if(1)
     set(unconfirmed_args)
-    list(APPEND unconfirmed_args --hex --shex ${output}.signed.hex)
+    list(APPEND unconfirmed_args ${mcuboot_image_dir}/zephyr/zephyr.hex ${output}.signed.hex)
     list(APPEND byproducts ${output}.signed.hex)
 #    zephyr_runner_file(hex ${output}.signed.hex)
 
