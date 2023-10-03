@@ -32,9 +32,9 @@ if(SB_CONFIG_SECURE_BOOT)
   )
 
   if(SB_CONFIG_SECURE_BOOT_DOMAIN_APP)
-  set_property(GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN}
-               "${SB_CONFIG_SECURE_BOOT_IMAGE_NAME}"
-  )
+    set_property(GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN}
+                 "${SB_CONFIG_SECURE_BOOT_IMAGE_NAME}"
+    )
   endif()
 
   if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
@@ -55,7 +55,7 @@ if(SB_CONFIG_SECURE_BOOT)
     else()
       set(s1_source_image ${DEFAULT_IMAGE})
       set(s1_source_dir ${APP_DIR})
-  endif()
+    endif()
 
   get_cmake_property(sysbuild_cache CACHE_VARIABLES)
   foreach(var_name ${sysbuild_cache})
@@ -69,9 +69,13 @@ if(SB_CONFIG_SECURE_BOOT)
 ExternalZephyrProject_Add(
   APPLICATION ${image}
   SOURCE_DIR ${s1_source_dir}
-#  APP_TYPE MAIN
+  BUILD_ONLY true
 )
-  list(APPEND IMAGES "${image}")
+
+  set_property(GLOBAL APPEND PROPERTY
+      PM_${SB_CONFIG_SECURE_BOOT_DOMAIN}_IMAGES
+      "s1_image"
+  )
 endif()
 
 
