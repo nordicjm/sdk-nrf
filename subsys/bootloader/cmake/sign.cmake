@@ -71,9 +71,13 @@ if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL
   set(slots ${domain_app})
 endif()
 
-if (CONFIG_BUILD_S1_VARIANT)
+if(CONFIG_BUILD_S1_VARIANT OR SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
   list(APPEND slots s1_image)
-endif ()
+endif()
+
+if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL "APP" AND SB_CONFIG_BOOTLOADER_MCUBOOT)
+  list(APPEND slots mcuboot)
+endif()
 
 if (NOT "${CONFIG_SB_VALIDATION_INFO_CRYPTO_ID}" EQUAL "1")
   message(FATAL_ERROR
@@ -97,11 +101,27 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
 
     set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
     set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
+    set(target_name ${slot})
+  elseif("${slot}" STREQUAL "s0_image")
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      set(target_name mcuboot)
+    else()
+      set(target_name ${DEFAULT_IMAGE})
+    endif()
+
+    sysbuild_get(${target_name}_image_dir IMAGE ${target_name} VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(${target_name}_kernel_name IMAGE ${target_name} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+
+    set(slot_hex ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.hex)
+    set(sign_depends ${target_name} ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.hex)
   else()
     set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
     set(sign_depends ${slot}_hex)
+    set(target_name ${slot})
   endif()
 else()
+  set(target_name ${slot})
+
   if ("${slot}" STREQUAL "s1_image")
     # The s1_image slot is built as a child image, add the dependency and
     # path to its hex file accordingly. We cannot use the shared variables
@@ -182,6 +202,15 @@ endif()
     ${signature_file}
     )
 
+  cmake_path(GET signed_hex FILENAME signed_hex_filename)
+
+  if(NCS_SYSBUILD_PARTITION_MANAGER)
+    cmake_path(GET to_sign FILENAME to_sign_filename)
+    set(validation_comment "Creating validation for ${to_sign_filename}, storing to ${signed_hex_filename}")
+  else()
+    set(validation_comment "Creating validation for ${KERNEL_HEX_NAME}, storing to ${signed_hex_filename}")
+  endif()
+
   add_custom_command(
     OUTPUT
     ${signed_hex}
@@ -229,7 +258,6 @@ endif()
     ${slot}_PM_TARGET
     ${slot}_signed_kernel_hex_target
     )
-
 endforeach()
 
 
