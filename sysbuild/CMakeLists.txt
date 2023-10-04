@@ -140,6 +140,14 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         endif()
       endif()
     endif()
+
+if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/sysbuild/mcuboot_enable_secure_bootloader.overlay
+        )
+endif()
+
   elseif(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
     if(SB_CONFIG_NETCORE_APP_UPDATE)
 #What if a user wants 3?
