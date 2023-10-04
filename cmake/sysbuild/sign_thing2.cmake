@@ -70,8 +70,8 @@ message(WARNING "Dir: ${application_image_dir}")
   # Set up .bin outputs.
 #  if(CONFIG_BUILD_OUTPUT_BIN)
 if(1)
-    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.bin ${output}.signed.bin)
-    list(APPEND byproducts ${output}.signed.bin)
+    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.bin ${output}.bin)
+    list(APPEND byproducts ${output}.bin)
 #    zephyr_runner_file(bin ${output}.signed.bin)
 #    set(BYPRODUCT_KERNEL_SIGNED_BIN_NAME "${output}.signed.bin"
 #        CACHE FILEPATH "Signed kernel bin file" FORCE
@@ -87,7 +87,7 @@ if(1)
 
       add_custom_command(
         OUTPUT
-        ${output}.signed.bin # Signed hex with IMAGE_MAGIC located at secondary slot
+        ${output}.bin # Signed hex with IMAGE_MAGIC located at secondary slot
 
         COMMAND
         # Create version of test update which is located at the secondary slot.
@@ -105,13 +105,13 @@ ${application}_extra_byproducts
 #  if(CONFIG_BUILD_OUTPUT_HEX)
 if(1)
     set(unconfirmed_args)
-    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.hex ${output}.signed.hex)
-    list(APPEND byproducts ${output}.signed.hex)
+    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.hex ${output}.hex)
+    list(APPEND byproducts ${output}.hex)
 #    zephyr_runner_file(hex ${output}.signed.hex)
 
       add_custom_command(
         OUTPUT
-        ${output}.signed.hex # Signed hex with IMAGE_MAGIC located at secondary slot
+        ${output}.hex # Signed hex with IMAGE_MAGIC located at secondary slot
 
         COMMAND
         # Create version of test update which is located at the secondary slot.
@@ -145,10 +145,10 @@ ${application}_extra_byproducts
   # calls to the "extra_post_build_commands" property ensures they run
   # after the commands which generate the unsigned versions.
 
-add_custom_target(magic
+add_custom_target(magic_${application}
       DEPENDS
-${output}.signed.hex
-${output}.signed.bin
+${output}.hex
+${output}.bin
       )
 
 #  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
@@ -165,9 +165,9 @@ ${output}.signed.bin
 endfunction()
 
 if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
-#mcuboot
   ncs_secure_boot_mcuboot_sign("mcuboot")
 
-#s1_image
-#  ncs_secure_boot_mcuboot_sign("s1_image")
+  if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
+    ncs_secure_boot_mcuboot_sign("s1_image")
+  endif()
 endif()
