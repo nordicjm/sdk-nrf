@@ -233,7 +233,7 @@ endif()
     WORKING_DIRECTORY
     ${PROJECT_BINARY_DIR}
     COMMENT
-    "Creating validation for ${KERNEL_HEX_NAME}, storing to ${SIGNED_KERNEL_HEX_NAME}"
+    "${validation_comment}"
     USES_TERMINAL
     )
 
@@ -249,13 +249,13 @@ endif()
   # This includes the hex file (and its corresponding target) to the build.
   set_property(
     GLOBAL PROPERTY
-    ${slot}_PM_HEX_FILE
+    ${target_name}_PM_HEX_FILE
     ${signed_hex}
     )
 
   set_property(
     GLOBAL PROPERTY
-    ${slot}_PM_TARGET
+    ${target_name}_PM_TARGET
     ${slot}_signed_kernel_hex_target
     )
 endforeach()
