@@ -57,28 +57,26 @@ if(SB_CONFIG_SECURE_BOOT)
       set(s1_source_dir ${APP_DIR})
     endif()
 
-  get_cmake_property(sysbuild_cache CACHE_VARIABLES)
-  foreach(var_name ${sysbuild_cache})
-    if("${var_name}" MATCHES "^(${s1_source_image}_.*)$")
-      string(LENGTH "${s1_source_image}" tmplen)
-      string(SUBSTRING "${var_name}" ${tmplen} -1 tmp)
-      set(${image}${tmp} "${${var_name}}" CACHE UNINITIALIZED "" FORCE)
-    endif()
-  endforeach()
+    get_cmake_property(sysbuild_cache CACHE_VARIABLES)
+    foreach(var_name ${sysbuild_cache})
+      if("${var_name}" MATCHES "^(${s1_source_image}_.*)$")
+        string(LENGTH "${s1_source_image}" tmplen)
+        string(SUBSTRING "${var_name}" ${tmplen} -1 tmp)
+        set(${image}${tmp} "${${var_name}}" CACHE UNINITIALIZED "" FORCE)
+      endif()
+    endforeach()
 
-ExternalZephyrProject_Add(
-  APPLICATION ${image}
-  SOURCE_DIR ${s1_source_dir}
-  BUILD_ONLY true
-)
+    ExternalZephyrProject_Add(
+      APPLICATION ${image}
+      SOURCE_DIR ${s1_source_dir}
+      BUILD_ONLY true
+    )
 
-  set_property(GLOBAL APPEND PROPERTY
-      PM_${SB_CONFIG_SECURE_BOOT_DOMAIN}_IMAGES
-      "s1_image"
-  )
-endif()
-
-
+    set_property(GLOBAL APPEND PROPERTY
+        PM_${SB_CONFIG_SECURE_BOOT_DOMAIN}_IMAGES
+        "s1_image"
+    )
+  endif()
 endif()
 
 set_property(GLOBAL PROPERTY PM_DOMAINS ${PM_DOMAINS})
