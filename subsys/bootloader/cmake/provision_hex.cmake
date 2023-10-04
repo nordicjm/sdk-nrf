@@ -11,10 +11,17 @@ set_ifndef(partition_manager_target partition_manager)
 
 if(NCS_SYSBUILD_PARTITION_MANAGER)
   # Get the main app of the domain that secure boot should handle.
+
+  if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
+  ExternalProject_Get_Property(mcuboot BINARY_DIR)
+  import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+  sysbuild_get(APPLICATION_CONFIG_DIR IMAGE mcuboot VAR APPLICATION_CONFIG_DIR CACHE)
+else()
   get_property(main_app GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN})
   ExternalProject_Get_Property(${main_app} BINARY_DIR)
   import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
   sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${main_app} VAR APPLICATION_CONFIG_DIR CACHE)
+endif()
 endif()
 
 if (CONFIG_NCS_IS_VARIANT_IMAGE)
