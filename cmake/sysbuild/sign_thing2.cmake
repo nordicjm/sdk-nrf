@@ -13,7 +13,7 @@
 #key file from SB
 #encryyption file from SB
 
-function(ncs_secure_boot_mcuboot_sign)
+function(ncs_secure_boot_mcuboot_sign application)
   set(keyfile "${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}")
 #  set(keyfile_enc "${CONFIG_}")
 
@@ -38,16 +38,16 @@ function(ncs_secure_boot_mcuboot_sign)
     return()
   endif()
 
-    sysbuild_get(mcuboot_image_dir IMAGE mcuboot VAR APPLICATION_BINARY_DIR CACHE)
+    sysbuild_get(application_image_dir IMAGE ${application} VAR APPLICATION_BINARY_DIR CACHE)
 
-message(WARNING "Dir: ${mcuboot_image_dir}")
+message(WARNING "Dir: ${application_image_dir}")
 
   # Basic 'west sign' command and output format independent arguments.
 #  set(west_sign ${WEST} sign --force
 #    --tool imgtool
 #    --tool-path "${imgtool_path}"
 #    --build-dir "${mcuboot_image_dir}")
-  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size 0x70000 --pad-header --header-size 0x200)
+  set(west_sign ${imgtool_path} sign --version 0.0.0+0 --align 4 --slot-size 0x70000 --pad-header --header-size 0x200)
 
 
 #set(imgtool_args -- --pad-header --version 1.2.3 --header-size 0x200)
@@ -58,7 +58,7 @@ message(WARNING "Dir: ${mcuboot_image_dir}")
 
   # Extensionless prefix of any output file.
 #  set(output ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME})
-  set(output ${PROJECT_BINARY_DIR}/signed_by_mcuboot_and_b0_)
+  set(output ${PROJECT_BINARY_DIR}/signed_by_mcuboot_and_b0_${application})
 
   # List of additional build byproducts.
   set(byproducts)
@@ -70,7 +70,7 @@ message(WARNING "Dir: ${mcuboot_image_dir}")
   # Set up .bin outputs.
 #  if(CONFIG_BUILD_OUTPUT_BIN)
 if(1)
-    list(APPEND unconfirmed_args ${mcuboot_image_dir}/zephyr/zephyr.bin ${output}.signed.bin)
+    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.bin ${output}.signed.bin)
     list(APPEND byproducts ${output}.signed.bin)
 #    zephyr_runner_file(bin ${output}.signed.bin)
 #    set(BYPRODUCT_KERNEL_SIGNED_BIN_NAME "${output}.signed.bin"
@@ -97,7 +97,7 @@ if(1)
     ${west_sign} ${unconfirmed_args} ${imgtool_args}
 
         DEPENDS
-mcuboot_extra_byproducts
+${application}_extra_byproducts
         )
   endif()
 
@@ -105,7 +105,7 @@ mcuboot_extra_byproducts
 #  if(CONFIG_BUILD_OUTPUT_HEX)
 if(1)
     set(unconfirmed_args)
-    list(APPEND unconfirmed_args ${mcuboot_image_dir}/zephyr/zephyr.hex ${output}.signed.hex)
+    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.hex ${output}.signed.hex)
     list(APPEND byproducts ${output}.signed.hex)
 #    zephyr_runner_file(hex ${output}.signed.hex)
 
@@ -121,7 +121,7 @@ if(1)
     ${west_sign} ${unconfirmed_args} ${imgtool_args}
 
         DEPENDS
-mcuboot_extra_byproducts
+${application}_extra_byproducts
         )
 
 #    set(BYPRODUCT_KERNEL_SIGNED_HEX_NAME "${output}.signed.hex"
@@ -165,5 +165,9 @@ ${output}.signed.bin
 endfunction()
 
 if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
-  ncs_secure_boot_mcuboot_sign()
+#mcuboot
+  ncs_secure_boot_mcuboot_sign("mcuboot")
+
+#s1_image
+#  ncs_secure_boot_mcuboot_sign("s1_image")
 endif()
