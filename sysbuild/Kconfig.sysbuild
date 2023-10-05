@@ -23,12 +23,11 @@ config PM_MCUBOOT_PAD
 if BOOTLOADER_MCUBOOT
 
 choice BOOT_SIGNATURE_TYPE
-        default BOOT_SIGNATURE_TYPE_ECDSA_P256
+	default BOOT_SIGNATURE_TYPE_ECDSA_P256
 
 endchoice
 
 endif
-
 
 rsource "Kconfig.netcore"
 rsource "Kconfig.secureboot"
