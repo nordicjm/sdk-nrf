@@ -38,26 +38,17 @@ function(ncs_secure_boot_mcuboot_sign application)
     return()
   endif()
 
-    sysbuild_get(application_image_dir IMAGE ${application} VAR APPLICATION_BINARY_DIR CACHE)
+  sysbuild_get(application_image_dir IMAGE ${application} VAR APPLICATION_BINARY_DIR CACHE)
 
-#message(WARNING "Dir: ${application_image_dir}")
-
-  # Basic 'west sign' command and output format independent arguments.
-#  set(west_sign ${WEST} sign --force
-#    --tool imgtool
-#    --tool-path "${imgtool_path}"
-#    --build-dir "${mcuboot_image_dir}")
-  set(west_sign ${imgtool_path} sign --version 0.0.0+0 --align 4 --slot-size 0x70000 --pad-header --header-size 0x200)
-
-
-#set(imgtool_args -- --pad-header --version 1.2.3 --header-size 0x200)
+#TODO: get parameters another way - from main app?
+  string(TOUPPER "${application}" application_uppercase)
+  set(imgtool_sign ${imgtool_path} sign --version 0.0.0+0 --align 4 --slot-size $<TARGET_PROPERTY:partition_manager,PM_${application_uppercase}_SIZE> --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
 
   if(NOT "${keyfile}" STREQUAL "")
     set(imgtool_extra -k "${keyfile}" ${imgtool_extra})
   endif()
 
   # Extensionless prefix of any output file.
-#  set(output ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME})
   set(output ${PROJECT_BINARY_DIR}/signed_by_mcuboot_and_b0_${application})
 
   # List of additional build byproducts.
@@ -90,7 +81,7 @@ if(1)
         # Hence, if a programmer is given this hex file, it will flash it
         # to the secondary slot, and upon reboot mcuboot will swap in the
         # contents of the hex file.
-        ${west_sign} ${unconfirmed_args} ${imgtool_args}
+        ${imgtool_sign} ${unconfirmed_args} ${imgtool_args}
 
         DEPENDS
         ${application}_extra_byproducts
@@ -116,7 +107,7 @@ if(1)
         # Hence, if a programmer is given this hex file, it will flash it
         # to the secondary slot, and upon reboot mcuboot will swap in the
         # contents of the hex file.
-        ${west_sign} ${unconfirmed_args} ${imgtool_args}
+        ${imgtool_sign} ${unconfirmed_args} ${imgtool_args}
 
         DEPENDS
         ${application}_extra_byproducts
@@ -124,10 +115,6 @@ if(1)
         ${application_image_dir}/zephyr/.config
         ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex
         )
-
-#    set(BYPRODUCT_KERNEL_SIGNED_HEX_NAME "${output}.signed.hex"
-#        CACHE FILEPATH "Signed kernel hex file" FORCE
-#    )
 
 #    if(NOT "${keyfile_enc}" STREQUAL "")
 #      list(APPEND encrypted_args --hex --shex ${output}.signed.encrypted.hex)
@@ -152,17 +139,10 @@ if(1)
       ${output}.bin
       )
 
-#  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-#    ${west_sign} ${unconfirmed_args} ${imgtool_args})
-#  if(confirmed_args)
-#    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-#      ${west_sign} ${confirmed_args} ${imgtool_args} --pad --confirm)
-#  endif()
 #  if(encrypted_args)
 #    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-#      ${west_sign} ${encrypted_args} ${imgtool_args} --encrypt "${keyfile_enc}")
+#      ${imgtool_sign} ${encrypted_args} ${imgtool_args} --encrypt "${keyfile_enc}")
 #  endif()
-#  set_property(GLOBAL APPEND PROPERTY extra_post_build_byproducts ${byproducts})
 endfunction()
 
 if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
