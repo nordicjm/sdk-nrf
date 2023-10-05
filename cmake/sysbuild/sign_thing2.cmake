@@ -40,7 +40,7 @@ function(ncs_secure_boot_mcuboot_sign application)
 
     sysbuild_get(application_image_dir IMAGE ${application} VAR APPLICATION_BINARY_DIR CACHE)
 
-message(WARNING "Dir: ${application_image_dir}")
+#message(WARNING "Dir: ${application_image_dir}")
 
   # Basic 'west sign' command and output format independent arguments.
 #  set(west_sign ${WEST} sign --force
@@ -70,12 +70,8 @@ message(WARNING "Dir: ${application_image_dir}")
   # Set up .bin outputs.
 #  if(CONFIG_BUILD_OUTPUT_BIN)
 if(1)
-    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.bin ${output}.bin)
+    list(APPEND unconfirmed_args ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.bin ${output}.bin)
     list(APPEND byproducts ${output}.bin)
-#    zephyr_runner_file(bin ${output}.signed.bin)
-#    set(BYPRODUCT_KERNEL_SIGNED_BIN_NAME "${output}.signed.bin"
-#        CACHE FILEPATH "Signed kernel bin file" FORCE
-#    )
 
 #    if(NOT "${keyfile_enc}" STREQUAL "")
 #      list(APPEND encrypted_args --bin --sbin ${output}.signed.encrypted.bin)
@@ -94,10 +90,13 @@ if(1)
         # Hence, if a programmer is given this hex file, it will flash it
         # to the secondary slot, and upon reboot mcuboot will swap in the
         # contents of the hex file.
-    ${west_sign} ${unconfirmed_args} ${imgtool_args}
+        ${west_sign} ${unconfirmed_args} ${imgtool_args}
 
         DEPENDS
-${application}_extra_byproducts
+        ${application}_extra_byproducts
+        ${application}_signed_kernel_hex_target
+        ${application_image_dir}/zephyr/.config
+        ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.bin
         )
   endif()
 
@@ -105,9 +104,8 @@ ${application}_extra_byproducts
 #  if(CONFIG_BUILD_OUTPUT_HEX)
 if(1)
     set(unconfirmed_args)
-    list(APPEND unconfirmed_args ${application_image_dir}/zephyr/zephyr.hex ${output}.hex)
+    list(APPEND unconfirmed_args ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex ${output}.hex)
     list(APPEND byproducts ${output}.hex)
-#    zephyr_runner_file(hex ${output}.signed.hex)
 
       add_custom_command(
         OUTPUT
@@ -118,10 +116,13 @@ if(1)
         # Hence, if a programmer is given this hex file, it will flash it
         # to the secondary slot, and upon reboot mcuboot will swap in the
         # contents of the hex file.
-    ${west_sign} ${unconfirmed_args} ${imgtool_args}
+        ${west_sign} ${unconfirmed_args} ${imgtool_args}
 
         DEPENDS
-${application}_extra_byproducts
+        ${application}_extra_byproducts
+        ${application}_signed_kernel_hex_target
+        ${application_image_dir}/zephyr/.config
+        ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex
         )
 
 #    set(BYPRODUCT_KERNEL_SIGNED_HEX_NAME "${output}.signed.hex"
@@ -145,10 +146,10 @@ ${application}_extra_byproducts
   # calls to the "extra_post_build_commands" property ensures they run
   # after the commands which generate the unsigned versions.
 
-add_custom_target(magic_${application}
-      DEPENDS
-${output}.hex
-${output}.bin
+  add_custom_target(${application}_signed_packaged_target
+      ALL DEPENDS
+      ${output}.hex
+      ${output}.bin
       )
 
 #  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
