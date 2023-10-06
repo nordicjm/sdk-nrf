@@ -39,6 +39,8 @@ function(ncs_secure_boot_mcuboot_sign application)
   endif()
 
   sysbuild_get(application_image_dir IMAGE ${application} VAR APPLICATION_BINARY_DIR CACHE)
+  sysbuild_get(CONFIG_BUILD_OUTPUT_BIN IMAGE ${application} VAR CONFIG_BUILD_OUTPUT_BIN KCONFIG)
+  sysbuild_get(CONFIG_BUILD_OUTPUT_HEX IMAGE ${application} VAR CONFIG_BUILD_OUTPUT_HEX KCONFIG)
 
 #TODO: get parameters another way - from main app?
   string(TOUPPER "${application}" application_uppercase)
@@ -59,8 +61,8 @@ function(ncs_secure_boot_mcuboot_sign application)
   set(encrypted_args)
 
   # Set up .bin outputs.
-#  if(CONFIG_BUILD_OUTPUT_BIN)
-if(1)
+  if(CONFIG_BUILD_OUTPUT_BIN)
+#if(1)
     list(APPEND unconfirmed_args ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.bin ${output}.bin)
     list(APPEND byproducts ${output}.bin)
 
@@ -92,9 +94,9 @@ if(1)
   endif()
 
   # Set up .hex outputs.
-#  if(CONFIG_BUILD_OUTPUT_HEX)
-if(1)
-    set(unconfirmed_args)
+  if(CONFIG_BUILD_OUTPUT_HEX)
+#if(1)
+#    set(unconfirmed_args)
     list(APPEND unconfirmed_args ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex ${output}.hex)
     list(APPEND byproducts ${output}.hex)
 
@@ -133,11 +135,12 @@ if(1)
   # calls to the "extra_post_build_commands" property ensures they run
   # after the commands which generate the unsigned versions.
 
-  add_custom_target(${application}_signed_packaged_target
-      ALL DEPENDS
-      ${output}.hex
-      ${output}.bin
-      )
+  if(byproducts)
+    add_custom_target(${application}_signed_packaged_target
+        ALL DEPENDS
+        ${byproducts}
+        )
+  endif()
 
 #  if(encrypted_args)
 #    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND

@@ -40,6 +40,16 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     else()
       set_config_bool(${image} CONFIG_PARTITION_MANAGER_ENABLED n)
     endif()
+
+    if(SB_CONFIG_BUILD_OUTPUT_BIN)
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_BIN y)
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_BIN n)
+    endif()
+
+    if(SB_CONFIG_BUILD_OUTPUT_HEX)
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX y)
+      set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX n)
+    endif()
   endforeach()
 
   if(SB_CONFIG_BOOTLOADER_MCUBOOT)

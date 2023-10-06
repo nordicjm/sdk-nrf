@@ -20,6 +20,20 @@ config PM_MCUBOOT_PAD
 	  different padding size, then this value must be updated to correspond
 	  to the value in the static partition file.
 
+config BUILD_OUTPUT_BIN
+	bool "Build a binary in BIN format"
+	default y
+	  Build a "raw" binary zephyr/zephyr.bin in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+	  This will be applied to all target images.
+
+config BUILD_OUTPUT_HEX
+	bool "Build a binary in HEX format"
+	default y
+	  Build an Intel HEX binary zephyr/zephyr.hex in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+	  This will be applied to all target images.
+
 if BOOTLOADER_MCUBOOT
 
 choice BOOT_SIGNATURE_TYPE
