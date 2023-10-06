@@ -43,11 +43,13 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 
     if(SB_CONFIG_BUILD_OUTPUT_BIN)
       set_config_bool(${image} CONFIG_BUILD_OUTPUT_BIN y)
+    else()
       set_config_bool(${image} CONFIG_BUILD_OUTPUT_BIN n)
     endif()
 
     if(SB_CONFIG_BUILD_OUTPUT_HEX)
       set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX y)
+    else()
       set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX n)
     endif()
   endforeach()
