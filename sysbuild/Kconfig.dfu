@@ -6,24 +6,25 @@ config DFU_MULTI_IMAGE_PACKAGE_BUILD
 	bool "Created multi-image DFU"
 	depends on BOOTLOADER_MCUBOOT
 	help
-	  I don't actually know what this does or what the point of this file is, maybe I should look that up one day.
+	  Build DFU Multi Image package that contains a manifest file followed by
+	  selected update images.
 
 if DFU_MULTI_IMAGE_PACKAGE_BUILD
 
 config DFU_MULTI_IMAGE_PACKAGE_APP
-	bool "App"
+	bool "Application update"
 
 if SECURE_BOOT
 
 config DFU_MULTI_IMAGE_PACKAGE_NET
-	bool "Network"
+	bool "Network core update"
 	depends on SUPPORT_NETCORE
 	depends on !NETCORE_NONE
 	depends on !NETCORE_EMPTY
 	depends on SECURE_BOOT_NETCORE
 
 config DFU_MULTI_IMAGE_PACKAGE_MCUBOOT
-	bool "MCUboot"
+	bool "MCUboot update"
 	depends on !SECURE_BOOT_NETCORE
 
 endif
