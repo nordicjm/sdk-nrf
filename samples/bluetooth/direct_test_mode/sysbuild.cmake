@@ -1,3 +1,6 @@
+# Note: this does not work, PM fails
+# NCSDK-23805
+
 if("${BOARD}" STREQUAL "nrf5340dk_nrf5340_cpunet")
   ExternalZephyrProject_Add(
     APPLICATION remote_shell
