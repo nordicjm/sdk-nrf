@@ -13,7 +13,7 @@
 #key file from SB
 #encryyption file from SB
 
-function(ncs_secure_boot_mcuboot_sign application)
+function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
   set(keyfile "${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}")
 #  set(keyfile_enc "${CONFIG_}")
 
@@ -57,14 +57,14 @@ function(ncs_secure_boot_mcuboot_sign application)
   set(byproducts)
 
   # 'west sign' arguments for confirmed, unconfirmed and encrypted images.
-  set(unconfirmed_args)
   set(encrypted_args)
 
   # Set up .bin outputs.
   if(CONFIG_BUILD_OUTPUT_BIN)
 #if(1)
-    list(APPEND unconfirmed_args ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.bin ${output}.bin)
     list(APPEND byproducts ${output}.bin)
+    list(APPEND bin_files ${output}.bin)
+    set(bin_files ${bin_files} PARENT_SCOPE)
 
 #    if(NOT "${keyfile_enc}" STREQUAL "")
 #      list(APPEND encrypted_args --bin --sbin ${output}.signed.encrypted.bin)
@@ -83,7 +83,7 @@ function(ncs_secure_boot_mcuboot_sign application)
         # Hence, if a programmer is given this hex file, it will flash it
         # to the secondary slot, and upon reboot mcuboot will swap in the
         # contents of the hex file.
-        ${imgtool_sign} ${unconfirmed_args} ${imgtool_args}
+        ${imgtool_sign} ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.bin ${output}.bin
 
         DEPENDS
         ${application}_extra_byproducts
@@ -96,8 +96,6 @@ function(ncs_secure_boot_mcuboot_sign application)
   # Set up .hex outputs.
   if(CONFIG_BUILD_OUTPUT_HEX)
 #if(1)
-#    set(unconfirmed_args)
-    list(APPEND unconfirmed_args ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex ${output}.hex)
     list(APPEND byproducts ${output}.hex)
 
       add_custom_command(
@@ -109,7 +107,7 @@ function(ncs_secure_boot_mcuboot_sign application)
         # Hence, if a programmer is given this hex file, it will flash it
         # to the secondary slot, and upon reboot mcuboot will swap in the
         # contents of the hex file.
-        ${imgtool_sign} ${unconfirmed_args} ${imgtool_args}
+        ${imgtool_sign} ${PROJECT_BINARY_DIR}/signed_by_b0_${application}.hex ${output}.hex
 
         DEPENDS
         ${application}_extra_byproducts
@@ -140,6 +138,9 @@ function(ncs_secure_boot_mcuboot_sign application)
         ALL DEPENDS
         ${byproducts}
         )
+
+    list(APPEND signed_targets ${application}_signed_packaged_target)
+    set(signed_targets ${signed_targets} PARENT_SCOPE)
   endif()
 
 #  if(encrypted_args)
@@ -149,9 +150,35 @@ function(ncs_secure_boot_mcuboot_sign application)
 endfunction()
 
 if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
-  ncs_secure_boot_mcuboot_sign("mcuboot")
+  set(bin_files)
+  set(signed_targets)
+
+  ncs_secure_boot_mcuboot_sign("mcuboot" "${bin_files}" "${signed_targets}")
 
   if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-    ncs_secure_boot_mcuboot_sign("s1_image")
+    ncs_secure_boot_mcuboot_sign("s1_image" "${bin_files}" "${signed_targets}")
   endif()
+
+  if(bin_files)
+    include(${ZEPHYR_NRF_MODULE_DIR}/cmake/fw_zip.cmake)
+
+#not working properly
+    generate_dfu_zip(
+      OUTPUT ${PROJECT_BINARY_DIR}/dfu_mcuboot.zip
+      BIN_FILES ${bin_files}
+      TYPE mcuboot
+      SCRIPT_PARAMS
+      "mcubootload_address=$<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>"
+      "s1_imageload_address=$<TARGET_PROPERTY:partition_manager,PM_S1_ADDRESS>"
+#      "version_MCUBOOT=${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION}"
+      "version_MCUBOOT=0.0.0"
+#      "version_B0=${CONFIG_FW_INFO_FIRMWARE_VERSION}"
+      "version_B0=0"
+      DEPENDS ${signed_targets}
+      )
+  endif()
+
+  # Clear temp variables
+  set(bin_files)
+  set(signed_targets)
 endif()

@@ -6,7 +6,7 @@
 
 function(generate_dfu_zip)
   set(oneValueArgs OUTPUT TYPE TARGET)
-  set(multiValueArgs BIN_FILES SCRIPT_PARAMS)
+  set(multiValueArgs BIN_FILES SCRIPT_PARAMS DEPENDS)
   cmake_parse_arguments(GENZIP "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if (NOT(
@@ -24,6 +24,10 @@ function(generate_dfu_zip)
     set(meta_argument --meta-info-file ${meta_info_file})
   endif()
 
+  if(NOT GENZIP_DEPENDS)
+    set(GENZIP_DEPENDS ${GENZIP_BIN_FILES})
+  endif()
+
   add_custom_command(
     OUTPUT ${GENZIP_OUTPUT}
     COMMAND
@@ -37,7 +41,7 @@ function(generate_dfu_zip)
     "type=${GENZIP_TYPE}"
     "board=${CONFIG_BOARD}"
     "soc=${CONFIG_SOC}"
-    DEPENDS ${GENZIP_BIN_FILES} ${meta_info_file}
+    DEPENDS ${GENZIP_DEPENDS} ${meta_info_file}
     )
 
   get_filename_component(TARGET_NAME ${GENZIP_OUTPUT} NAME)
@@ -48,5 +52,4 @@ function(generate_dfu_zip)
     ALL
     DEPENDS ${GENZIP_OUTPUT}
     )
-
 endfunction()
