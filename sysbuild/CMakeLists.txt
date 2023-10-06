@@ -182,6 +182,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   cmake_parse_arguments(POST_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
 
+set(SYSBUILD y)
+
   set_property(GLOBAL PROPERTY DOMAIN_APP_APP ${DEFAULT_IMAGE})
 
   # Run partition manager for each image before running CMake.

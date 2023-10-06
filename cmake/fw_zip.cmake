@@ -5,7 +5,7 @@
 #
 
 function(generate_dfu_zip)
-  set(oneValueArgs OUTPUT TYPE TARGET)
+  set(oneValueArgs OUTPUT TYPE TARGET IMAGE)
   set(multiValueArgs BIN_FILES SCRIPT_PARAMS DEPENDS)
   cmake_parse_arguments(GENZIP "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -18,14 +18,28 @@ function(generate_dfu_zip)
     message(FATAL_ERROR "Missing required param")
   endif()
 
-  get_filename_component(APPNAME ${APPLICATION_SOURCE_DIR} NAME)
-  if(CONFIG_BUILD_OUTPUT_META)
-    set(meta_info_file ${PROJECT_BINARY_DIR}/${KERNEL_META_NAME})
-    set(meta_argument --meta-info-file ${meta_info_file})
+  if(SYSBUILD AND NOT GENZIP_IMAGE)
+    message(FATAL_ERROR "Missing required param")
   endif()
 
-  if(NOT GENZIP_DEPENDS)
-    set(GENZIP_DEPENDS ${GENZIP_BIN_FILES})
+  if(SYSBUILD)
+    set(APPNAME ${GENZIP_IMAGE})
+    sysbuild_get(CONFIG_BUILD_OUTPUT_META IMAGE ${GENZIP_IMAGE} VAR CONFIG_BUILD_OUTPUT_META KCONFIG)
+    sysbuild_get(CONFIG_BOARD IMAGE ${GENZIP_IMAGE} VAR CONFIG_BOARD KCONFIG)
+    sysbuild_get(CONFIG_SOC IMAGE ${GENZIP_IMAGE} VAR CONFIG_SOC KCONFIG)
+
+    if(CONFIG_BUILD_OUTPUT_META)
+      sysbuild_get(application_image_dir IMAGE ${GENZIP_IMAGE} VAR APPLICATION_BINARY_DIR CACHE)
+      sysbuild_get(CONFIG_KERNEL_BIN_NAME IMAGE ${GENZIP_IMAGE} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+      set(meta_info_file ${application_image_dir}/zephyr/${CONFIG_KERNEL_BIN_NAME}.meta)
+      set(meta_argument --meta-info-file ${meta_info_file})
+    endif()
+  else()
+    get_filename_component(APPNAME ${APPLICATION_SOURCE_DIR} NAME)
+    if(CONFIG_BUILD_OUTPUT_META)
+      set(meta_info_file ${PROJECT_BINARY_DIR}/${KERNEL_META_NAME})
+      set(meta_argument --meta-info-file ${meta_info_file})
+    endif()
   endif()
 
   add_custom_command(
@@ -41,7 +55,7 @@ function(generate_dfu_zip)
     "type=${GENZIP_TYPE}"
     "board=${CONFIG_BOARD}"
     "soc=${CONFIG_SOC}"
-    DEPENDS ${GENZIP_DEPENDS} ${meta_info_file}
+    DEPENDS ${GENZIP_DEPENDS} ${GENZIP_BIN_FILES} ${meta_info_file}
     )
 
   get_filename_component(TARGET_NAME ${GENZIP_OUTPUT} NAME)

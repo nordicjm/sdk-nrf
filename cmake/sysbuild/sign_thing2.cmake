@@ -61,7 +61,6 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
 
   # Set up .bin outputs.
   if(CONFIG_BUILD_OUTPUT_BIN)
-#if(1)
     list(APPEND byproducts ${output}.bin)
     list(APPEND bin_files ${output}.bin)
     set(bin_files ${bin_files} PARENT_SCOPE)
@@ -95,7 +94,6 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
 
   # Set up .hex outputs.
   if(CONFIG_BUILD_OUTPUT_HEX)
-#if(1)
     list(APPEND byproducts ${output}.hex)
 
       add_custom_command(
@@ -162,14 +160,14 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
   if(bin_files)
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/fw_zip.cmake)
 
-#not working properly
     generate_dfu_zip(
       OUTPUT ${PROJECT_BINARY_DIR}/dfu_mcuboot.zip
       BIN_FILES ${bin_files}
       TYPE mcuboot
+      IMAGE mcuboot
       SCRIPT_PARAMS
-      "mcubootload_address=$<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>"
-      "s1_imageload_address=$<TARGET_PROPERTY:partition_manager,PM_S1_ADDRESS>"
+      "signed_by_mcuboot_and_b0_mcuboot.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>"
+      "signed_by_mcuboot_and_b0_s1_image.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S1_ADDRESS>"
 #      "version_MCUBOOT=${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION}"
       "version_MCUBOOT=0.0.0"
 #      "version_B0=${CONFIG_FW_INFO_FIRMWARE_VERSION}"
