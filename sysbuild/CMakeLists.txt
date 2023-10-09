@@ -55,6 +55,15 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   endforeach()
 
   if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+    string(LENGTH "${BOARD}" board_len)
+    math(EXPR board_len "${board_len} - 3")
+    string(SUBSTRING "${BOARD}" ${board_len} 3 ns_board_check)
+
+    if("${ns_board_check}" STREQUAL "_ns")
+      # Configure MCUboot before application so that TF-M can read MCUboot configuration
+      sysbuild_add_dependencies(CONFIGURE ${DEFAULT_IMAGE} mcuboot)
+    endif()
+
     set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
                       "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}"
     )
