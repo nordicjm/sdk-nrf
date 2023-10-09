@@ -80,8 +80,16 @@ function(zephyr_mcuboot_tasks)
 #    --tool-path "${imgtool_path}"
 #    --build-dir "${APPLICATION_BINARY_DIR}")
 
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
+
 #  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size 262144 --pad-header --header-size 0x200)
-  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size 0x70000 --pad-header --header-size 0x200)
+  string(TOUPPER "${DEFAULT_IMAGE}" application_uppercase)
+#  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size $<TARGET_PROPERTY:partition_manager,PM_${application_uppercase}_SIZE> --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
+  set(west_sign imgtool sign --version ${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION} --align 4 --slot-size 0xa8000) #--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
 
   # Arguments to imgtool.
   if(NOT CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS STREQUAL "")
