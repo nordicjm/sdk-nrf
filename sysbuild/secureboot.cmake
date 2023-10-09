@@ -48,7 +48,7 @@ if(SB_CONFIG_SECURE_BOOT)
 
     set_property(GLOBAL APPEND PROPERTY
         PM_${SB_CONFIG_SECURE_BOOT_DOMAIN}_IMAGES
-        "s1_image"
+        "${image}"
     )
   endif()
 endif()
