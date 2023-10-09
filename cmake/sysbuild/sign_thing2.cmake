@@ -42,9 +42,8 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
   sysbuild_get(CONFIG_BUILD_OUTPUT_BIN IMAGE ${application} VAR CONFIG_BUILD_OUTPUT_BIN KCONFIG)
   sysbuild_get(CONFIG_BUILD_OUTPUT_HEX IMAGE ${application} VAR CONFIG_BUILD_OUTPUT_HEX KCONFIG)
 
-#TODO: get parameters another way - from main app?
   string(TOUPPER "${application}" application_uppercase)
-  set(imgtool_sign ${imgtool_path} sign --version 0.0.0+0 --align 4 --slot-size $<TARGET_PROPERTY:partition_manager,PM_${application_uppercase}_SIZE> --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
+  set(imgtool_sign ${imgtool_path} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size $<TARGET_PROPERTY:partition_manager,PM_${application_uppercase}_SIZE> --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
 
   if(NOT "${keyfile}" STREQUAL "")
     set(imgtool_extra -k "${keyfile}" ${imgtool_extra})
@@ -158,6 +157,8 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
   endif()
 
   if(bin_files)
+    sysbuild_get(mcuboot_fw_info_firmware_version IMAGE mcuboot VAR CONFIG_FW_INFO_FIRMWARE_VERSION KCONFIG)
+
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/fw_zip.cmake)
 
     generate_dfu_zip(
@@ -168,10 +169,8 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
       SCRIPT_PARAMS
       "signed_by_mcuboot_and_b0_mcuboot.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>"
       "signed_by_mcuboot_and_b0_s1_image.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S1_ADDRESS>"
-#      "version_MCUBOOT=${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION}"
-      "version_MCUBOOT=0.0.0"
-#      "version_B0=${CONFIG_FW_INFO_FIRMWARE_VERSION}"
-      "version_B0=0"
+      "version_MCUBOOT=${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION}"
+      "version_B0=${mcuboot_fw_info_firmware_version}"
       DEPENDS ${signed_targets}
       )
   endif()
