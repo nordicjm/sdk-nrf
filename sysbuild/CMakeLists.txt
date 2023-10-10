@@ -88,24 +88,29 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         mcuboot
         ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/fih_low_enable.conf
       )
+    endif()
 
-      if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
-        add_overlay_config(
-          mcuboot
-          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/hw_counters.conf
-        )
-#this is problem
-#set(imgtool_security_counter --security-counter ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
-      endif()
+    set(imgtool_extra)
+    if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+      set(imgtool_extra " --security-counter ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE}")
+
+      set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION=${SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION}\n")
+      set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS=${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_SLOTS}\n")
+      set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE=${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE}\n")
+
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/hw_counters.conf
+      )
     endif()
 
     set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
-                      "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}"
+                      "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}${imgtool_extra}"
     )
 
     if(NOT DEFINED mcuboot_BOARD AND DEFINED board_secure)
       # MCUboot must run in secure mode on the nRF9160/nRF5340
-        set_target_properties(mcuboot PROPERTIES BOARD ${board_secure})
+      set_target_properties(mcuboot PROPERTIES BOARD ${board_secure})
     endif()
   endif()
 
@@ -158,7 +163,7 @@ set(SYSBUILD y)
     set(partition_manager_target partition_manager_${domain})
   endif()
 
-  if(SB_CONFIG_SECURE_BOOT)
+  if(SB_CONFIG_SECURE_BOOT OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
     include_provision_hex()
   endif()
 
