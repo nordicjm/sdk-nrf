@@ -26,7 +26,7 @@ function(include_provision_hex)
 endfunction()
 
 function(include_packaging)
-  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/sign_thing2.cmake)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/b0_mcuboot_signing.cmake)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
 endfunction()
 
