@@ -76,6 +76,27 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     if("${ns_board_check}" STREQUAL "_ns")
       # Configure MCUboot before application so that TF-M can read MCUboot configuration
       sysbuild_add_dependencies(CONFIGURE ${DEFAULT_IMAGE} mcuboot)
+
+      # Configure MCUBoot to be able to boot TFM
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/tfm.conf
+        )
+
+      # Add fault injection protection to MCUBOOT
+      add_overlay_config(
+        mcuboot
+        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/fih_low_enable.conf
+      )
+
+      if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+        add_overlay_config(
+          mcuboot
+          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/hw_counters.conf
+        )
+#this is problem
+#set(imgtool_security_counter --security-counter ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
+      endif()
     endif()
 
     set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
