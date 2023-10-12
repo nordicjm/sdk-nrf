@@ -200,6 +200,9 @@ include_packaging()
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
   endif()
 
+  # temp hack, load the specifically needed PM setting into a CMake current scope var.
+  get_property(PM_APP_SIZE TARGET partition_manager PROPERTY PM_APP_SIZE)
+  get_property(PM_MCUBOOT_PAD TARGET partition_manager PROPERTY PM_MCUBOOT_PAD)
   foreach(image ${IMAGES})
     configure_cache(IMAGE ${image})
   endforeach()
