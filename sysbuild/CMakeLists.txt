@@ -4,6 +4,31 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+# Usage:
+#   configure_cache(IMAGE <name>)
+#
+# This function is similar in nature to configure file, except that it takes
+# an image as argument to work on the CMakeCache of said image.
+#
+# The CMake cache of the image will only be re-written in case there are
+# variables which has been updated as part of the call.
+#
+# Only variable of the form `@VAR_NAME@` will be updated.
+#
+# IMAGE: image name identifying the cache to update.
+#
+function(configure_cache)
+  set(single_args IMAGE)
+  cmake_parse_arguments(CONFIGURE_CACHE "" "${single_args}" "" ${ARGN})
+
+  zephyr_check_arguments_required(configure_cache CONFIGURE_CACHE IMAGE)
+
+  ExternalProject_Get_Property(${CONFIGURE_CACHE_IMAGE} BINARY_DIR)
+
+  configure_file("${BINARY_DIR}/CMakeCache.txt" "${BINARY_DIR}/CMakeCache.txt.tmp" @ONLY)
+  file(COPY_FILE "${BINARY_DIR}/CMakeCache.txt.tmp" "${BINARY_DIR}/CMakeCache.txt" ONLY_IF_DIFFERENT)
+endfunction()
+
 function(store_ncs_vars)
   get_property(ncs_vars DIRECTORY ${SYSBUILD_CURRENT_CMAKE_DIR} PROPERTY VARIABLES)
   list(FILTER ncs_vars INCLUDE REGEX "NCS_.*")
@@ -179,6 +204,11 @@ include_packaging()
   if(SB_CONFIG_PARTITION_MANAGER)
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
   endif()
+
+  foreach(image ${IMAGES})
+    configure_cache(IMAGE ${image})
+  endforeach()
+
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
 
 # Enable use of partition manager with sysbuild.
