@@ -115,6 +115,9 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       )
     endif()
 
+    # Use NCS signing script with support for PM
+    set(${DEFAULT_IMAGE}_SIGNING_SCRIPT "${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/image_signing.cmake" CACHE INTERNAL "MCUboot signing script")
+
     set(imgtool_extra)
     if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
       set(imgtool_extra " --security-counter ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE}")
@@ -206,11 +209,12 @@ include_packaging()
   endif()
 
   # temp hack, load the specifically needed PM setting into a CMake current scope var.
-  get_property(PM_APP_SIZE TARGET partition_manager PROPERTY PM_APP_SIZE)
+  get_property(PM_MCUBOOT_PRIMARY_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_SIZE)
+  get_property(PM_MCUBOOT_PAD_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PAD_SIZE)
+
   foreach(image ${IMAGES})
     configure_cache(IMAGE ${image})
   endforeach()
-
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
 
 # Enable use of partition manager with sysbuild.
