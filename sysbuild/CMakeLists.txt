@@ -158,10 +158,10 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         ${ZEPHYR_NRF_MODULE_DIR}/sysbuild/mcuboot_enable_secure_bootloader.overlay
         )
 
-      add_overlay_config(
-        mcuboot
-        ${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr/external_crypto.conf
-        )
+#      add_overlay_config(
+#        mcuboot
+#        ${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr/external_crypto.conf
+#        )
     endif()
   elseif(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
     if(SB_CONFIG_NETCORE_APP_UPDATE)
