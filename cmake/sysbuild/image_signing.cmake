@@ -32,11 +32,6 @@ function(zephyr_mcuboot_tasks)
     endif()
   endif()
 
-  if(NOT WEST)
-    # This feature requires west.
-    message(FATAL_ERROR "Can't sign images for MCUboot: west not found. To fix, install west and ensure it's on PATH.")
-  endif()
-
   foreach(file keyfile keyfile_enc)
     if(NOT "${${file}}" STREQUAL "")
       if(NOT IS_ABSOLUTE "${${file}}")
@@ -75,20 +70,8 @@ function(zephyr_mcuboot_tasks)
 
   # Basic 'west sign' command and output format independent arguments.
   separate_arguments(west_sign_extra UNIX_COMMAND ${CONFIG_MCUBOOT_CMAKE_WEST_SIGN_PARAMS})
-#  set(west_sign ${WEST} sign ${west_sign_extra}
-#    --tool imgtool
-#    --tool-path "${imgtool_path}"
-#    --build-dir "${APPLICATION_BINARY_DIR}")
 
-#get_cmake_property(_variableNames VARIABLES)
-#list (SORT _variableNames)
-#foreach (_variableName ${_variableNames})
-#    message(STATUS "${_variableName}=${${_variableName}}")
-#endforeach()
-
-#  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size 262144 --pad-header --header-size 0x200)
-  set(west_sign imgtool sign --version 0.0.0+0 --align 4 --slot-size @PM_APP_SIZE@ --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD} CACHE INTERNAL "west sign command")
-#  set(west_sign imgtool sign --version ${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION} --align 4 --slot-size 0xa8000) #--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
+  set(west_sign imgtool sign --version ${CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION} --align 4 --slot-size @PM_MCUBOOT_PRIMARY_SIZE@ --pad-header --header-size @PM_MCUBOOT_PAD_SIZE@ CACHE STRING "imgtool sign command")
 
   # Arguments to imgtool.
   if(NOT CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS STREQUAL "")
@@ -103,15 +86,19 @@ function(zephyr_mcuboot_tasks)
   endif()
 
   if(NOT "${keyfile}" STREQUAL "")
-#    set(imgtool_extra --key "${keyfile}" ${imgtool_extra})
     set(imgtool_extra -k "${keyfile}" ${imgtool_extra})
   endif()
 
-#  set(imgtool_args -- ${imgtool_extra})
   set(imgtool_args ${imgtool_extra})
 
   # Extensionless prefix of any output file.
-  set(output ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME})
+  set(output ${ZEPHYR_BINARY_DIR}/${KERNEL_NAME}.signed)
+
+  if(CONFIG_BUILD_WITH_TFM)
+    set(input ${APPLICATION_BINARY_DIR}/zephyr/tfm_merged)
+  else()
+    set(input ${APPLICATION_BINARY_DIR}/zephyr/${KERNEL_NAME})
+  endif()
 
   # List of additional build byproducts.
   set(byproducts)
@@ -122,11 +109,27 @@ function(zephyr_mcuboot_tasks)
   set(encrypted_args)
 
   # Set up .bin outputs.
-#  if(CONFIG_BUILD_OUTPUT_BIN)
-#    list(APPEND unconfirmed_args --bin --sbin ${output}.signed.bin)
-#    list(APPEND byproducts ${output}.signed.bin)
-#    zephyr_runner_file(bin ${output}.signed.bin)
-#
+  if(CONFIG_BUILD_OUTPUT_BIN)
+    if(CONFIG_BUILD_WITH_TFM)
+      # TF-M does not generate a bin file, so use the hex file as an input
+      set(unconfirmed_args ${input}.hex ${output}.bin)
+    else()
+      set(unconfirmed_args ${input}.bin ${output}.bin)
+    endif()
+
+    list(APPEND byproducts ${output}.bin)
+    zephyr_runner_file(bin ${output}.bin)
+
+  # Add the west sign calls and their byproducts to the post-processing
+  # steps for zephyr.elf.
+  #
+  # CMake guarantees that multiple COMMANDs given to
+  # add_custom_command() are run in order, so adding the 'west sign'
+  # calls to the "extra_post_build_commands" property ensures they run
+  # after the commands which generate the unsigned versions.
+  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+    ${west_sign} ${imgtool_args} ${unconfirmed_args})
+
 #    if(CONFIG_MCUBOOT_GENERATE_CONFIRMED_IMAGE)
 #      list(APPEND confirmed_args --bin --sbin ${output}.signed.confirmed.bin)
 #      list(APPEND byproducts ${output}.signed.confirmed.bin)
@@ -136,14 +139,24 @@ function(zephyr_mcuboot_tasks)
 #      list(APPEND encrypted_args --bin --sbin ${output}.signed.encrypted.bin)
 #      list(APPEND byproducts ${output}.signed.encrypted.bin)
 #    endif()
-#  endif()
+  endif()
 
   # Set up .hex outputs.
   if(CONFIG_BUILD_OUTPUT_HEX)
 #    list(APPEND unconfirmed_args --hex --shex ${output}.signed.hex)
-    list(APPEND unconfirmed_args ${APPLICATION_BINARY_DIR}/zephyr/tfm_merged.hex ${output}.signed.hex)
-    list(APPEND byproducts ${output}.signed.hex)
-    zephyr_runner_file(hex ${output}.signed.hex)
+    set(unconfirmed_args ${input}.hex ${output}.hex)
+    list(APPEND byproducts ${output}.hex)
+    zephyr_runner_file(hex ${output}.hex)
+
+  # Add the west sign calls and their byproducts to the post-processing
+  # steps for zephyr.elf.
+  #
+  # CMake guarantees that multiple COMMANDs given to
+  # add_custom_command() are run in order, so adding the 'west sign'
+  # calls to the "extra_post_build_commands" property ensures they run
+  # after the commands which generate the unsigned versions.
+  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+    ${west_sign} ${imgtool_args} ${unconfirmed_args})
 
 #    if(CONFIG_MCUBOOT_GENERATE_CONFIRMED_IMAGE)
 #      list(APPEND confirmed_args --hex --shex ${output}.signed.confirmed.hex)
@@ -156,15 +169,6 @@ function(zephyr_mcuboot_tasks)
 #    endif()
   endif()
 
-  # Add the west sign calls and their byproducts to the post-processing
-  # steps for zephyr.elf.
-  #
-  # CMake guarantees that multiple COMMANDs given to
-  # add_custom_command() are run in order, so adding the 'west sign'
-  # calls to the "extra_post_build_commands" property ensures they run
-  # after the commands which generate the unsigned versions.
-  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-    ${west_sign} ${unconfirmed_args} ${imgtool_args})
 #  if(confirmed_args)
 #    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
 #      ${west_sign} ${confirmed_args} ${imgtool_args} --pad --confirm)
