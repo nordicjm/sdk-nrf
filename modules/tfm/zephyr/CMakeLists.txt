@@ -257,8 +257,3 @@ set_property(TARGET zephyr_property_target
   APPEND PROPERTY TFM_CMAKE_OPTIONS
     -DPROJECT_CONFIG_HEADER_FILE=${CMAKE_CURRENT_BINARY_DIR}/tfm_config.h
 )
-
-if(SYSBUILD)
-  # Use NCS TF-M signing script
-  set_target_properties(zephyr_property_target PROPERTIES SIGNING_SCRIPT ${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/tfm_signing.cmake)
-endif()
