@@ -88,70 +88,58 @@ foreach (slot ${slots})
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
 
+  if(NCS_SYSBUILD_PARTITION_MANAGER)
+    # A container can be merged, in which case we should use old style below,
+    # or it may be an actual image, where we know everything.
+    # Initial support disregards the merged hex files.
+    # In parent-child, everything is merged, even when having a single image in a
+    # container (where the original image == the merged image).
+    if(TARGET ${slot})
+      # If slot is a target of it's own, then it means we target the hex directly and not a merged hex.
+      sysbuild_get(${slot}_image_dir IMAGE ${slot} VAR APPLICATION_BINARY_DIR CACHE)
+      sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
+      sysbuild_get(${slot}_kernel_elf IMAGE ${slot} VAR CONFIG_KERNEL_ELF_NAME KCONFIG)
 
-## ISSUES:
-# mcuboot targets are made but do not run automatically for s0_image
-# files are not updated once they have been generated once and e.g. configuration is changed
-# if output hex files are deleted, config is changed, signing fails due to some error
+      set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
+      set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf)
+      set(target_name ${slot})
+    elseif("${slot}" STREQUAL "s0_image")
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        set(target_name mcuboot)
+      else()
+        set(target_name ${DEFAULT_IMAGE})
+      endif()
 
+      sysbuild_get(${target_name}_image_dir IMAGE ${target_name} VAR APPLICATION_BINARY_DIR CACHE)
+      sysbuild_get(${target_name}_kernel_name IMAGE ${target_name} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
 
-
-if(NCS_SYSBUILD_PARTITION_MANAGER)
-  # A container can be merged, in which case we should use old style below,
-  # or it may be an actual image, where we know everything.
-  # Initial support disregards the merged hex files.
-  # In parent-child, everything is merged, even when having a single image in a
-  # container (where the original image == the merged image).
-  if(TARGET ${slot})
-    # If slot is a target of it's own, then it means we target the hex directly and not a merged hex.
-    sysbuild_get(${slot}_image_dir IMAGE ${slot} VAR APPLICATION_BINARY_DIR CACHE)
-    sysbuild_get(${slot}_kernel_name IMAGE ${slot} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
-    sysbuild_get(${slot}_kernel_elf IMAGE ${slot} VAR CONFIG_KERNEL_ELF_NAME KCONFIG)
-
-    set(slot_hex ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
-#    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.hex)
-#    set(sign_depends ${slot} ${${slot}_image_dir}/zephyr/${${slot}_kernel_elf})
-    set(sign_depends ${${slot}_image_dir}/zephyr/${${slot}_kernel_name}.elf)
-    set(target_name ${slot})
-  elseif("${slot}" STREQUAL "s0_image")
-    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-      set(target_name mcuboot)
+      set(slot_hex ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.hex)
+      set(sign_depends ${target_name} ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.elf)
     else()
-      set(target_name ${DEFAULT_IMAGE})
+      set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
+      set(sign_depends ${slot}_hex)
+      set(target_name ${slot})
     endif()
-
-    sysbuild_get(${target_name}_image_dir IMAGE ${target_name} VAR APPLICATION_BINARY_DIR CACHE)
-    sysbuild_get(${target_name}_kernel_name IMAGE ${target_name} VAR CONFIG_KERNEL_BIN_NAME KCONFIG)
-
-    set(slot_hex ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.hex)
-    set(sign_depends ${target_name} ${${target_name}_image_dir}/zephyr/${${target_name}_kernel_name}.elf)
   else()
-    set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
-    set(sign_depends ${slot}_hex)
     set(target_name ${slot})
-  endif()
-else()
-  set(target_name ${slot})
 
-  if ("${slot}" STREQUAL "s1_image")
-    # The s1_image slot is built as a child image, add the dependency and
-    # path to its hex file accordingly. We cannot use the shared variables
-    # from the s1 child image since its configure stage might not have executed
-    # yet.
-    set(slot_hex ${CMAKE_BINARY_DIR}/s1_image/zephyr/zephyr.hex)
-    set(sign_depends s1_image_subimage)
-  else()
-    set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
-    set(sign_depends ${slot}_hex)
+    if ("${slot}" STREQUAL "s1_image")
+      # The s1_image slot is built as a child image, add the dependency and
+      # path to its hex file accordingly. We cannot use the shared variables
+      # from the s1 child image since its configure stage might not have executed
+      # yet.
+      set(slot_hex ${CMAKE_BINARY_DIR}/s1_image/zephyr/zephyr.hex)
+      set(sign_depends s1_image_subimage)
+    else()
+      set(slot_hex ${PROJECT_BINARY_DIR}/${slot}.hex)
+      set(sign_depends ${slot}_hex)
+    endif()
+    list(APPEND sign_depends ${slot_hex} ${SIGN_KEY_FILE_DEPENDS})
   endif()
-  list(APPEND sign_depends ${slot_hex} ${SIGN_KEY_FILE_DEPENDS})
-endif()
 
   set(to_sign ${slot_hex})
   set(hash_file ${GENERATED_PATH}/${slot}_firmware.sha256)
   set(signature_file ${GENERATED_PATH}/${slot}_firmware.signature)
-
-message(WARNING "GOT: ${to_sign}, ${hash_file}, ${signature_file}, ${sign_depends}")
 
   set(hash_cmd
     ${PYTHON_EXECUTABLE}
