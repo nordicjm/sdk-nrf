@@ -132,10 +132,6 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       )
     endif()
 
-    set_config_string(${DEFAULT_IMAGE} CONFIG_MCUBOOT_EXTRA_IMGTOOL_ARGS
-                      "--pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD}${imgtool_extra}"
-    )
-
     if(NOT DEFINED mcuboot_BOARD AND DEFINED board_secure)
       # MCUboot must run in secure mode on the nRF9160/nRF5340
       set_target_properties(mcuboot PROPERTIES BOARD ${board_secure})
