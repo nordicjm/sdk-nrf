@@ -208,6 +208,10 @@ include_packaging()
   get_property(PM_MCUBOOT_PRIMARY_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_SIZE)
   get_property(PM_MCUBOOT_PAD_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PAD_SIZE)
 
+  if(SB_CONFIG_SUPPORT_NETCORE AND NOT SB_CONFIG_NETCORE_EMPTY)
+    get_property(PM_MCUBOOT_PRIMARY_1_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_1_SIZE)
+  endif()
+
   foreach(image ${IMAGES})
     configure_cache(IMAGE ${image})
   endforeach()
