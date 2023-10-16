@@ -13,7 +13,7 @@
 #key file from SB
 #encryyption file from SB
 
-function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
+function(ncs_secure_boot_mcuboot_sign application application_name bin_files signed_targets)
   set(keyfile "${SB_CONFIG_BOOT_SIGNATURE_KEY_FILE}")
 #  set(keyfile_enc "${CONFIG_}")
 
@@ -42,8 +42,8 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
   sysbuild_get(CONFIG_BUILD_OUTPUT_BIN IMAGE ${application} VAR CONFIG_BUILD_OUTPUT_BIN KCONFIG)
   sysbuild_get(CONFIG_BUILD_OUTPUT_HEX IMAGE ${application} VAR CONFIG_BUILD_OUTPUT_HEX KCONFIG)
 
-  string(TOUPPER "${application}" application_uppercase)
-  set(imgtool_sign ${imgtool_path} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size $<TARGET_PROPERTY:partition_manager,PM_${application_uppercase}_SIZE> --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
+  string(TOUPPER "${application_name}" application_name_uppercase)
+  set(imgtool_sign ${imgtool_path} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size $<TARGET_PROPERTY:partition_manager,PM_${application_name_uppercase}_SIZE> --pad-header --header-size ${SB_CONFIG_PM_MCUBOOT_PAD})
 
   if(NOT "${keyfile}" STREQUAL "")
     set(imgtool_extra -k "${keyfile}" ${imgtool_extra})
@@ -146,14 +146,23 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets)
 #  endif()
 endfunction()
 
-if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
+if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT)
   set(bin_files)
   set(signed_targets)
 
-  ncs_secure_boot_mcuboot_sign("mcuboot" "${bin_files}" "${signed_targets}")
+  if(SB_CONFIG_SECURE_BOOT_APPCORE)
+    set(s0_image_name "mcuboot")
+    set(s0_application_name "${s0_image_name}")
+  else()
+    get_property(image_name GLOBAL PROPERTY DOMAIN_APP_CPUNET)
+    set(s0_image_name "${image_name}")
+    set(s0_application_name "mcuboot_primary_1")
+  endif()
+
+  ncs_secure_boot_mcuboot_sign("${s0_image_name}" "${s0_application_name}" "${bin_files}" "${signed_targets}")
 
   if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-    ncs_secure_boot_mcuboot_sign("s1_image" "${bin_files}" "${signed_targets}")
+    ncs_secure_boot_mcuboot_sign("s1_image" "s1_image" "${bin_files}" "${signed_targets}")
   endif()
 
   if(bin_files)
@@ -167,7 +176,7 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
       TYPE mcuboot
       IMAGE mcuboot
       SCRIPT_PARAMS
-      "signed_by_mcuboot_and_b0_mcuboot.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>"
+      "signed_by_mcuboot_and_b0_${s0_image_name}.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S0_ADDRESS>"
       "signed_by_mcuboot_and_b0_s1_image.binload_address=$<TARGET_PROPERTY:partition_manager,PM_S1_ADDRESS>"
       "version_MCUBOOT=${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION}"
       "version_B0=${mcuboot_fw_info_firmware_version}"
