@@ -11,13 +11,18 @@ set_ifndef(partition_manager_target partition_manager)
 
 if(NCS_SYSBUILD_PARTITION_MANAGER)
   # Get the main app of the domain that secure boot should handle.
-
   if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
     ExternalProject_Get_Property(mcuboot BINARY_DIR)
     import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
     sysbuild_get(APPLICATION_CONFIG_DIR IMAGE mcuboot VAR APPLICATION_CONFIG_DIR CACHE)
   elseif(DEFINED SB_CONFIG_SECURE_BOOT_DOMAIN)
     get_property(main_app GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN})
+
+    if(NOT main_app)
+      message(FATAL_ERROR "Secure boot is enabled on domain ${SB_CONFIG_SECURE_BOOT_DOMAIN}"
+                          " but no image is selected for this domain.")
+    endif()
+
     ExternalProject_Get_Property(${main_app} BINARY_DIR)
     import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
     sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${main_app} VAR APPLICATION_CONFIG_DIR CACHE)
