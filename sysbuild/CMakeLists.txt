@@ -268,6 +268,16 @@ if(SB_CONFIG_SECURE_BOOT)
       # Include a kconfig file which enables CONFIG_FW_INFO in the image
       # which is booted by B0.
       add_overlay_config(mcuboot ${secure_boot_image_dir}/fw_info.conf)
+
+      add_overlay_config(mcuboot ${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/image/log_minimal.conf)
+
+      if(SB_CONFIG_PM_OVERRIDE_EXTERNAL_DRIVER_CHECK)
+        add_overlay_config(mcuboot ${CMAKE_CURRENT_SOURCE_DIR}/override_external_mcuboot.conf)
+      endif()
+    else()
+      # Include a kconfig file which enables CONFIG_FW_INFO in the image
+      # which is booted by B0.
+      add_overlay_config(${DEFAULT_IMAGE} ${secure_boot_image_dir}/fw_info.conf)
     endif()
   endif()
 endif()
