@@ -147,6 +147,9 @@ function(zephyr_mcuboot_tasks)
     set(unconfirmed_args ${input}.hex ${output}.hex)
     list(APPEND byproducts ${output}.hex)
     zephyr_runner_file(hex ${output}.hex)
+    set(BYPRODUCT_KERNEL_SIGNED_HEX_NAME "${output}.hex"
+        CACHE FILEPATH "Signed kernel hex file" FORCE
+    )
 
   # Add the west sign calls and their byproducts to the post-processing
   # steps for zephyr.elf.
