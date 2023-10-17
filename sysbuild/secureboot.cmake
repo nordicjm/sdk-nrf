@@ -15,6 +15,7 @@ if(SB_CONFIG_SECURE_BOOT)
     # ToDo: which sample is used as  secure boot sample in other cases ?
     SOURCE_DIR ${secure_boot_source_dir}
     BOARD ${SB_CONFIG_SECURE_BOOT_BOARD}
+    BUILD_ONLY true
   )
   set_target_properties(${SB_CONFIG_SECURE_BOOT_IMAGE_NAME} PROPERTIES
     IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
