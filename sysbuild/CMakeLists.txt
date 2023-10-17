@@ -173,6 +173,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         mcuboot
         ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
         )
+    else()
+      set_config_bool(mcuboot CONFIG_PCD_APP n)
     endif()
   endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
