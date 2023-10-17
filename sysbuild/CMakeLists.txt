@@ -94,6 +94,10 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   endif()
 
   if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+    # Make mcuboot a build only target as the main application will flash this from the
+    # merged hex file
+    set_target_properties(mcuboot PROPERTIES BUILD_ONLY true)
+
     string(LENGTH "${BOARD}" board_len)
     math(EXPR board_len "${board_len} - 3")
     string(SUBSTRING "${BOARD}" ${board_len} 3 ns_board_check)
@@ -116,7 +120,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     endif()
 
     # Use NCS signing script with support for PM
-    set(${DEFAULT_IMAGE}_SIGNING_SCRIPT "${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/image_signing.cmake" CACHE INTERNAL "MCUboot signing script")
+    set(${DEFAULT_IMAGE}_SIGNING_SCRIPT "${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/image_signing.cmake" CACHE INTERNAL "MCUboot signing script" FORCE)
 
     set(imgtool_extra)
     if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
@@ -188,6 +192,9 @@ set(SYSBUILD y)
 
   set_property(GLOBAL PROPERTY DOMAIN_APP_APP ${DEFAULT_IMAGE})
 
+#temp
+include_packaging()
+
   # Run partition manager for each image before running CMake.
   set(domain ${SB_CONFIG_SECURE_BOOT_DOMAIN})
   if(DEFINED domain AND NOT domain STREQUAL APP)
@@ -197,9 +204,6 @@ set(SYSBUILD y)
   if(SB_CONFIG_SECURE_BOOT OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
     include_provision_hex()
   endif()
-
-#temp
-include_packaging()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
