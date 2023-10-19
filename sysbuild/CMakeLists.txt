@@ -97,7 +97,54 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     # Make mcuboot a build only target as the main application will flash this from the
     # merged hex file
     set_target_properties(mcuboot PROPERTIES BUILD_ONLY true)
+    set_property(TARGET mcuboot APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=${SB_CONFIG_MCUBOOT_UPDATEABLE_IMAGES}\n")
 
+    # Set MCUboot operating mode in application and MCUboot
+# todo: support RAM load
+    set(mcuboot_mode)
+    set(application_mcuboot_mode)
+    set(mcuboot_modes "CONFIG_SINGLE_APPLICATION_SLOT;CONFIG_BOOT_SWAP_USING_MOVE;CONFIG_BOOT_SWAP_USING_SCRATCH;CONFIG_BOOT_UPGRADE_ONLY;CONFIG_BOOT_DIRECT_XIP;CONFIG_BOOT_DIRECT_XIP_REVERT")
+    set(application_mcuboot_modes "CONFIG_MCUBOOT_BOOTLOADER_MODE_SINGLE_APP;CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_WITHOUT_SCRATCH;CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_SCRATCH;CONFIG_MCUBOOT_BOOTLOADER_MODE_OVERWRITE_ONLY;CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP;CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP_WITH_REVERT")
+
+    if(SB_CONFIG_MCUBOOT_MODE_SINGLE_APP)
+      set(mcuboot_mode CONFIG_SINGLE_APPLICATION_SLOT)
+      set(application_mcuboot_mode CONFIG_MCUBOOT_BOOTLOADER_MODE_SINGLE_APP)
+    elseif(SB_CONFIG_MCUBOOT_MODE_SWAP_WITHOUT_SCRATCH)
+      set(mcuboot_mode CONFIG_BOOT_SWAP_USING_MOVE)
+      set(application_mcuboot_mode CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_WITHOUT_SCRATCH)
+    elseif(SB_CONFIG_MCUBOOT_MODE_SWAP_SCRATCH)
+      set(mcuboot_mode CONFIG_BOOT_SWAP_USING_SCRATCH)
+      set(application_mcuboot_mode CONFIG_MCUBOOT_BOOTLOADER_MODE_SWAP_SCRATCH)
+    elseif(SB_CONFIG_MCUBOOT_MODE_OVERWRITE_ONLY)
+      set(mcuboot_mode CONFIG_BOOT_UPGRADE_ONLY)
+      set(application_mcuboot_mode CONFIG_MCUBOOT_BOOTLOADER_MODE_OVERWRITE_ONLY)
+    elseif(SB_CONFIG_MCUBOOT_MODE_DIRECT_XIP)
+      set(mcuboot_mode CONFIG_BOOT_DIRECT_XIP)
+      set(application_mcuboot_mode CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP)
+    elseif(SB_CONFIG_MCUBOOT_MODE_DIRECT_XIP_WITH_REVERT)
+      set(mcuboot_mode CONFIG_BOOT_DIRECT_XIP;CONFIG_BOOT_DIRECT_XIP_REVERT)
+      set(application_mcuboot_mode CONFIG_MCUBOOT_BOOTLOADER_MODE_DIRECT_XIP_WITH_REVERT)
+    endif()
+
+    # Apply configuration to MCUboot
+    foreach(mode ${mcuboot_modes})
+      if("${mode}" IN_LIST mcuboot_mode)
+        set_config_bool(mcuboot ${mode} y)
+      else()
+        set_config_bool(mcuboot ${mode} n)
+      endif()
+    endforeach()
+
+    # Apply configuration to application
+    foreach(mode ${application_mcuboot_modes})
+      if("${mode}" IN_LIST application_mcuboot_mode)
+        set_config_bool(${DEFAULT_IMAGE} ${mode} y)
+      else()
+        set_config_bool(${DEFAULT_IMAGE} ${mode} n)
+      endif()
+    endforeach()
+
+    # Check if the board is a non-secure one
     string(LENGTH "${BOARD}" board_len)
     math(EXPR board_len "${board_len} - 3")
     string(SUBSTRING "${BOARD}" ${board_len} 3 ns_board_check)
@@ -122,8 +169,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     # Use NCS signing script with support for PM
     set(${DEFAULT_IMAGE}_SIGNING_SCRIPT "${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/image_signing.cmake" CACHE INTERNAL "MCUboot signing script" FORCE)
 
+# hack to work around issue introduced by other hack
     set(${DEFAULT_IMAGE}_ALT_SIGNED_HEX_FILE "${CMAKE_BINARY_DIR}/merged.hex" CACHE INTERNAL "nope" FORCE)
-
 
     set(imgtool_extra)
     if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
@@ -168,9 +215,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     endif()
   elseif(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
     if(SB_CONFIG_NETCORE_APP_UPDATE)
-#What if a user wants 3?
       set_config_bool(mcuboot CONFIG_PCD_APP y)
-      set_property(TARGET mcuboot APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=2\n")
 
       add_overlay_config(
         mcuboot
