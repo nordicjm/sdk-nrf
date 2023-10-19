@@ -265,7 +265,7 @@ endif()
 if(SB_CONFIG_SECURE_BOOT_NETCORE)
 set(DO_APP)
 set(DO_NET 1)
-#    include_provision_hex()
+    include_provision_hex()
 endif()
   endif()
 
