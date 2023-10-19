@@ -10,11 +10,11 @@ menuconfig SECURE_BOOT
 
 if SECURE_BOOT
 
-choice SECURE_BOOT_CORE
-	bool "Secure boot SoC core"
-	default SECURE_BOOT_NETCORE
-	help
-	  SoC core where the first stage bootloader resides.
+#choice SECURE_BOOT_CORE
+#	bool "Secure boot SoC core"
+#	default SECURE_BOOT_NETCORE
+#	help
+#	  SoC core where the first stage bootloader resides.
 
 config SECURE_BOOT_APPCORE
 	bool "Appcore"
@@ -27,7 +27,7 @@ config SECURE_BOOT_NETCORE
 	help
 	  Locate first stage bootloader on network core.
 
-endchoice
+#endchoice
 
 config SECURE_BOOT_IMAGE_NAME
 	string
