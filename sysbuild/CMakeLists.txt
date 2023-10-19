@@ -193,41 +193,47 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     endif()
   endif()
 
-  if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE)
-    if(NOT DEFINED b0_BOARD AND DEFINED board_secure)
-      # b0 must run in secure mode on the nRF9160/nRF5340
-      set_target_properties(b0 PROPERTIES BOARD ${board_secure})
+  if(SB_CONFIG_SECURE_BOOT)
+    if(SB_CONFIG_SECURE_BOOT_APPCORE)
+      if(NOT DEFINED b0_BOARD AND DEFINED board_secure)
+        # b0 must run in secure mode on the nRF9160/nRF5340
+        set_target_properties(b0 PROPERTIES BOARD ${board_secure})
+
+        if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+          set_target_properties(s1_image PROPERTIES BOARD ${board_secure})
+        endif()
+      endif()
 
       if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-        set_target_properties(s1_image PROPERTIES BOARD ${board_secure})
-      endif()
-    endif()
-
-    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-      add_overlay_config(
-        mcuboot
-        ${ZEPHYR_NRF_MODULE_DIR}/sysbuild/mcuboot_enable_secure_bootloader.overlay
-        )
+        add_overlay_config(
+          mcuboot
+          ${ZEPHYR_NRF_MODULE_DIR}/sysbuild/mcuboot_enable_secure_bootloader.overlay
+          )
 
 #      add_overlay_config(
 #        mcuboot
 #        ${ZEPHYR_MCUBOOT_MODULE_DIR}/boot/zephyr/external_crypto.conf
 #        )
+      endif()
     endif()
-  elseif(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
-    if(SB_CONFIG_NETCORE_APP_UPDATE)
-      set_config_bool(mcuboot CONFIG_PCD_APP y)
 
-      add_overlay_config(
-        mcuboot
-        ${ZEPHYR_NRF_MODULE_DIR}/subsys/partition_manager/ext_flash_mcuboot_secondary.conf
-        )
-      add_overlay_dts(
-        mcuboot
-        ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
-        )
-    else()
-      set_config_bool(mcuboot CONFIG_PCD_APP n)
+    if(SB_CONFIG_SECURE_BOOT_NETCORE)
+if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      if(SB_CONFIG_NETCORE_APP_UPDATE)
+        set_config_bool(mcuboot CONFIG_PCD_APP y)
+
+        add_overlay_config(
+          mcuboot
+          ${ZEPHYR_NRF_MODULE_DIR}/subsys/partition_manager/ext_flash_mcuboot_secondary.conf
+          )
+        add_overlay_dts(
+          mcuboot
+          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
+          )
+      else()
+        set_config_bool(mcuboot CONFIG_PCD_APP n)
+      endif()
+    endif()
     endif()
   endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
@@ -245,19 +251,41 @@ set(SYSBUILD y)
 include_packaging()
 
   # Run partition manager for each image before running CMake.
-  set(domain ${SB_CONFIG_SECURE_BOOT_DOMAIN})
-  if(DEFINED domain AND NOT domain STREQUAL APP)
-    set(partition_manager_target partition_manager_${domain})
-  endif()
+#  set(domain ${SB_CONFIG_SECURE_BOOT_DOMAIN})
+#  if(DEFINED domain AND NOT domain STREQUAL APP)
+#    set(partition_manager_target partition_manager_${domain})
+#  endif()
 
   if(SB_CONFIG_SECURE_BOOT OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+if(SB_CONFIG_SECURE_BOOT_APPCORE)
+set(DO_APP 1)
+set(DO_NET)
     include_provision_hex()
+endif()
+if(SB_CONFIG_SECURE_BOOT_NETCORE)
+set(DO_APP)
+set(DO_NET 1)
+#    include_provision_hex()
+endif()
   endif()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
+    if(SB_CONFIG_SECURE_BOOT_NETCORE)
+ # set(domain CPUNET)
+#    set(partition_manager_target partition_manager_${domain})
     include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
+endif()
   endif()
+
+#    set(partition_manager_target)
+#    if(SB_CONFIG_SECURE_BOOT_APPCORE)
+#  set(domain APP)
+#else()
+#  set(domain)
+#endif()
+
+#    include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/partition_manager.cmake OPTIONAL)
 
   # temp hack, load the specifically needed PM setting into a CMake current scope var.
   get_property(PM_MCUBOOT_PRIMARY_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_SIZE)
@@ -310,7 +338,9 @@ if(SB_CONFIG_SECURE_BOOT)
     endif()
 
     add_overlay_config(mcuboot "${ZEPHYR_NRF_MODULE_DIR}/subsys/pcd/pcd.conf")
-  else()
+  endif()
+
+  if(SB_CONFIG_SECURE_BOOT_APPCORE)
     if(SB_CONFIG_BOOTLOADER_MCUBOOT)
       add_overlay_config(mcuboot ${secure_boot_image_dir}/multi_image_mcuboot.conf)
 

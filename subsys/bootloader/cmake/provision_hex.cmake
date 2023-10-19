@@ -11,6 +11,7 @@ set_ifndef(partition_manager_target partition_manager)
 
 if(NCS_SYSBUILD_PARTITION_MANAGER)
   # Get the main app of the domain that secure boot should handle.
+if(0)
   if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
     ExternalProject_Get_Property(mcuboot BINARY_DIR)
     import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
@@ -31,6 +32,42 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
     import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
     sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${DEFAULT_IMAGE} VAR APPLICATION_CONFIG_DIR CACHE)
   endif()
+  endif()
+
+set(done 0)
+set(prefix_name)
+if(DO_APP)
+  if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
+    ExternalProject_Get_Property(mcuboot BINARY_DIR)
+    import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+    sysbuild_get(APPLICATION_CONFIG_DIR IMAGE mcuboot VAR APPLICATION_CONFIG_DIR CACHE)
+    set(done 1)
+  endif()
+set(prefix_name app_)
+endif()
+
+if(DO_NET)
+  if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_NETCORE)
+    get_property(main_app GLOBAL PROPERTY DOMAIN_APP_CPUNET)
+
+    if(NOT main_app)
+      message(FATAL_ERROR "Secure boot is enabled on domain CPUNET"
+                          " but no image is selected for this domain.")
+    endif()
+
+    ExternalProject_Get_Property(${main_app} BINARY_DIR)
+    import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+    sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${main_app} VAR APPLICATION_CONFIG_DIR CACHE)
+set(done 1)
+endif()
+set(prefix_name net_)
+endif()
+
+if(NOT done)
+    ExternalProject_Get_Property(${DEFAULT_IMAGE} BINARY_DIR)
+    import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
+    sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${DEFAULT_IMAGE} VAR APPLICATION_CONFIG_DIR CACHE)
+endif()
 endif()
 
 if (CONFIG_NCS_IS_VARIANT_IMAGE)
@@ -44,7 +81,7 @@ if (CONFIG_NCS_IS_VARIANT_IMAGE)
 endif()
 
 # Build and include hex file containing provisioned data for the bootloader.
-set(PROVISION_HEX_NAME     provision.hex)
+set(PROVISION_HEX_NAME     ${prefix_name}_provision.hex)
 set(PROVISION_HEX          ${PROJECT_BINARY_DIR}/${PROVISION_HEX_NAME})
 
 if(CONFIG_SECURE_BOOT)
@@ -60,8 +97,11 @@ if(CONFIG_SECURE_BOOT)
       # Input is comma separated string, convert to CMake list type
       string(REPLACE "," ";" PUBLIC_KEY_FILES_LIST "${CONFIG_SB_PUBLIC_KEY_FILES}")
 
+if(NOT wedone)
       include(${CMAKE_CURRENT_LIST_DIR}/debug_keys.cmake)
       include(${CMAKE_CURRENT_LIST_DIR}/sign.cmake)
+set(wedone 1)
+endif()
 
       if (${CONFIG_SB_DEBUG_SIGNATURE_PUBLIC_KEY_LAST})
         message(WARNING
@@ -155,7 +195,7 @@ endif()
 
 if(CONFIG_SECURE_BOOT OR CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
   add_custom_target(
-    provision_target
+    ${prefix_name}_provision_target
     DEPENDS
     ${PROVISION_HEX}
     ${PROVISION_DEPENDS}
