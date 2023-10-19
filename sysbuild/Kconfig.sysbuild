@@ -6,7 +6,7 @@
 
 # This file contains extra images which can be used with sysbuild based builds.
 
-config PARTITION_MANAGER
+menuconfig PARTITION_MANAGER
 	bool "Partition Manager"
 	default y
 
@@ -14,6 +14,7 @@ config PM_MCUBOOT_PAD
 	hex "Memory reserved for MCUBOOT_PAD"
 	default 0x200
 	depends on BOOTLOADER_MCUBOOT
+	depends on PARTITION_MANAGER
 	help
 	  MCUBOOT_PAD size in partition file.
 	  This value is default 0x200 but if using static partitions having a
@@ -22,6 +23,7 @@ config PM_MCUBOOT_PAD
 
 config PM_OVERRIDE_EXTERNAL_DRIVER_CHECK
 	bool "Override external driver check"
+	depends on PARTITION_MANAGER
 	help
 	  When enabled, will include all external flash stroage areas without
 	  being gated on the NORDIC_QSPI_NOR Kconfig, can be enabled to use
@@ -54,5 +56,5 @@ endif
 
 rsource "Kconfig.netcore"
 rsource "Kconfig.secureboot"
-rsource "Kconfig.dfu"
 rsource "Kconfig.mcuboot"
+rsource "Kconfig.dfu"
