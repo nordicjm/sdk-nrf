@@ -98,6 +98,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     # merged hex file
     set_target_properties(mcuboot PROPERTIES BUILD_ONLY true)
     set_property(TARGET mcuboot APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=${SB_CONFIG_MCUBOOT_UPDATEABLE_IMAGES}\n")
+    set_property(TARGET ${DEFAULT_IMAGE} APPEND_STRING PROPERTY CONFIG "CONFIG_UPDATEABLE_IMAGE_NUMBER=${SB_CONFIG_MCUBOOT_UPDATEABLE_IMAGES}\n")
 
     # Set MCUboot operating mode in application and MCUboot
 # todo: support RAM load

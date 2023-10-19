@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
 menuconfig SECURE_BOOT
-	bool "Use Secure Bootloader"
+	bool "Secure Bootloader"
 	help
 	  Set this option to enable the first stage bootloader which
 	  verifies the signature of the app.
