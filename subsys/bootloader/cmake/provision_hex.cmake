@@ -81,7 +81,7 @@ if (CONFIG_NCS_IS_VARIANT_IMAGE)
 endif()
 
 # Build and include hex file containing provisioned data for the bootloader.
-set(PROVISION_HEX_NAME     ${prefix_name}_provision.hex)
+set(PROVISION_HEX_NAME     ${prefix_name}provision.hex)
 set(PROVISION_HEX          ${PROJECT_BINARY_DIR}/${PROVISION_HEX_NAME})
 
 if(CONFIG_SECURE_BOOT)
@@ -91,17 +91,17 @@ if(CONFIG_SECURE_BOOT)
     endif()
 
     # Skip signing if MCUBoot is to be booted and its not built from source
+if(DO_APP)
     if ((CONFIG_SB_VALIDATE_FW_SIGNATURE OR CONFIG_SB_VALIDATE_FW_HASH) AND
        ((NOT (CONFIG_BOOTLOADER_MCUBOOT AND NOT CONFIG_MCUBOOT_BUILD_STRATEGY_FROM_SOURCE)) OR NCS_SYSBUILD_PARTITION_MANAGER))
 
       # Input is comma separated string, convert to CMake list type
       string(REPLACE "," ";" PUBLIC_KEY_FILES_LIST "${CONFIG_SB_PUBLIC_KEY_FILES}")
 
-if(NOT wedone)
+#if(NOT wedone)
       include(${CMAKE_CURRENT_LIST_DIR}/debug_keys.cmake)
       include(${CMAKE_CURRENT_LIST_DIR}/sign.cmake)
-set(wedone 1)
-endif()
+#set(wedone 1)
 
       if (${CONFIG_SB_DEBUG_SIGNATURE_PUBLIC_KEY_LAST})
         message(WARNING
@@ -124,10 +124,13 @@ endif()
 
       set(PROVISION_DEPENDS signature_public_key_file_target)
     endif()
+endif()
 
     # Adjustment to be able to load into sysbuild
-    if (CONFIG_SOC_NRF5340_CPUNET OR "${domain}" STREQUAL "CPUNET")
+#    if (CONFIG_SOC_NRF5340_CPUNET OR "${domain}" STREQUAL "CPUNET")
+if(DO_NET)
       set(s0_arg --s0-addr $<TARGET_PROPERTY:${partition_manager_target},PM_APP_ADDRESS>)
+      set(s1_arg)
     else()
       set(s0_arg --s0-addr $<TARGET_PROPERTY:${partition_manager_target},PM_S0_ADDRESS>)
       set(s1_arg --s1-addr $<TARGET_PROPERTY:${partition_manager_target},PM_S1_ADDRESS>)
@@ -195,7 +198,7 @@ endif()
 
 if(CONFIG_SECURE_BOOT OR CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
   add_custom_target(
-    ${prefix_name}_provision_target
+    ${prefix_name}provision_target
     DEPENDS
     ${PROVISION_HEX}
     ${PROVISION_DEPENDS}
