@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
-if BOOTLOADER_MCUBOOT
+menu "MCUboot configuration"
+	depends on BOOTLOADER_MCUBOOT
 
 menuconfig MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION
 	bool "Downgrade prevention using hardware security counters"
@@ -38,4 +39,23 @@ config MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE
 
 endif # MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION
 
-endif # BOOTLOADER_MCUBOOT
+config MCUBOOT_MAX_UPDATEABLE_IMAGES
+	int
+	default 3
+
+config MCUBOOT_UPDATEABLE_IMAGES
+	int "Updateable images"
+	range 3 MCUBOOT_MAX_UPDATEABLE_IMAGES if QSPI_XIP_SUPPORT
+	range 2 MCUBOOT_MAX_UPDATEABLE_IMAGES if NETCORE_APP_UPDATE
+	range 1 MCUBOOT_MAX_UPDATEABLE_IMAGES
+	help
+	  The number of images that MCUboot will be built with.
+
+config SECURE_BOOT_MCUBOOT_VERSION
+	string "MCUboot S0/S1 image update version"
+	default "0.0.0+0"
+	depends on SECURE_BOOT
+	help
+	  The version of the MCUboot S0/S1 upgrade package
+
+endmenu

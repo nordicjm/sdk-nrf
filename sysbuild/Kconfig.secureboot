@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 
-config SECURE_BOOT
+menuconfig SECURE_BOOT
 	bool "Use Secure Bootloader"
 	help
 	  Set this option to enable the first stage bootloader which
@@ -51,16 +51,11 @@ config SECURE_BOOT_DOMAIN
 	help
 	  Internal build system domain name used for first stage bootloader.
 
-config SECURE_BOOT_MCUBOOT_VERSION
-	string "MCUboot S0/S1 image update version"
-	default "0.0.0+0"
-	depends on BOOTLOADER_MCUBOOT
-	help
-	  The version of the MCUboot S0/S1 upgrade package
-
 config SECURE_BOOT_BUILD_S1_VARIANT_IMAGE
+#	bool "Build S1 variant image" # Possibly support disabling this in future
 	bool
-	default y if SECURE_BOOT_APPCORE
+	default y
+	depends on SECURE_BOOT_APPCORE
 	help
 	  Will build an S1 variant image for the second slot.
 
