@@ -59,4 +59,136 @@ config SECURE_BOOT_BUILD_S1_VARIANT_IMAGE
 	help
 	  Will build an S1 variant image for the second slot.
 
+
+
+
+
+#config SECURE_BOOT_PRIVATE_KEY_PROVIDED
+#	bool
+#	help
+#	  Hidden config specifying whether the build system has access to the
+#	  private key used for signing, and will use it to perform signing and
+#	  create the public key to be provisioned.
+
+choice SECURE_BOOT_SIGNING
+	prompt "Firmware signing method"
+	default SECURE_BOOT_SIGNING_PYTHON
+
+config SECURE_BOOT_SIGNING_PYTHON
+	bool "Sign with Python ecdsa library"
+	select SECURE_BOOT_PRIVATE_KEY_PROVIDED
+
+config SECURE_BOOT_SIGNING_OPENSSL
+	bool "Sign with openssl command line tool"
+	select SECURE_BOOT_PRIVATE_KEY_PROVIDED
+
+config SECURE_BOOT_SIGNING_CUSTOM
+	bool "Sign with custom command"
+
+endchoice
+
+config SECURE_BOOT_SIGNING_KEY_FILE
+	string
+	prompt "Private key PEM file" if !SECURE_BOOT_SIGNING_CUSTOM
+	default ""
+	help
+	  Absolute path to the private key PEM file.
+	  Specifies the private key used for signing the firmware image.
+	  The hash of the corresponding public key is stored as the first
+	  entry in the list of public key hashes in the provision hex file.
+	  This value can also be set by exporting an environment variable
+	  named 'SECURE_BOOT_SIGNING_KEY_FILE' or passing
+	  '-DSECURE_BOOT_SIGNING_KEY_FILE=/path/to/my/pem' when running cmake.
+	  See also SECURE_BOOT_PUBLIC_KEY_FILES.
+
+config SECURE_BOOT_SIGNING_COMMAND
+	string
+	prompt "Custom signing command" if SECURE_BOOT_SIGNING_CUSTOM
+	default ""
+	help
+	  This command will be called to produce a signature of the firmware.
+	  It will be called as "${CONFIG_SECURE_BOOT_SIGNING_COMMAND} <file>"
+	  The command must calculate the signature over the contents
+	  of the <file> and write the signature to stdout.
+	  The signature must be on DER format.
+
+config SECURE_BOOT_SIGNING_PUBLIC_KEY
+	string
+	prompt "Public key PEM file" if SECURE_BOOT_SIGNING_CUSTOM
+	default ""
+	help
+	  Path to a PEM file.
+	  When using a custom signing command, specify the corresponding public
+	  key here. This public key is checked during building, and added as
+	  the first entry in the provisioned data. See SECURE_BOOT_PUBLIC_KEY_FILES.
+
+config SECURE_BOOT_PUBLIC_KEY_FILES
+	string "Public Key PEM files"
+	default ""
+	help
+	  Comma-separated list of absolute paths to public key pem files.
+	  The provision hex file will contain a list of hashes of public keys.
+	  The first public key hash is the one corresponding to the private
+	  signing key used to sign the image. See SECURE_BOOT_SIGNING_KEY_FILE.
+	  The hashes of the public keys specified in this configuration will be
+	  placed after the aforementioned public key hash, in the order
+	  they appear in this config. The order is significant since if an image
+	  is successfully validated against a public key in the list, all
+	  public keys before it in the list will be invalidated.
+	  Example value: ~/keys/pk1.pem,~/keys/pk2.pem,~/keys/pk3.pem
+	  If config is the string "debug", 2 generated debug files will be used.
+	  If config is an empty string then only the public key hash
+	  corresponding to the private signing key used to sign the image is
+	  included in provision.hex.
+
+config SECURE_BOOT_DEBUG_SIGNATURE_PUBLIC_KEY_LAST
+	bool "[DEBUG] Place signing public key last"
+	default n
+	help
+	  Place the public key used for signing last in the list instead of
+	  first. This is meant to be used for testing looping through the
+	  public keys.
+
+config SECURE_BOOT_DEBUG_NO_VERIFY_HASHES
+	bool
+	help
+	  [DEBUG] Don't check public key hashes for applicability.
+	  Use this only in (negative) tests!
+
+#config SECURE_BOOT_MONOTONIC_COUNTER
+#	bool "Enable HW monotonic version counter"
+#	default y
+#	help
+#	  The counter stores the current firmware version in a way that ensures that the value
+#	  can only increase. This is used to prevent malicious rollback of the firmware.
+#	  An array of slots is used for the counter. One slot is used per
+#	  counter update, and each new slot must have a larger value than the
+#	  previous. Application versions are checked against the largest
+#	  counter value before being booted.
+
+#config SECURE_BOOT_NUM_VER_COUNTER_SLOTS
+#	int "Number of monotonic counter slots used for the firmware version"
+#	default 20 if BOOTLOADER_MCUBOOT
+#	default 240
+#	range 2 300 if SOC_NRF5340_CPUAPP || SOC_SERIES_NRF91X
+#	range 2 1800 if SOC_SERIES_NRF52X
+#	range 2 400 if SOC_SERIES_NRF51X
+#	depends on SECURE_BOOT_MONOTONIC_COUNTER
+#	help
+#	  The number of monotonic counter slots available for the counter,
+#	  i.e., the number of times the counter can be updated.
+#	  The slots are 16 bits each. The number of slots must be an even
+#	  number to ensure that the total size of header and slots is aligned on a 32-bit word.
+#	  Rationale for the default number (240): Assume one update a month for
+#	  10 years, then double that value just in case. This default fits
+#	  comfortably within the OTP region of UICR.
+#	  When a second stage bootloader is enabled, such as MCUboot, this counter is used
+#	  for the updates of the second stage bootloader and not of the application image. Thus
+#	  the default when MCUboot is enabled is 20, to allow two updates a year for 10 years.
+#	  Regarding ranges: The actual maximum depends on the number of
+#	  provisioned public keys, since they share the space. The same is true if
+#	  other data is stored in the "OTP" region (on for example nRF91 and nRF53).
+#	  This configuration should not be used in code. Instead, the header before the
+#	  slots should be read at run-time.
+
 endif
