@@ -5,39 +5,39 @@
 #
 
 function(domegen)
-set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
+  set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
 
-# This is needed for make, ninja is able to resolve and create the path but make
-# is not able to resolve it.
-file(MAKE_DIRECTORY ${GENERATED_PATH})
+  # This is needed for make, ninja is able to resolve and create the path but make
+  # is not able to resolve it.
+  file(MAKE_DIRECTORY ${GENERATED_PATH})
 
-set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem)
-set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem PARENT_SCOPE)
+  set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem)
+  set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem PARENT_SCOPE)
 
-if(SB_CONFIG_SECURE_BOOT_SIGNING_PYTHON)
-  set(PUB_GEN_CMD
-    ${PYTHON_EXECUTABLE}
-    ${ZEPHYR_NRF_MODULE_DIR}/scripts/bootloader/keygen.py
-    --public
-    --in ${SIGNATURE_PRIVATE_KEY_FILE}
-    --out ${SIGNATURE_PUBLIC_KEY_FILE}
-    )
-elseif(SB_CONFIG_SECURE_BOOT_SIGNING_OPENSSL)
-  set(PUB_GEN_CMD
-    openssl ec
-    -pubout
-    -in ${SIGNATURE_PRIVATE_KEY_FILE}
-    -out ${SIGNATURE_PUBLIC_KEY_FILE}
-    )
-elseif(SB_CONFIG_SECURE_BOOT_SIGNING_CUSTOM)
-  set(SIGNATURE_PUBLIC_KEY_FILE ${SB_CONFIG_SECURE_BOOT_SIGNING_PUBLIC_KEY})
-  set(SIGNATURE_PUBLIC_KEY_FILE ${SB_CONFIG_SECURE_BOOT_SIGNING_PUBLIC_KEY} PARENT_SCOPE)
-  if (NOT EXISTS ${SIGNATURE_PUBLIC_KEY_FILE} OR IS_DIRECTORY ${SIGNATURE_PUBLIC_KEY_FILE})
-    message(WARNING "Invalid public key file: ${SIGNATURE_PUBLIC_KEY_FILE}")
+  if(SB_CONFIG_SECURE_BOOT_SIGNING_PYTHON)
+    set(PUB_GEN_CMD
+      ${PYTHON_EXECUTABLE}
+      ${ZEPHYR_NRF_MODULE_DIR}/scripts/bootloader/keygen.py
+      --public
+      --in ${SIGNATURE_PRIVATE_KEY_FILE}
+      --out ${SIGNATURE_PUBLIC_KEY_FILE}
+      )
+  elseif(SB_CONFIG_SECURE_BOOT_SIGNING_OPENSSL)
+    set(PUB_GEN_CMD
+      openssl ec
+      -pubout
+      -in ${SIGNATURE_PRIVATE_KEY_FILE}
+      -out ${SIGNATURE_PUBLIC_KEY_FILE}
+      )
+  elseif(SB_CONFIG_SECURE_BOOT_SIGNING_CUSTOM)
+    set(SIGNATURE_PUBLIC_KEY_FILE ${SB_CONFIG_SECURE_BOOT_SIGNING_PUBLIC_KEY})
+    set(SIGNATURE_PUBLIC_KEY_FILE ${SB_CONFIG_SECURE_BOOT_SIGNING_PUBLIC_KEY} PARENT_SCOPE)
+    if(NOT EXISTS ${SIGNATURE_PUBLIC_KEY_FILE} OR IS_DIRECTORY ${SIGNATURE_PUBLIC_KEY_FILE})
+      message(WARNING "Invalid public key file: ${SIGNATURE_PUBLIC_KEY_FILE}")
+    endif()
+  else()
+    message(WARNING "Unable to parse signing config.")
   endif()
-else ()
-  message(WARNING "Unable to parse signing config.")
-endif()
 
 # TODO: this config is gone
 #if(SB_CONFIG_SECURE_BOOT_PRIVATE_KEY_PROVIDED)
@@ -56,44 +56,22 @@ endif()
     )
 #endif()
 
-# Public key file target is required for all signing options
-add_custom_target(
-    signature_public_key_file_target
-    DEPENDS
-    ${SIGNATURE_PUBLIC_KEY_FILE}
-  )
+  # Public key file target is required for all signing options
+  add_custom_target(
+      signature_public_key_file_target
+      DEPENDS
+      ${SIGNATURE_PUBLIC_KEY_FILE}
+    )
 endfunction()
 
 function(dosomesign slot)
-
-set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
-set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem)
+  set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
+  set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem)
 
 # TODO: this uses zephyr_target
 #include(${CMAKE_CURRENT_LIST_DIR}/../cmake/bl_validation_magic.cmake)
-include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/bl_validation_magic.cmake)
+  include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/bl_validation_magic.cmake)
 
-#set(slots s0_image)
-#if (CONFIG_SECURE_BOOT AND CONFIG_SOC_NRF5340_CPUNET AND NOT NCS_SYSBUILD_PARTITION_MANAGER)
-#  list(APPEND slots app)
-#endif()
-
-##if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL "CPUNET")
-##  get_property(domain_app GLOBAL PROPERTY DOMAIN_APP_${SB_CONFIG_SECURE_BOOT_DOMAIN})
-#  get_property(domain_app GLOBAL PROPERTY DOMAIN_APP_CPUNET)
-##  set(slots ${domain_app})
-#  list(APPEND slots ${domain_app})
-##endif()
-
-#if (CONFIG_BUILD_S1_VARIANT OR SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-#  list(APPEND slots s1_image)
-#endif ()
-
-##if(NCS_SYSBUILD_PARTITION_MANAGER AND "${SB_CONFIG_SECURE_BOOT_DOMAIN}" STREQUAL "APP" AND SB_CONFIG_BOOTLOADER_MCUBOOT)
-#  list(APPEND slots mcuboot)
-##endif()
-
-#foreach (slot ${slots})
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
 
@@ -265,5 +243,4 @@ message(FATAL_ERROR "Not supported")
     ${target_name}_PM_TARGET
     ${slot}_signed_kernel_hex_target
     )
-#endforeach()
 endfunction()
