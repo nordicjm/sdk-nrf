@@ -4,8 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-
-        string(REPLACE "," ";" PUBLIC_KEY_FILES_LIST "${SB_CONFIG_SECURE_BOOT_PUBLIC_KEY_FILES}")
+string(REPLACE "," ";" PUBLIC_KEY_FILES_LIST "${SB_CONFIG_SECURE_BOOT_PUBLIC_KEY_FILES}")
 
 set(PRIV_CMD
   ${PYTHON_EXECUTABLE}
@@ -80,7 +79,7 @@ endif()
 set(PUBLIC_KEY_FILES "")
 
 # Check if debug public and private keys for key revokation should be generated
-if ("${SB_CONFIG_SECURE_BOOT_PUBLIC_KEY_FILES}" STREQUAL "debug")
+if("${SB_CONFIG_SECURE_BOOT_PUBLIC_KEY_FILES}" STREQUAL "debug")
   message(WARNING "
     ---------------------------------------------------------------
     --- WARNING: Using generated NSIB public/private key-pairs. ---
