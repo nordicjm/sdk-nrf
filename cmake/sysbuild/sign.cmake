@@ -37,6 +37,7 @@ function(domegen)
     endif()
   else()
     message(WARNING "Unable to parse signing config.")
+    return()
   endif()
 
 # TODO: this config is gone
