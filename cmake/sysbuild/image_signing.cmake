@@ -85,6 +85,10 @@ function(zephyr_mcuboot_tasks)
     set(imgtool_extra)
   endif()
 
+  if(CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
+    set(imgtool_extra --security-counter ${CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE} ${imgtool_extra})
+  endif()
+
   if(NOT "${keyfile}" STREQUAL "")
     set(imgtool_extra -k "${keyfile}" ${imgtool_extra})
   endif()
