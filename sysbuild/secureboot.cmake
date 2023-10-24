@@ -9,11 +9,10 @@ if(SB_CONFIG_SECURE_BOOT)
     set(secure_boot_source_dir ${ZEPHYR_NRF_MODULE_DIR}/samples/nrf5340/netboot)
 
     ExternalZephyrProject_Add(
-#      APPLICATION ${SB_CONFIG_SECURE_BOOT_IMAGE_NAME}
       APPLICATION b0n
       # ToDo: which sample is used as  secure boot sample in other cases ?
       SOURCE_DIR ${secure_boot_source_dir}
-      BOARD ${SB_CONFIG_SECURE_BOOT_BOARD}
+      BOARD ${SB_CONFIG_SECURE_BOOT_NETWORK_BOARD}
       BUILD_ONLY true
     )
     set_target_properties(${SB_CONFIG_SECURE_BOOT_IMAGE_NAME} PROPERTIES
@@ -45,7 +44,6 @@ endif()
     set(secure_boot_source_dir ${ZEPHYR_NRF_MODULE_DIR}/samples/bootloader)
 
     ExternalZephyrProject_Add(
-#      APPLICATION ${SB_CONFIG_SECURE_BOOT_IMAGE_NAME}
       APPLICATION b0
       # ToDo: which sample is used as  secure boot sample in other cases ?
       SOURCE_DIR ${secure_boot_source_dir}
@@ -88,7 +86,7 @@ endif()
     endif()
 
     set_property(GLOBAL APPEND PROPERTY
-        PM_${SB_CONFIG_SECURE_BOOT_DOMAIN}_IMAGES
+        PM_APP_IMAGES
         "${image}"
     )
   endif()
