@@ -229,20 +229,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
           mcuboot
           ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
           )
-
-        set_config_bool(s1_image CONFIG_PCD_APP y)
-
-        add_overlay_config(
-          s1_image
-          ${ZEPHYR_NRF_MODULE_DIR}/subsys/partition_manager/ext_flash_mcuboot_secondary.conf
-          )
-        add_overlay_dts(
-          s1_image
-          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
-          )
       else()
         set_config_bool(mcuboot CONFIG_PCD_APP n)
-        set_config_bool(s1_image CONFIG_PCD_APP n)
       endif()
     endif()
   endif()
