@@ -15,7 +15,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/debug_keys.cmake)
 function(provision application prefix_name)
   ExternalProject_Get_Property(${application} BINARY_DIR)
   import_kconfig(CONFIG_ ${BINARY_DIR}/zephyr/.config)
-#  sysbuild_get(APPLICATION_CONFIG_DIR IMAGE ${application} VAR APPLICATION_CONFIG_DIR CACHE)
 
   # Build and include hex file containing provisioned data for the bootloader.
   set(PROVISION_HEX_NAME     ${prefix_name}provision.hex)
@@ -28,7 +27,7 @@ function(provision application prefix_name)
     endif()
 
     # Skip signing if MCUBoot is to be booted and its not built from source
-    if ((CONFIG_SB_VALIDATE_FW_SIGNATURE OR CONFIG_SB_VALIDATE_FW_HASH) AND
+    if((CONFIG_SB_VALIDATE_FW_SIGNATURE OR CONFIG_SB_VALIDATE_FW_HASH) AND
         NCS_SYSBUILD_PARTITION_MANAGER)
 
       if (${SB_CONFIG_SECURE_BOOT_DEBUG_SIGNATURE_PUBLIC_KEY_LAST})
@@ -69,8 +68,7 @@ function(provision application prefix_name)
     endif()
 
     dosomesign(${application})
-    if(NOT (CONFIG_SOC_NRF5340_CPUNET OR "${domain}" STREQUAL "CPUNET"))
-#todo: check if S1 enabled
+    if(NOT (CONFIG_SOC_NRF5340_CPUNET OR "${domain}" STREQUAL "CPUNET") AND SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
       dosomesign("s1_image")
     endif()
   endif()
@@ -168,7 +166,7 @@ if(NCS_SYSBUILD_PARTITION_MANAGER)
       provision("${DEFAULT_IMAGE}" "app_")
     endif()
   elseif(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
-#todo:
+    provision("${DEFAULT_IMAGE}" "app_")
   endif()
 
   if(SB_CONFIG_SECURE_BOOT_NETCORE)
