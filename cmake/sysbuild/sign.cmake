@@ -69,9 +69,25 @@ function(dosomesign slot)
   set(GENERATED_PATH ${PROJECT_BINARY_DIR}/nrf/subsys/bootloader/generated)
   set(SIGNATURE_PUBLIC_KEY_FILE ${GENERATED_PATH}/public.pem)
 
-# TODO: this uses zephyr_target
-#include(${CMAKE_CURRENT_LIST_DIR}/../cmake/bl_validation_magic.cmake)
-  include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/bl_validation_magic.cmake)
+  # Get variables for secure boot usage
+  sysbuild_get(${slot}_sb_validation_info_version IMAGE ${slot} VAR CONFIG_SB_VALIDATION_INFO_VERSION KCONFIG)
+  sysbuild_get(${slot}_fw_info_hardware_id IMAGE ${slot} VAR CONFIG_FW_INFO_HARDWARE_ID KCONFIG)
+  sysbuild_get(${slot}_sb_validation_info_crypto_id IMAGE ${slot} VAR CONFIG_SB_VALIDATION_INFO_CRYPTO_ID KCONFIG)
+  sysbuild_get(${slot}_fw_info_magic_compatibility_id IMAGE ${slot} VAR CONFIG_FW_INFO_MAGIC_COMPATIBILITY_ID KCONFIG)
+  sysbuild_get(${slot}_fw_info_magic_common IMAGE ${slot} VAR CONFIG_FW_INFO_MAGIC_COMMON KCONFIG)
+  sysbuild_get(${slot}_sb_validation_info_magic IMAGE ${slot} VAR CONFIG_SB_VALIDATION_INFO_MAGIC KCONFIG)
+#  sysbuild_get(${slot}_sb_validation_pointer_magic IMAGE ${slot} VAR CONFIG_SB_VALIDATION_POINTER_MAGIC KCONFIG)
+
+  math(EXPR
+    MAGIC_COMPATIBILITY_VALIDATION_INFO
+    "(${${slot}_sb_validation_info_version}) |
+     (${${slot}_fw_info_hardware_id} << 8) |
+     (${${slot}_sb_validation_info_crypto_id} << 16) |
+     (${${slot}_fw_info_magic_compatibility_id} << 24)"
+    )
+
+  set(VALIDATION_INFO_MAGIC    "${${slot}_fw_info_magic_common},${${slot}_sb_validation_info_magic},${MAGIC_COMPATIBILITY_VALIDATION_INFO}")
+#  set(VALIDATION_POINTER_MAGIC "${${slot}_fw_info_magic_common},${${slot}_sb_validation_pointer_magic},${MAGIC_COMPATIBILITY_VALIDATION_INFO}")
 
   set(signed_hex ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.hex)
   set(signed_bin ${PROJECT_BINARY_DIR}/signed_by_b0_${slot}.bin)
