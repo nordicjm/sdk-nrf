@@ -124,30 +124,39 @@ function(zephyr_mcuboot_tasks)
     list(APPEND byproducts ${output}.bin)
     zephyr_runner_file(bin ${output}.bin)
 
-  # Add the west sign calls and their byproducts to the post-processing
-  # steps for zephyr.elf.
-  #
-  # CMake guarantees that multiple COMMANDs given to
-  # add_custom_command() are run in order, so adding the 'west sign'
-  # calls to the "extra_post_build_commands" property ensures they run
-  # after the commands which generate the unsigned versions.
-  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-    ${west_sign} ${imgtool_args} ${unconfirmed_args})
+    # Add the west sign calls and their byproducts to the post-processing
+    # steps for zephyr.elf.
+    #
+    # CMake guarantees that multiple COMMANDs given to
+    # add_custom_command() are run in order, so adding the 'west sign'
+    # calls to the "extra_post_build_commands" property ensures they run
+    # after the commands which generate the unsigned versions.
+    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+      ${west_sign} ${imgtool_args} ${unconfirmed_args})
 
 #    if(CONFIG_MCUBOOT_GENERATE_CONFIRMED_IMAGE)
 #      list(APPEND confirmed_args --bin --sbin ${output}.signed.confirmed.bin)
 #      list(APPEND byproducts ${output}.signed.confirmed.bin)
 #    endif()
 #
-#    if(NOT "${keyfile_enc}" STREQUAL "")
-#      list(APPEND encrypted_args --bin --sbin ${output}.signed.encrypted.bin)
-#      list(APPEND byproducts ${output}.signed.encrypted.bin)
-#    endif()
+    if(NOT "${keyfile_enc}" STREQUAL "")
+      if(CONFIG_BUILD_WITH_TFM)
+        # TF-M does not generate a bin file, so use the hex file as an input
+        set(unconfirmed_args ${input}.hex ${output}.encrypted.bin)
+      else()
+        set(unconfirmed_args ${input}.bin ${output}.encrypted.bin)
+      endif()
+
+      list(APPEND byproducts ${output}.encrypted.bin)
+      zephyr_runner_file(bin ${output}.encrypted.bin)
+
+      set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+        ${west_sign} ${imgtool_args} --encrypt "${keyfile_enc}" ${unconfirmed_args})
+    endif()
   endif()
 
   # Set up .hex outputs.
   if(CONFIG_BUILD_OUTPUT_HEX)
-#    list(APPEND unconfirmed_args --hex --shex ${output}.signed.hex)
     set(unconfirmed_args ${input}.hex ${output}.hex)
     list(APPEND byproducts ${output}.hex)
     zephyr_runner_file(hex ${output}.hex)
@@ -155,34 +164,34 @@ function(zephyr_mcuboot_tasks)
         CACHE FILEPATH "Signed kernel hex file" FORCE
     )
 
-  # Add the west sign calls and their byproducts to the post-processing
-  # steps for zephyr.elf.
-  #
-  # CMake guarantees that multiple COMMANDs given to
-  # add_custom_command() are run in order, so adding the 'west sign'
-  # calls to the "extra_post_build_commands" property ensures they run
-  # after the commands which generate the unsigned versions.
-  set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-    ${west_sign} ${imgtool_args} ${unconfirmed_args})
+    # Add the west sign calls and their byproducts to the post-processing
+    # steps for zephyr.elf.
+    #
+    # CMake guarantees that multiple COMMANDs given to
+    # add_custom_command() are run in order, so adding the 'west sign'
+    # calls to the "extra_post_build_commands" property ensures they run
+    # after the commands which generate the unsigned versions.
+    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+      ${west_sign} ${imgtool_args} ${unconfirmed_args})
 
 #    if(CONFIG_MCUBOOT_GENERATE_CONFIRMED_IMAGE)
 #      list(APPEND confirmed_args --hex --shex ${output}.signed.confirmed.hex)
 #      list(APPEND byproducts ${output}.signed.confirmed.hex)
 #    endif()
 
-#    if(NOT "${keyfile_enc}" STREQUAL "")
-#      list(APPEND encrypted_args --hex --shex ${output}.signed.encrypted.hex)
-#      list(APPEND byproducts ${output}.signed.encrypted.hex)
-#    endif()
+    if(NOT "${keyfile_enc}" STREQUAL "")
+      set(unconfirmed_args ${input}.hex ${output}.encrypted.hex)
+      list(APPEND byproducts ${output}.encrypted.hex)
+      zephyr_runner_file(hex ${output}.encrypted.hex)
+
+      set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
+        ${west_sign} ${imgtool_args} --encrypt "${keyfile_enc}" ${unconfirmed_args})
+    endif()
   endif()
 
 #  if(confirmed_args)
 #    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
 #      ${west_sign} ${confirmed_args} ${imgtool_args} --pad --confirm)
-#  endif()
-#  if(encrypted_args)
-#    set_property(GLOBAL APPEND PROPERTY extra_post_build_commands COMMAND
-#      ${west_sign} ${encrypted_args} ${imgtool_args} --encrypt "${keyfile_enc}")
 #  endif()
   set_property(GLOBAL APPEND PROPERTY extra_post_build_byproducts ${byproducts})
 endfunction()
