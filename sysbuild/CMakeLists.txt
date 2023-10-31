@@ -26,7 +26,7 @@ function(configure_cache)
   ExternalProject_Get_Property(${CONFIGURE_CACHE_IMAGE} BINARY_DIR)
 
   configure_file("${BINARY_DIR}/CMakeCache.txt" "${BINARY_DIR}/CMakeCache.txt.tmp" @ONLY)
-  file(COPY_FILE "${BINARY_DIR}/CMakeCache.txt.tmp" "${BINARY_DIR}/CMakeCache.txt" ONLY_IF_DIFFERENT)
+  zephyr_file_copy("${BINARY_DIR}/CMakeCache.txt.tmp" "${BINARY_DIR}/CMakeCache.txt" ONLY_IF_DIFFERENT)
 endfunction()
 
 function(store_ncs_vars)
