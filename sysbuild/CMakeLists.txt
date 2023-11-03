@@ -50,6 +50,10 @@ function(include_provision_hex)
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/provision_hex.cmake)
 endfunction()
 
+function(include_fast_pair_hex)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/fast_pair_hex.cmake)
+endfunction()
+
 function(include_packaging)
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/b0_mcuboot_signing.cmake)
   include(${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/cmake/packaging.cmake)
@@ -253,6 +257,10 @@ include_packaging()
     include_provision_hex()
   endif()
 
+  if(DEFINED FP_MODEL_ID AND DEFINED FP_ANTI_SPOOFING_KEY)
+    include_fast_pair_hex()
+  endif()
+
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
     # Run partition manager for each image before running CMake.
@@ -262,6 +270,8 @@ include_packaging()
   # temp hack, load the specifically needed PM setting into a CMake current scope var.
   get_property(PM_MCUBOOT_PRIMARY_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_SIZE)
   get_property(PM_MCUBOOT_PAD_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PAD_SIZE)
+
+  get_property(PM_BT_FAST_PAIR_ADDRESS TARGET partition_manager PROPERTY PM_BT_FAST_PAIR_ADDRESS)
 
   if(SB_CONFIG_SUPPORT_NETCORE AND NOT SB_CONFIG_NETCORE_EMPTY)
     get_property(PM_MCUBOOT_PRIMARY_1_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_1_SIZE)
