@@ -243,6 +243,20 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       endif()
     endif()
   endif()
+
+  if(SB_CONFIG_FAST_PAIR_SUPPORT)
+    set_config_bool(${DEFAULT_IMAGE} CONFIG_BT_FAST_PAIR y)
+
+    if(DEFINED FP_MODEL_ID AND DEFINED FP_ANTI_SPOOFING_KEY)
+      include_fast_pair_hex()
+      set(FP_DATA_PRESENT "y" CACHE INTERNAL "Fast pair provision data provided" FORCE)
+    else()
+      message(WARNING "Fast pair support is enabled but `FP_MODEL_ID` or `FP_ANTI_SPOOFING_KEY` were not provided, this is likely to cause a build error")
+      set(FP_DATA_PRESENT "n" CACHE INTERNAL "Fast pair provision data provided" FORCE)
+    endif()
+  else()
+    set_config_bool(${DEFAULT_IMAGE} CONFIG_BT_FAST_PAIR n)
+  endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 
 # Sysbuild function hooks used by nRF Connect SDK
@@ -260,10 +274,6 @@ include_packaging()
 
   if(SB_CONFIG_SECURE_BOOT OR SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
     include_provision_hex()
-  endif()
-
-  if(DEFINED FP_MODEL_ID AND DEFINED FP_ANTI_SPOOFING_KEY)
-    include_fast_pair_hex()
   endif()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)

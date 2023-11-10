@@ -30,6 +30,16 @@ if(CONFIG_BT_FAST_PAIR_STORAGE)
   target_link_libraries(fast_pair PRIVATE fp_storage)
 endif()
 
+if(SYSBUILD)
+  zephyr_get(FP_DATA_PRESENT MERGE SYSBUILD)
+
+  if(NOT FP_DATA_PRESENT AND TARGET zephyr_interface)
+    zephyr_compile_definitions(
+      FP_DATA_NOT_PRESENT
+      )
+  endif()
+endif()
+
 if(NOT SYSBUILD)
   set(FP_PARTITION_NAME bt_fast_pair)
 
