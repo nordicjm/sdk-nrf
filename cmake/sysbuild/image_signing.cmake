@@ -159,7 +159,7 @@ function(zephyr_mcuboot_tasks)
   if(CONFIG_BUILD_OUTPUT_HEX)
     set(unconfirmed_args ${input}.hex ${output}.hex)
     list(APPEND byproducts ${output}.hex)
-    zephyr_runner_file(hex ${output}.hex)
+#    zephyr_runner_file(hex ${output}.hex)
     set(BYPRODUCT_KERNEL_SIGNED_HEX_NAME "${output}.hex"
         CACHE FILEPATH "Signed kernel hex file" FORCE
     )
