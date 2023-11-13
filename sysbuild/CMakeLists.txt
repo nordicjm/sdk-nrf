@@ -168,9 +168,6 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     # Use NCS signing script with support for PM
     set(${DEFAULT_IMAGE}_SIGNING_SCRIPT "${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/image_signing.cmake" CACHE INTERNAL "MCUboot signing script" FORCE)
 
-# TODO: NCSDK-24143: Issued caused by temp. PM hack
-    set(${DEFAULT_IMAGE}_ALT_SIGNED_HEX_FILE "${CMAKE_BINARY_DIR}/merged.hex" CACHE INTERNAL "nope" FORCE)
-
     set(imgtool_extra)
     if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
       set(imgtool_extra " --security-counter ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE}")
