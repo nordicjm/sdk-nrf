@@ -470,6 +470,7 @@ foreach (d ${PM_DOMAINS})
   endforeach()
 
   # ToDo: Adjust into each image generated folder instead of this.
+#THIS IS WRONG:
   list(APPEND ${d}_input_files ${PROJECT_BINARY_DIR}/${generated_path}/pm.yml)
   list(APPEND ${d}_header_files ${PROJECT_BINARY_DIR}/${generated_path}/pm_config.h)
 endforeach()
