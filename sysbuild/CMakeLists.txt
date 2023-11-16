@@ -304,9 +304,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/extensions.cmake)
 if(SB_CONFIG_SECURE_BOOT)
   set(secure_boot_image_dir ${ZEPHYR_NRF_MODULE_DIR}/subsys/bootloader/image)
   if(SB_CONFIG_SECURE_BOOT_NETCORE)
-    if(SB_CONFIG_NETCORE_HCI_RPMSG)
+    if(SB_CONFIG_NETCORE_HCI_IPC)
       add_overlay_config(
-        ${SB_CONFIG_NETCORE_HCI_RPMSG_NAME} # ToDo: Create a common Kconfig setting
+        ${SB_CONFIG_NETCORE_HCI_IPC_NAME} # ToDo: Create a common Kconfig setting
                                             # which can then default to the exact
                                             # remote image selected, as to work for
                                             # hci, mpsl, thread, etc.
