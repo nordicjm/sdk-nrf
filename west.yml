@@ -45,7 +45,7 @@ manifest:
   defaults:
     remote: ncs
 
-  group-filter: [-nrf-802154, -dragoon, -find-my, -ant, -babblesim, -sidewalk, -bsec]
+  group-filter: [-nrf-802154, -dragoon, -find-my, -ant, -babblesim, -sidewalk, -bsec, +optional]
 
   # "projects" is a list of git repositories which make up the NCS
   # source code.
