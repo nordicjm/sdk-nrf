@@ -26,8 +26,8 @@ tests:
     integration_platforms:
       - nrf52840dk_nrf52840
       - nrf5340dk_nrf5340_cpuapp
-# NCSDK-24684: Add support for disabling PM
-#      - qemu_cortex_m3
+      # NCSDK-24684: Add support for disabling PM
+      #- qemu_cortex_m3
     harness_config:
       type: multi_line
       ordered: true
