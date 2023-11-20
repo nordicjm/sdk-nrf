@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-if(DEFINED SB_CONFIG_REMOTE_BOARD)
+if(SB_CONFIG_REMOTE_BOARD)
   # Add remote project
   ExternalZephyrProject_Add(
       APPLICATION remote
