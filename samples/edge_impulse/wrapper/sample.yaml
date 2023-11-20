@@ -16,21 +16,21 @@ common:
 tests:
   sample.edge_impulse.wrapper:
     build_only: false
-  integration_platforms:
-    - nrf52dk_nrf52832
-    - nrf52840dk_nrf52840
-    - nrf5340dk_nrf5340_cpuapp
-    - nrf5340dk_nrf5340_cpuapp_ns
-    - nrf9160dk_nrf9160_ns
-    - qemu_cortex_m3
+    integration_platforms:
+      - nrf52dk_nrf52832
+      - nrf52840dk_nrf52840
+      - nrf5340dk_nrf5340_cpuapp
+      - nrf5340dk_nrf5340_cpuapp_ns
+      - nrf9160dk_nrf9160_ns
+      - qemu_cortex_m3
   sample.edge_impulse.wrapper.sysbuild:
     sysbuild: true
     build_only: false
-  integration_platforms:
-    - nrf52dk_nrf52832
-    - nrf52840dk_nrf52840
-    - nrf5340dk_nrf5340_cpuapp
-    - nrf5340dk_nrf5340_cpuapp_ns
-    - nrf9160dk_nrf9160_ns
-    # NCSDK-24684: Add support for disabling PM
-    # - qemu_cortex_m3
+    integration_platforms:
+      - nrf52dk_nrf52832
+      - nrf52840dk_nrf52840
+      - nrf5340dk_nrf5340_cpuapp
+      - nrf5340dk_nrf5340_cpuapp_ns
+      - nrf9160dk_nrf9160_ns
+      # NCSDK-24684: Add support for disabling PM
+      # - qemu_cortex_m3
