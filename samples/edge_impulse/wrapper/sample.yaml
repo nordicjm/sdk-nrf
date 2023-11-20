@@ -23,3 +23,6 @@ common:
 tests:
   sample.edge_impulse.wrapper:
     build_only: false
+  sample.edge_impulse.wrapper.sysbuild:
+    sysbuild: true
+    build_only: false
