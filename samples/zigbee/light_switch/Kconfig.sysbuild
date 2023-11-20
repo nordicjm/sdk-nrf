@@ -4,8 +4,6 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-source "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
-
 config NRF_DEFAULT_IPC_RADIO
 	default y
 
@@ -14,3 +12,8 @@ config NETCORE_IPC_RADIO_BT_HCI_IPC
 
 config NETCORE_IPC_RADIO_IEEE802154
 	default y
+
+config PM_EXTERNAL_FLASH_MCUBOOT_SECONDARY
+	default y if BOARD_NRF5340DK_NRF5340_CPUAPP
+
+source "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
