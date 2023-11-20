@@ -3,33 +3,37 @@ sample:
   description: IPC radio firmware application
 tests:
   applications.ipc_radio.hci:
+    sysbuild: true
     build_only: true
     platform_allow: nrf5340dk/nrf5340/cpunet thingy53/nrf5340/cpunet
-    tags: bluetooth ci_build
+    tags: bluetooth ci_build sysbuild
     integration_platforms:
       - nrf5340dk/nrf5340/cpunet
       - thingy53/nrf5340/cpunet
     extra_args: EXTRA_CONF_FILE=overlay-bt_hci_ipc.conf
   applications.ipc_radio.rpc:
+    sysbuild: true
     build_only: true
     platform_allow: nrf5340dk/nrf5340/cpunet thingy53/nrf5340/cpunet
-    tags: bluetooth ci_build
+    tags: bluetooth ci_build sysbuild
     integration_platforms:
       - nrf5340dk/nrf5340/cpunet
       - thingy53/nrf5340/cpunet
     extra_args: EXTRA_CONF_FILE=overlay-bt_rpc.conf
   applications.ipc_radio.802154:
+    sysbuild: true
     build_only: true
     platform_allow: nrf5340dk/nrf5340/cpunet thingy53/nrf5340/cpunet
-    tags: ci_build
+    tags: ci_build sysbuild
     integration_platforms:
       - nrf5340dk/nrf5340/cpunet
       - thingy53/nrf5340/cpunet
     extra_args: EXTRA_CONF_FILE=overlay-802154.conf
   applications.ipc_radio.hci802154:
+    sysbuild: true
     build_only: true
     platform_allow: nrf5340dk/nrf5340/cpunet thingy53/nrf5340/cpunet
-    tags: bluetooth ci_build
+    tags: bluetooth ci_build sysbuild
     integration_platforms:
       - nrf5340dk/nrf5340/cpunet
       - thingy53/nrf5340/cpunet
