@@ -2,6 +2,7 @@ sample:
   name: CoAP client sample
 tests:
   sample.net.coap_client:
+    sysbuild: true
     build_only: true
     build_on_all: true
     integration_platforms:
@@ -16,4 +17,4 @@ tests:
       - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - nrf7002dk/nrf5340/cpuapp/ns
-    tags: ci_build
+    tags: ci_build sysbuild
