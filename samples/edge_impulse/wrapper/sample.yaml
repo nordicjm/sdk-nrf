@@ -33,4 +33,4 @@ tests:
     - nrf5340dk_nrf5340_cpuapp_ns
     - nrf9160dk_nrf9160_ns
     # NCSDK-24684: Add support for disabling PM
-    #- qemu_cortex_m3
+    # - qemu_cortex_m3

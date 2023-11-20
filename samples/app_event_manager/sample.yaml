@@ -28,7 +28,7 @@ tests:
     build_only: false
     integration_platforms:
       # NCSDK-24684: Add support for disabling PM
-      #- qemu_cortex_m3
+      # - qemu_cortex_m3
       - nrf52dk_nrf52832
       - nrf52840dk_nrf52840
       - nrf5340dk_nrf5340_cpuapp
@@ -53,7 +53,7 @@ tests:
     build_only: false
     integration_platforms:
       # NCSDK-24684: Add support for disabling PM
-      #- qemu_cortex_m3
+      # - qemu_cortex_m3
       - nrf52dk_nrf52832
       - nrf52840dk_nrf52840
       - nrf5340dk_nrf5340_cpuapp
@@ -70,10 +70,10 @@ tests:
       - CONFIG_NATIVE_UART_0_ON_STDINOUT=y
     platform_allow: native_posix
   # NCSDK-24684: Add support for disabling PM
-  #sample.app_event_manager_shell.native_posix.sysbuild:
-  #  sysbuild: true
-  #  build_only: false
-  #  extra_configs:
-  #    - CONFIG_SHELL=y
-  #    - CONFIG_NATIVE_UART_0_ON_STDINOUT=y
-  #  platform_allow: native_posix
+  # sample.app_event_manager_shell.native_posix.sysbuild:
+  #   sysbuild: true
+  #   build_only: false
+  #   extra_configs:
+  #     - CONFIG_SHELL=y
+  #     - CONFIG_NATIVE_UART_0_ON_STDINOUT=y
+  #   platform_allow: native_posix
