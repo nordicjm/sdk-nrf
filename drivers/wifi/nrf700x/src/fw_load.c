@@ -69,6 +69,23 @@ LOG_MODULE_DECLARE(wifi_nrf, CONFIG_WIFI_NRF700X_LOG_LEVEL);
 
 INCBIN(_bin, nrf70_fw, STR(CONFIG_NRF_WIFI_FW_BIN));
 #endif /* CONFIG_NRF_WIFI_PATCHES_BUILTIN */
+#if defined(CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_XIP) && defined(CONFIG_NORDIC_QSPI_NOR)
+#include <zephyr/drivers/flash.h>
+#include <zephyr/storage/flash_map.h>
+int nrf_wifi_xip_workaround(const struct device *flash_dev)
+{
+	char dummy[1];
+	int ret;
+
+	ret = flash_read(flash_dev, 0, dummy, 1);
+	if (ret < 0) {
+		LOG_ERR("Failed to read from flash: %d", ret);
+		return ret;
+	}
+
+	return 0;
+}
+#endif /* CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_XIP */
 
 #ifdef CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE
 #include <zephyr/drivers/flash.h>
@@ -242,6 +259,7 @@ enum nrf_wifi_status nrf_wifi_fw_load(void *rpu_ctx)
 	enum nrf_wifi_status status = NRF_WIFI_STATUS_FAIL;
 	struct nrf_wifi_fmac_fw_info fw_info = { 0 };
 #if defined(CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_XIP) && defined(CONFIG_NORDIC_QSPI_NOR)
+	int ret;
 	const struct device *flash_dev = DEVICE_DT_GET(DT_INST(0, nordic_qspi_nor));
 #endif /* CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_XIP */
 	uint8_t *fw_start;
@@ -257,6 +275,10 @@ enum nrf_wifi_status nrf_wifi_fw_load(void *rpu_ctx)
 
 #if defined(CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_XIP) && defined(CONFIG_NORDIC_QSPI_NOR)
 	nrf_qspi_nor_xip_enable(flash_dev, true);
+	ret = nrf_wifi_xip_workaround(flash_dev);
+	if (ret < 0) {
+		return NRF_WIFI_STATUS_FAIL;
+	}
 #endif /* CONFIG_NRF_WIFI */
 
 	status = nrf_wifi_fmac_fw_parse(rpu_ctx, fw_start, fw_end - fw_start,
