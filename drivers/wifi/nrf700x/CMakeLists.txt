@@ -162,38 +162,56 @@ else()
 	message(FATAL_ERROR "QSPI node not found in dts")
 endif()
 
-
-dt_nodelabel(nrf70_fw_node NODELABEL "nrf70_fw_partition")
-if (NOT DEFINED nrf70_fw_node)
-	message(FATAL_ERROR "nrf70_fw_partition node not found in dts")
-endif()
-dt_prop(nrf70_fw_offset PATH ${nrf70_fw_node} PROPERTY reg INDEX 0)
-if (NOT DEFINED nrf70_fw_offset)
-	message(FATAL_ERROR "nrf70_fw_partition.reg not found in dts")
-endif()
-math(EXPR NRF70_PATCH_ADDR "${xip_addr} + ${nrf70_fw_offset}")
-
-find_package(Python3)
-# Using python module instead of intelhex command line tool to handle windows
-execute_process(
-	COMMAND ${Python3_EXECUTABLE}
-		-c "import sys; import intelhex; intelhex.bin2hex(sys.argv[1], sys.argv[2], int(sys.argv[3]))"
-		${NRF70_PATCH}
+if (CONFIG_PARTITION_MANAGER_ENABLED)
+	add_custom_target(nrf70_wifi_fw_patch_target
+		DEPENDS ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+	)
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+		COMMAND bin2hex.py  --offset $<TARGET_PROPERTY:partition_manager,nrf70_wifi_fw_XIP_ABS_ADDR> ${NRF70_PATCH} ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+		)
+	set_property(
+		GLOBAL PROPERTY
+		nrf70_wifi_fw_PM_HEX_FILE
 		${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
-		${NRF70_PATCH_ADDR}
-	RESULT_VARIABLE _bin2hex_result
-	OUTPUT_VARIABLE _bin2hex_output
-	ERROR_VARIABLE _bin2hex_error
-	COMMAND_ECHO STDOUT
-)
+		)
+	set_property(
+		GLOBAL PROPERTY
+		nrf70_wifi_fw_PM_TARGET
+		nrf70_wifi_fw_patch_target
+		)
+else()
+	dt_nodelabel(nrf70_fw_node NODELABEL "nrf70_fw_partition")
+	if (NOT DEFINED nrf70_fw_node)
+		message(FATAL_ERROR "nrf70_fw_partition node not found in dts")
+	endif()
+	dt_prop(nrf70_fw_offset PATH ${nrf70_fw_node} PROPERTY reg INDEX 0)
+	if (NOT DEFINED nrf70_fw_offset)
+		message(FATAL_ERROR "nrf70_fw_partition.reg not found in dts")
+	endif()
+	math(EXPR NRF70_PATCH_ADDR "${xip_addr} + ${nrf70_fw_offset}")
 
-if(NOT _bin2hex_result EQUAL 0)
-	message(FATAL_ERROR "Failed to convert binary patch to hex format: \n${_bin2hex_output}\n${_bin2hex_error}")
-endif()
+	find_package(Python3)
+	# Using python module instead of intelhex command line tool to handle windows
+	execute_process(
+		COMMAND ${Python3_EXECUTABLE}
+			-c "import sys; import intelhex; intelhex.bin2hex(sys.argv[1], sys.argv[2], int(sys.argv[3]))"
+			${NRF70_PATCH}
+			${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+			${NRF70_PATCH_ADDR}
+		RESULT_VARIABLE _bin2hex_result
+		OUTPUT_VARIABLE _bin2hex_output
+		ERROR_VARIABLE _bin2hex_error
+		COMMAND_ECHO STDOUT
+	)
 
-# TODO: As this is append, check why the application hex is not automatically added
-set_property(GLOBAL APPEND PROPERTY HEX_FILES_TO_MERGE
-	${CMAKE_BINARY_DIR}/zephyr/nrf70.hex ${CMAKE_BINARY_DIR}/zephyr/zephyr.hex)
-set_property(TARGET runners_yaml_props_target PROPERTY
-	hex_file ${CMAKE_BINARY_DIR}/zephyr/merged.hex)
+	if(NOT _bin2hex_result EQUAL 0)
+		message(FATAL_ERROR "Failed to convert binary patch to hex format: \n${_bin2hex_output}\n${_bin2hex_error}")
+	endif()
+
+	# TODO: As this is append, check why the application hex is not automatically added
+	set_property(GLOBAL APPEND PROPERTY HEX_FILES_TO_MERGE
+		${CMAKE_BINARY_DIR}/zephyr/nrf70.hex ${CMAKE_BINARY_DIR}/zephyr/zephyr.hex)
+	set_property(TARGET runners_yaml_props_target PROPERTY
+		hex_file ${CMAKE_BINARY_DIR}/zephyr/merged.hex)
+	endif()
 endif()
