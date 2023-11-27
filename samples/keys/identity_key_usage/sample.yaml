@@ -16,3 +16,7 @@ tests:
   sample.keys.identity_key_usage:
     tags: keys ci_build
     build_only: true
+  sample.keys.identity_key_usage.sysbuild:
+    sysbuild: true
+    tags: keys ci_build sysbuild
+    build_only: true
