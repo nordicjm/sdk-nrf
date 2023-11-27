@@ -26,3 +26,21 @@ tests:
       - nrf9151dk/nrf9151/ns
       - nrf7002dk/nrf5340/cpuapp/ns
     tags: ci_build
+  sample.net.download_client.sysbuild:
+    sysbuild: true
+    build_only: true
+    extra_configs:
+      - CONFIG_SHELL=y
+      - CONFIG_COAP=y
+      - CONFIG_DOWNLOAD_CLIENT_SHELL=y
+      - CONFIG_SAMPLE_COMPUTE_HASH=y
+    integration_platforms:
+      - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      # NCSDK-24849 - wifi configuration needs sorting out
+      # - nrf7002dk_nrf5340_cpuapp
+    platform_allow:
+      - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      # - nrf7002dk_nrf5340_cpuapp
+    tags: ci_build sysbuild

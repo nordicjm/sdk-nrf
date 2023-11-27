@@ -11,7 +11,17 @@ tests:
       - nrf52833dk/nrf52833
       - nrf21540dk/nrf52840
       - nrf5340dk/nrf5340/cpuapp
-
+  sample.zigbee.ncp.sysbuild:
+    sysbuild: true
+    build_only: true
+    platform_allow: >
+      nrf52840dk/nrf52840 nrf52833dk/nrf52833 nrf21540dk/nrf52840 nrf5340dk/nrf5340/cpuapp
+    integration_platforms:
+      - nrf52840dk/nrf52840
+      - nrf52833dk/nrf52833
+      - nrf21540dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+    tags: sysbuild
   sample.zigbee.ncp.usb:
     build_only: true
     platform_allow: nrf52840dk/nrf52840 nrf52833dk/nrf52833 nrf21540dk/nrf52840
@@ -24,7 +34,19 @@ tests:
       - nrf21540dk/nrf52840
       - nrf52840dongle/nrf52840
       - nrf5340dk/nrf5340/cpuapp
-
+  sample.zigbee.ncp.usb.sysbuild:
+    sysbuild: true
+    build_only: true
+    platform_allow: nrf52840dk/nrf52840 nrf52833dk/nrf52833 nrf21540dk/nrf52840
+      nrf52840dongle/nrf52840 nrf5340dk/nrf5340/cpuapp
+    tags: ci_build ncp sysbuild
+    extra_args: FILE_SUFFIX=usb
+    integration_platforms:
+      - nrf52840dk/nrf52840
+      - nrf52833dk/nrf52833
+      - nrf21540dk/nrf52840
+      - nrf52840dongle/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
   sample.zigbee.ncp.with_nrf21540ek:
     build_only: true
     extra_args: SHIELD=nrf21540ek
@@ -32,3 +54,11 @@ tests:
       - nrf52840dk/nrf52840
     platform_allow: nrf52840dk/nrf52840
     tags: ci_build
+  sample.zigbee.ncp.with_nrf21540ek.sysbuild:
+    sysbuild: true
+    build_only: true
+    extra_args: SHIELD=nrf21540ek
+    integration_platforms:
+      - nrf52840dk/nrf52840
+    platform_allow: nrf52840dk/nrf52840
+    tags: ci_build sysbuild
