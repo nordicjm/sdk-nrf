@@ -64,6 +64,10 @@ function(include_fast_pair_hex)
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/fast_pair_hex.cmake)
 endfunction()
 
+function(include_wifi_fw_hex)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/wifi_update_hex.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
@@ -259,6 +263,12 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   else()
     set_config_bool(${DEFAULT_IMAGE} CONFIG_BT_FAST_PAIR n)
   endif()
+
+  if(SB_CONFIG_WIFI_THING)
+#    get_property(nrf70_wifi_fw_XIP_ABS_ADDR TARGET partition_manager PROPERTY nrf70_wifi_fw_XIP_ABS_ADDR)
+include_wifi_fw_hex()
+  endif()
+
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 
 # Sysbuild function hooks used by nRF Connect SDK

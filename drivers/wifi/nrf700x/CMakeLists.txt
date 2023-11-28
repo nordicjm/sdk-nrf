@@ -162,7 +162,25 @@ else()
 	message(FATAL_ERROR "QSPI node not found in dts")
 endif()
 
-if (CONFIG_PARTITION_MANAGER_ENABLED)
+message(WARNING "Check ${SYSBUILD}, ${SB_CONFIG_WIFI_THING}")
+if(SYSBUILD) # AND SB_CONFIG_WIFI_THING)
+	add_custom_target(nrf70_wifi_fw_patch_target
+		DEPENDS ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+	)
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+		COMMAND bin2hex.py  --offset @nrf70_wifi_fw_XIP_ABS_ADDR@ ${NRF70_PATCH} ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+		)
+	set_property(
+		GLOBAL PROPERTY
+		nrf70_wifi_fw_PM_HEX_FILE
+		${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
+		)
+	set_property(
+		GLOBAL PROPERTY
+		nrf70_wifi_fw_PM_TARGET
+		nrf70_wifi_fw_patch_target
+		)
+elseif(CONFIG_PARTITION_MANAGER_ENABLED)
 	add_custom_target(nrf70_wifi_fw_patch_target
 		DEPENDS ${CMAKE_BINARY_DIR}/zephyr/nrf70.hex
 	)
