@@ -15,3 +15,12 @@ tests:
       - nrf9161dk/nrf9161/ns
       - thingy91/nrf9160/ns
     tags: ci_build
+  samples.cellular.nidd.sysbuild:
+    sysbuild: true
+    build_only: true
+    platform_allow: nrf9160dk/nrf9160/ns nrf9161dk/nrf9161/ns thingy91_nrf9160_ns
+    integration_platforms:
+      - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - thingy91_nrf9160_ns
+    tags: ci_build sysbuild
