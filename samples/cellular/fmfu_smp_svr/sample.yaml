@@ -13,3 +13,11 @@ tests:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
     tags: ci_build
+  sample.cellular.fmfu_smp_svr.sysbuild:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+    platform_allow: nrf9160dk/nrf9160/ns nrf9161dk/nrf9161/ns
+    tags: ci_build sysbuild
