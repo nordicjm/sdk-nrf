@@ -51,7 +51,7 @@ tests:
       - nrf5340dk/nrf5340/cpuapp
     platform_allow: nrf52840dk/nrf52840 nrf21540dk/nrf52840 nrf5340dk/nrf5340/cpuapp
     tags: ci_build smoke
-  sample.zigbee.light_switch.fota.sysbuild1:
+  sample.zigbee.light_switch.fota.sysbuild:
     sysbuild: true
     build_only: true
     extra_args: >
@@ -62,18 +62,17 @@ tests:
       - nrf21540dk/nrf52840
     platform_allow: nrf52840dk/nrf52840 nrf21540dk/nrf52840
     tags: ci_build smoke sysbuild
-  # NCSDK-24465 prj_<x>.conf does not propagate to other images
-  # sample.zigbee.light_switch.fota.sysbuild2:
-  #   sysbuild: true
-  #   build_only: true
-  #   extra_args: >
-  #     CONF_FILE=prj_fota.conf SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD=y
-  #     SB_CONFIG_BOOTLOADER_MCUBOOT=y SB_CONFIG_SECURE_BOOT=y SB_CONFIG_SECURE_BOOT_NETCORE=y
-  #     SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP=y SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET=y
-  #   integration_platforms:
-  #     - nrf5340dk/nrf5340/cpuapp
-  #   platform_allow: nrf5340dk/nrf5340/cpuapp
-  #   tags: ci_build smoke sysbuild
+  sample.zigbee.light_switch.fota.sysbuild.nrf5340dk:
+    sysbuild: true
+    build_only: true
+    extra_args: >
+      FILE_SUFFIX=fota SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD=y SB_CONFIG_NETCORE_APP_UPDATE=y
+      SB_CONFIG_BOOTLOADER_MCUBOOT=y SB_CONFIG_SECURE_BOOT=y SB_CONFIG_SECURE_BOOT_NETCORE=y
+      SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP=y SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET=y
+    integration_platforms:
+      - nrf5340dk/nrf5340/cpuapp
+    platform_allow: nrf5340dk/nrf5340/cpuapp
+    tags: ci_build smoke sysbuild
   sample.zigbee.light_switch.fota_and_multiprotocol:
     build_only: true
     extra_args: CONF_FILE=prj_fota.conf OVERLAY_CONFIG=overlay-multiprotocol_ble.conf
@@ -82,7 +81,7 @@ tests:
       - nrf5340dk/nrf5340/cpuapp
     platform_allow: nrf52840dk/nrf52840 nrf5340dk/nrf5340/cpuapp
     tags: ci_build
-  sample.zigbee.light_switch.fota_and_multiprotocol.sysbuild1:
+  sample.zigbee.light_switch.fota_and_multiprotocol.sysbuild:
     sysbuild: true
     build_only: true
     extra_args: >
@@ -93,19 +92,18 @@ tests:
       - nrf52840dk/nrf52840
     platform_allow: nrf52840dk/nrf52840
     tags: ci_build sysbuild
-  # NCSDK-24465 prj_<x>.conf does not propagate to other images
-  # sample.zigbee.light_switch.fota_and_multiprotocol.sysbuild2:
-  #   sysbuild: true
-  #   build_only: true
-  #   extra_args: >
-  #     CONF_FILE=prj_fota.conf OVERLAY_CONFIG=overlay-multiprotocol_ble.conf
-  #     SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD=y SB_CONFIG_BOOTLOADER_MCUBOOT=y
-  #     SB_CONFIG_SECURE_BOOT=y SB_CONFIG_SECURE_BOOT_NETCORE=y
-  #     SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP=y SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET=y
-  #   integration_platforms:
-  #     - nrf5340dk/nrf5340/cpuapp
-  #   platform_allow: nrf5340dk/nrf5340/cpuapp
-  #   tags: ci_build sysbuild
+  sample.zigbee.light_switch.fota_and_multiprotocol.sysbuild.nrf5340dk:
+    sysbuild: true
+    build_only: true
+    extra_args: >
+      FILE_SUFFIX=fota OVERLAY_CONFIG=overlay-multiprotocol_ble.conf SB_CONFIG_NETCORE_APP_UPDATE=y
+      SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_BUILD=y SB_CONFIG_BOOTLOADER_MCUBOOT=y
+      SB_CONFIG_SECURE_BOOT=y SB_CONFIG_SECURE_BOOT_NETCORE=y
+      SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_APP=y SB_CONFIG_DFU_MULTI_IMAGE_PACKAGE_NET=y
+    integration_platforms:
+      - nrf5340dk/nrf5340/cpuapp
+    platform_allow: nrf5340dk/nrf5340/cpuapp
+    tags: ci_build sysbuild
   sample.zigbee.light_switch.multiprotocol:
     build_only: true
     extra_args: OVERLAY_CONFIG=overlay-multiprotocol_ble.conf

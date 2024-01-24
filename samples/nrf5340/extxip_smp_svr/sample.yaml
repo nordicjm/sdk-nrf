@@ -16,3 +16,12 @@ tests:
     integration_platforms:
       - nrf5340dk/nrf5340/cpuapp
       - thingy53/nrf5340/cpuapp
+  sample.mcumgr.smp_svr.ext_xip.sysbuild:
+    sysbuild: true
+    platform_allow:
+      - nrf5340dk/nrf5340/cpuapp
+      - thingy53/nrf5340/cpuapp
+    integration_platforms:
+      - nrf5340dk/nrf5340/cpuapp
+      - thingy53/nrf5340/cpuapp
+    tags: sysbuild

@@ -25,14 +25,15 @@ tests:
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
-      - thingy91_nrf9160_ns
-      # NCSDK-24849 - wifi configuration needs sorting out
-      # - nrf7002dk_nrf5340_cpuapp
+      - nrf9151dk/nrf9151/ns
+      - thingy91/nrf9160/ns
+      - nrf7002dk/nrf5340/cpuapp/ns
     platform_allow:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
-      - thingy91_nrf9160_ns
-      # - nrf7002dk_nrf5340_cpuapp
+      - nrf9151dk/nrf9151/ns
+      - thingy91/nrf9160/ns
+      - nrf7002dk/nrf5340/cpuapp/ns
       - native_posix
     tags: ci_build sysbuild
   sample.net.mqtt.nrf70.tls:
@@ -43,16 +44,15 @@ tests:
     platform_allow: nrf7002dk/nrf5340/cpuapp/ns
     tags: ci_build
     extra_args: EXTRA_CONF_FILE=overlay-tls-nrf70.conf
-  # NCSDK-24849 - wifi configuration needs sorting out
-  # sample.net.mqtt.nrf70.tls.sysbuild:
-  #   sysbuild: true
-  #   build_only: true
-  #   build_on_all: true
-  #   integration_platforms:
-  #     - nrf7002dk_nrf5340_cpuapp
-  #   platform_allow: nrf7002dk_nrf5340_cpuapp
-  #   tags: ci_build sysbuild
-  #   extra_args: EXTRA_CONF_FILE=overlay-tls-nrf70.conf
+  sample.net.mqtt.nrf70.tls.sysbuild:
+    sysbuild: true
+    build_only: true
+    build_on_all: true
+    integration_platforms:
+    - nrf7002dk/nrf5340/cpuapp/ns
+    platform_allow: nrf7002dk/nrf5340/cpuapp/ns
+    tags: ci_build sysbuild
+    extra_args: EXTRA_CONF_FILE=overlay-tls-nrf70.conf
   sample.net.mqtt.nrf91.tls:
     build_only: true
     build_on_all: true
@@ -75,11 +75,13 @@ tests:
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
-      - thingy91_nrf9160_ns
+      - nrf9151dk/nrf9151/ns
+      - thingy91/nrf9160/ns
     platform_allow:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
-      - thingy91_nrf9160_ns
+      - nrf9151dk/nrf9151/ns
+      - thingy91/nrf9160/ns
     tags: ci_build sysbuild
     extra_args: EXTRA_CONF_FILE=overlay-tls-nrf91.conf
   sample.net.mqtt.native_posix.tls:
