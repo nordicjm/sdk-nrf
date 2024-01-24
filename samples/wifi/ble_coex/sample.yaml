@@ -15,10 +15,10 @@ tests:
     sysbuild: true
     build_only: true
     integration_platforms:
-      - nrf7002dk_nrf5340_cpuapp
-    extra_args: CONFIG_MPSL_CX=y hci_rpmsg_CONFIG_MPSL_CX=y
+      - nrf7002dk/nrf5340/cpuapp
+    extra_args: CONFIG_MPSL_CX=y hci_ipc_CONFIG_MPSL_CX=y
                 CONFIG_COEX_SEP_ANTENNAS=y
-    platform_allow: nrf7002dk_nrf5340_cpuapp
+    platform_allow: nrf7002dk/nrf5340/cpuapp
     tags: ci_build sysbuild
   sample.nrf7002.ble_coex_sha_ant:
     build_only: true
@@ -32,10 +32,10 @@ tests:
     sysbuild: true
     build_only: true
     integration_platforms:
-      - nrf7002dk_nrf5340_cpuapp
-    extra_args: CONFIG_MPSL_CX=y hci_rpmsg_CONFIG_MPSL_CX=y
+      - nrf7002dk/nrf5340/cpuapp
+    extra_args: CONFIG_MPSL_CX=y hci_ipc_CONFIG_MPSL_CX=y
                 CONFIG_COEX_SEP_ANTENNAS=n
-    platform_allow: nrf7002dk_nrf5340_cpuapp
+    platform_allow: nrf7002dk/nrf5340/cpuapp
     tags: ci_build sysbuild
   sample.nrf7001.ble_coex:
     build_only: true
@@ -49,10 +49,10 @@ tests:
     sysbuild: true
     build_only: true
     integration_platforms:
-      - nrf7002dk_nrf7001_nrf5340_cpuapp
-    extra_args: CONFIG_MPSL_CX=y hci_rpmsg_CONFIG_MPSL_CX=y
+      - nrf7002dk/nrf5340/cpuapp/nrf7001
+    extra_args: CONFIG_MPSL_CX=y hci_ipc_CONFIG_MPSL_CX=y
                 CONFIG_COEX_SEP_ANTENNAS=y
-    platform_allow: nrf7002dk_nrf7001_nrf5340_cpuapp
+    platform_allow: nrf7002dk/nrf5340/cpuapp/nrf7001
     tags: ci_build sysbuild
   # Daughter boards (EK's/EB's) do not have a shared antenna
   sample.nrf7002ek.ble_coex:
@@ -69,8 +69,8 @@ tests:
     build_only: true
     integration_platforms:
       - nrf5340dk/nrf5340/cpuapp
-    extra_args: SHIELD=nrf7002ek hci_rpmsg_SHIELD=nrf7002ek_coex
-                CONFIG_MPSL_CX=y hci_rpmsg_CONFIG_MPSL_CX=y
+    extra_args: SHIELD=nrf7002ek hci_ipc_SHIELD=nrf7002ek_coex
+                CONFIG_MPSL_CX=y hci_ipc_CONFIG_MPSL_CX=y
                 CONFIG_COEX_SEP_ANTENNAS=y
     platform_allow: nrf5340dk/nrf5340/cpuapp
     tags: ci_build sysbuild
@@ -87,8 +87,8 @@ tests:
     build_only: true
     integration_platforms:
       - nrf5340dk/nrf5340/cpuapp
-    extra_args: SHIELD=nrf7002ek_nrf7001 hci_rpmsg_SHIELD=nrf7002ek_nrf7001_coex
-                CONFIG_MPSL_CX=y hci_rpmsg_CONFIG_MPSL_CX=y
+    extra_args: SHIELD=nrf7002ek_nrf7001 hci_ipc_SHIELD=nrf7002ek_nrf7001_coex
+                CONFIG_MPSL_CX=y hci_ipc_CONFIG_MPSL_CX=y
                 CONFIG_COEX_SEP_ANTENNAS=y
     platform_allow: nrf5340dk/nrf5340/cpuapp
     tags: sysbuild
@@ -104,8 +104,8 @@ tests:
   sample.nrf7002_eb.thingy53.ble_coex.sysbuild:
     sysbuild: true
     build_only: true
-    extra_args: SHIELD=nrf7002eb hci_rpmsg_SHIELD=nrf7002eb_coex
-                CONFIG_MPSL_CX=y hci_rpmsg_CONFIG_MPSL_CX=y
+    extra_args: SHIELD=nrf7002eb hci_ipc_SHIELD=nrf7002eb_coex
+                CONFIG_MPSL_CX=y hci_ipc_CONFIG_MPSL_CX=y
                 CONFIG_COEX_SEP_ANTENNAS=y
     integration_platforms:
       - thingy53/nrf5340/cpuapp

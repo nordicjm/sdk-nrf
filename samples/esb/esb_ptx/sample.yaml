@@ -53,8 +53,19 @@ tests:
       - nrf52dk/nrf52810
       - nrf5340dk/nrf5340/cpunet
       - nrf21540dk/nrf52840
-    platform_allow: nrf52dk/nrf52832 nrf52833dk/nrf52833 nrf52840dk/nrf52840
-      nrf52dk/nrf52810 nrf5340dk/nrf5340/cpunet nrf21540dk/nrf52840
+      - nrf54h20dk/nrf54h20/cpurad
+      - nrf54l15pdk/nrf54l15/cpuapp
+      - nrf54l15pdk@0.3.0/nrf54l15/cpuapp
+    platform_allow: >
+      nrf52dk/nrf52832
+      nrf52833dk/nrf52833
+      nrf52840dk/nrf52840
+      nrf52dk/nrf52810
+      nrf5340dk/nrf5340/cpunet
+      nrf21540dk/nrf52840
+      nrf54h20dk/nrf54h20/cpurad
+      nrf54l15pdk/nrf54l15/cpuapp
+      nrf54l15pdk@0.3.0/nrf54l15/cpuapp
     tags: esb ci_build sysbuild
   sample.esb.ptx.dynamic_irq:
     build_only: true
@@ -109,6 +120,7 @@ tests:
     build_only: true
     extra_configs:
       - CONFIG_ESB_FAST_SWITCHING=y
+      - CONFIG_ESB_FAST_CHANNEL_SWITCHING=y
     integration_platforms:
       - nrf54h20dk/nrf54h20/cpurad
     platform_allow: >

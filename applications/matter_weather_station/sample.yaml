@@ -10,6 +10,14 @@ tests:
     platform_exclude: thingy53/nrf5340/cpuapp/ns
     integration_platforms:
       - thingy53/nrf5340/cpuapp
+  applications.matter_weather_station.debug.no_fd.sysbuild:
+    sysbuild: true
+    build_only: true
+    platform_allow: thingy53/nrf5340/cpuapp
+    platform_exclude: thingy53/nrf5340/cpuapp/ns
+    integration_platforms:
+      - thingy53/nrf5340/cpuapp
+    tags: sysbuild
   applications.matter_weather_station.debug:
     build_only: true
     extra_args: OVERLAY_CONFIG=overlay-factory_data.conf
@@ -18,6 +26,16 @@ tests:
     platform_exclude: thingy53/nrf5340/cpuapp/ns
     integration_platforms:
       - thingy53/nrf5340/cpuapp
+  applications.matter_weather_station.debug.sysbuild:
+    sysbuild: true
+    build_only: true
+    extra_args: OVERLAY_CONFIG=overlay-factory_data.conf
+      FILE_SUFFIX=factory_data
+    platform_allow: thingy53/nrf5340/cpuapp
+    platform_exclude: thingy53/nrf5340/cpuapp/ns
+    integration_platforms:
+      - thingy53/nrf5340/cpuapp
+    tags: sysbuild
   applications.matter_weather_station.release:
     build_only: true
     extra_args: OVERLAY_CONFIG=overlay-factory_data.conf CONF_FILE=prj_release.conf
@@ -26,6 +44,16 @@ tests:
     platform_exclude: thingy53/nrf5340/cpuapp/ns
     integration_platforms:
       - thingy53/nrf5340/cpuapp
+  applications.matter_weather_station.release.sysbuild:
+    sysbuild: true
+    build_only: true
+    extra_args: OVERLAY_CONFIG=overlay-factory_data.conf CONF_FILE=prj_release.conf
+      FILE_SUFFIX=factory_data
+    platform_allow: thingy53/nrf5340/cpuapp
+    platform_exclude: thingy53/nrf5340/cpuapp/ns
+    integration_platforms:
+      - thingy53/nrf5340/cpuapp
+    tags: sysbuild
   applications.matter_weather_station.nrf7002eb:
     build_only: true
     extra_args: SHIELD=nrf7002eb CONF_FILE=prj_release.conf
@@ -33,3 +61,12 @@ tests:
     platform_exclude: thingy53/nrf5340/cpuapp/ns
     integration_platforms:
       - thingy53/nrf5340/cpuapp
+  applications.matter_weather_station.nrf7002eb.sysbuild:
+    sysbuild: true
+    build_only: true
+    extra_args: SHIELD=nrf7002eb CONF_FILE=prj_release.conf
+    platform_allow: thingy53/nrf5340/cpuapp
+    platform_exclude: thingy53/nrf5340/cpuapp/ns
+    integration_platforms:
+      - thingy53/nrf5340/cpuapp
+    tags: sysbuild

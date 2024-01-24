@@ -17,19 +17,21 @@ tests:
       - thingy91/nrf9160/ns
       - nrf7002dk/nrf5340/cpuapp/ns
     tags: ci_build
-  sample.cellular.coap_client.sysbuild:
+  sample.net.coap_client.sysbuild:
     sysbuild: true
     build_only: true
     build_on_all: true
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
-      - thingy91_nrf9160_ns
+      - nrf9151dk/nrf9151/ns
+      - thingy91/nrf9160/ns
       # NCSDK-24849 - wifi configuration needs sorting out
-      # - nrf7002dk_nrf5340_cpuapp
+      # - nrf7002dk/nrf5340/cpuapp
     platform_allow:
       - nrf9160dk/nrf9160/ns
       - nrf9161dk/nrf9161/ns
-      - thingy91_nrf9160_ns
-      # - nrf7002dk_nrf5340_cpuapp
+      - nrf9151dk/nrf9151/ns
+      - thingy91/nrf9160/ns
+      # - nrf7002dk/nrf5340/cpuapp
     tags: ci_build sysbuild
