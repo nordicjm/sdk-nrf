@@ -17,16 +17,20 @@ tests:
       - native_sim
     tags: ci_build
   applications.asset_tracker_v2.nrf_cloud.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
+      - native_sim
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
+      - native_sim
     tags: ci_build sysbuild
   applications.asset_tracker_v2.nrf_cloud-pgps:
     build_only: true
@@ -42,11 +46,13 @@ tests:
     extra_args: EXTRA_CONF_FILE=overlay-pgps.conf
     tags: ci_build
   applications.asset_tracker_v2.nrf_cloud-pgps.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
@@ -68,11 +74,13 @@ tests:
     extra_args: CONFIG_NRF_CLOUD_AGNSS=n
     tags: ci_build
   applications.asset_tracker_v2.nrf_cloud-no-agnss.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
     integration_platforms:
@@ -99,16 +107,20 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-aws.conf"
     tags: ci_build
   applications.asset_tracker_v2.aws.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
+      - native_sim
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
+      - native_sim
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
     extra_args: EXTRA_CONF_FILE="overlay-aws.conf"
@@ -130,11 +142,13 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-aws.conf;overlay-pgps.conf"
     tags: ci_build
   applications.asset_tracker_v2.aws-pgps.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
     integration_platforms:
@@ -162,11 +176,13 @@ tests:
       EXTRA_CONF_FILE="overlay-aws.conf;overlay-pgps.conf;overlay-debug.conf;overlay-memfault.conf"
     tags: ci_build
   applications.asset_tracker_v2.aws-all.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
@@ -197,16 +213,20 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-azure.conf"
     tags: ci_build
   applications.asset_tracker_v2.azure.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
+      - native_sim
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
+      - native_sim
     extra_configs:
       - CONFIG_AZURE_IOT_HUB_DPS_HOSTNAME="global.azure-devices-provisioning.net"
       - CONFIG_AZURE_IOT_HUB_DPS_ID_SCOPE="IDSCOPE"
@@ -229,15 +249,20 @@ tests:
     extra_args: EXTRA_CONF_FILE=overlay-debug.conf
     tags: ci_build
   applications.asset_tracker_v2.debug.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
+      - native_sim
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
+      - native_sim
     extra_args: EXTRA_CONF_FILE=overlay-debug.conf
     tags: ci_build sysbuild
   applications.asset_tracker_v2.debug-memfault:
@@ -257,12 +282,15 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-debug.conf;overlay-memfault.conf"
     tags: ci_build
   applications.asset_tracker_v2.debug-memfault.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
@@ -287,11 +315,13 @@ tests:
     extra_args: EXTRA_CONF_FILE=overlay-memfault.conf
     tags: ci_build
   applications.asset_tracker_v2.memfault.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
     integration_platforms:
@@ -316,11 +346,13 @@ tests:
     extra_args: EXTRA_CONF_FILE=overlay-low-power.conf
     tags: ci_build
   applications.asset_tracker_v2.low-power.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
     integration_platforms:
@@ -339,16 +371,23 @@ tests:
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
     tags: ci_build
   applications.asset_tracker_v2.carrier.nrf9160dk.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
-      - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
+    extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
+    tags: ci_build sysbuild
+  applications.asset_tracker_v2.carrier.thingy91.sysbuild:
+    sysbuild: true
+    build_only: true
+    build_on_all: true
+    platform_allow:
       - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
+      SB_CONFIG_THINGY91_STATIC_PARTITIONS_LWM2M_CARRIER=y
     tags: ci_build sysbuild
   applications.asset_tracker_v2.carrier.nrf9161dk:
     build_only: true
@@ -358,6 +397,15 @@ tests:
       - nrf9161dk/nrf9161/ns
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
     tags: ci_build
+  applications.asset_tracker_v2.carrier.nrf9161dk.sysbuild:
+    sysbuild: true
+    build_only: true
+    build_on_all: true
+    platform_allow: nrf9161dk/nrf9161/ns
+    integration_platforms:
+      - nrf9161dk/nrf9161/ns
+    extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
+    tags: ci_build sysbuild
   applications.asset_tracker_v2.carrier.nrf9151dk:
     build_only: true
     build_on_all: true
@@ -366,6 +414,15 @@ tests:
       - nrf9151dk/nrf9151/ns
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
     tags: ci_build
+  applications.asset_tracker_v2.carrier.nrf9151dk.sysbuild:
+    sysbuild: true
+    build_only: true
+    build_on_all: true
+    platform_allow: nrf9151dk/nrf9151/ns
+    integration_platforms:
+      - nrf9151dk/nrf9151/ns
+    extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
+    tags: ci_build sysbuild
   applications.asset_tracker_v2.lwm2m.bootstrap-low_power:
     build_only: true
     build_on_all: true
@@ -382,17 +439,21 @@ tests:
       - CONFIG_LWM2M_RD_CLIENT_SUPPORT_BOOTSTRAP=y
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-low-power.conf"
     tags: ci_build
-  applications.asset_tracker_v2.lwm2m.low-power.sysbuild:
-    build_only: true
+  applications.asset_tracker_v2.lwm2m.bootstrap-low_power.sysbuild:
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
+    extra_configs:
+      - CONFIG_LWM2M_RD_CLIENT_SUPPORT_BOOTSTRAP=y
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-low-power.conf"
     tags: ci_build sysbuild
   applications.asset_tracker_v2.lwm2m.debug:
@@ -409,11 +470,13 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-debug.conf"
     tags: ci_build
   applications.asset_tracker_v2.lwm2m.debug.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
@@ -434,14 +497,16 @@ tests:
       SNIPPET="nrf91-modem-trace-uart;tfm-enable-share-uart"
     tags: ci_build
   applications.asset_tracker_v2.lwm2m.debug-modem_trace.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
-    extra_args: >
+    extra_args:
       EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-debug.conf"
       asset_tracker_v2_SNIPPET="nrf91-modem-trace-uart;tfm-enable-share-uart"
     tags: ci_build sysbuild
@@ -461,16 +526,18 @@ tests:
       SNIPPET="nrf91-modem-trace-uart;tfm-enable-share-uart"
     tags: ci_build
   applications.asset_tracker_v2.lwm2m.modem_trace.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
       - thingy91/nrf9160/ns
-    extra_args: >
+    extra_args:
       EXTRA_CONF_FILE="overlay-lwm2m.conf"
       asset_tracker_v2_SNIPPET="nrf91-modem-trace-uart;tfm-enable-share-uart"
     tags: ci_build sysbuild
@@ -492,14 +559,18 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-memfault.conf"
     tags: ci_build
   applications.asset_tracker_v2.lwm2m.memfault.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
@@ -524,15 +595,19 @@ tests:
     extra_args: EXTRA_CONF_FILE="overlay-low-power.conf;overlay-memfault.conf"
     tags: ci_build
   applications.asset_tracker_v2.memfault-low-power.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     build_on_all: true
     platform_allow:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
       - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
       - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
@@ -546,8 +621,8 @@ tests:
     extra_args: SHIELD=nrf7002ek EXTRA_CONF_FILE=overlay-nrf7002ek-wifi-scan-only.conf
     tags: ci_build
   applications.asset_tracker_v2.nrf7002ek_wifi.nrf9160dk.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     integration_platforms:
       - nrf9160dk/nrf9160/ns
     platform_allow: nrf9160dk/nrf9160/ns
@@ -560,6 +635,14 @@ tests:
     platform_allow: nrf9161dk/nrf9161/ns
     extra_args: SHIELD=nrf7002ek EXTRA_CONF_FILE=overlay-nrf7002ek-wifi-scan-only.conf
     tags: ci_build
+  applications.asset_tracker_v2.nrf7002ek_wifi.nrf9161dk.sysbuild:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - nrf9161dk/nrf9161/ns
+    platform_allow: nrf9161dk/nrf9161/ns
+    extra_args: SHIELD=nrf7002ek EXTRA_CONF_FILE=overlay-nrf7002ek-wifi-scan-only.conf
+    tags: ci_build sysbuild
   applications.asset_tracker_v2.nrf7002ek_wifi.nrf9151dk:
     build_only: true
     integration_platforms:
@@ -567,6 +650,14 @@ tests:
     platform_allow: nrf9151dk/nrf9151/ns
     extra_args: SHIELD=nrf7002ek EXTRA_CONF_FILE=overlay-nrf7002ek-wifi-scan-only.conf
     tags: ci_build
+  applications.asset_tracker_v2.nrf7002ek_wifi.nrf9151dk.sysbuild:
+    sysbuild: true
+    build_only: true
+    integration_platforms:
+      - nrf9151dk/nrf9151/ns
+    platform_allow: nrf9151dk/nrf9151/ns
+    extra_args: SHIELD=nrf7002ek EXTRA_CONF_FILE=overlay-nrf7002ek-wifi-scan-only.conf
+    tags: ci_build sysbuild
   applications.asset_tracker_v2.nrf7002ek_wifi-debug:
     build_only: true
     integration_platforms:
@@ -581,11 +672,16 @@ tests:
                 EXTRA_CONF_FILE="overlay-nrf7002ek-wifi-scan-only.conf;overlay-debug.conf"
     tags: ci_build
   applications.asset_tracker_v2.nrf7002ek_wifi-debug.sysbuild:
-    build_only: true
     sysbuild: true
+    build_only: true
     integration_platforms:
       - nrf9160dk/nrf9160/ns
-    platform_allow: nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
+    platform_allow:
+      - nrf9160dk/nrf9160/ns
+      - nrf9161dk/nrf9161/ns
+      - nrf9151dk/nrf9151/ns
     extra_args: SHIELD=nrf7002ek
                 EXTRA_CONF_FILE="overlay-nrf7002ek-wifi-scan-only.conf;overlay-debug.conf"
     tags: ci_build sysbuild

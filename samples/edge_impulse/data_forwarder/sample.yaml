@@ -22,6 +22,13 @@ tests:
   sample.ei_data_forwarder.sysbuild:
     sysbuild: true
     build_only: true
+    platform_allow:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf9160dk/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf52dk/nrf52832
       - nrf52840dk/nrf52840

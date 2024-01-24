@@ -3,4 +3,10 @@ tests:
     platform_allow: native_posix
     tags: bluetooth ci_build
     integration_platforms:
-        - native_posix
+      - native_posix
+  bluetooth.mesh.scheduler_model.sysbuild:
+    sysbuild: true
+    platform_allow: native_posix
+    tags: bluetooth ci_build sysbuild
+    integration_platforms:
+      - native_posix

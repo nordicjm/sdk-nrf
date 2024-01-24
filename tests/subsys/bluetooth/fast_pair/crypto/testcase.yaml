@@ -9,6 +9,18 @@ tests:
       - nrf52840dk/nrf52840
       - nrf5340dk/nrf5340/cpuapp
     extra_args: CONF_FILE=prj_mbedtls.conf
+  fast_pair.crypto.mbedtls.sysbuild:
+    sysbuild: true
+    platform_allow:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+    integration_platforms:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+    extra_args: CONF_FILE=prj_mbedtls.conf
+    tags: sysbuild
   fast_pair.crypto.oberon:
     platform_allow:
       - nrf52dk/nrf52832
@@ -22,6 +34,21 @@ tests:
       - nrf5340dk/nrf5340/cpuapp
       - nrf5340dk/nrf5340/cpuapp/ns
       - nrf54l15pdk/nrf54l15/cpuapp
+  fast_pair.crypto.oberon.sysbuild:
+    sysbuild: true
+    platform_allow:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf54l15pdk/nrf54l15/cpuapp
+    integration_platforms:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf54l15pdk/nrf54l15/cpuapp
+    tags: sysbuild
   fast_pair.crypto.psa:
     platform_allow:
       - nrf52dk/nrf52832
@@ -38,6 +65,24 @@ tests:
       - nrf54l15pdk/nrf54l15/cpuapp
       - nrf54l15pdk/nrf54l15/cpuapp/ns
     extra_args: CONF_FILE=prj_psa.conf
+  fast_pair.crypto.psa.sysbuild:
+    sysbuild: true
+    platform_allow:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf54l15pdk/nrf54l15/cpuapp
+      - nrf54l15pdk/nrf54l15/cpuapp/ns
+    integration_platforms:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf54l15pdk/nrf54l15/cpuapp
+      - nrf54l15pdk/nrf54l15/cpuapp/ns
+    extra_args: CONF_FILE=prj_psa.conf
+    tags: sysbuild
   fast_pair.crypto.tinycrypt:
     platform_allow:
       - nrf52dk/nrf52832
@@ -54,3 +99,21 @@ tests:
       - nrf54l15pdk/nrf54l15/cpuapp
       - qemu_cortex_m3
     extra_args: CONF_FILE=prj_tinycrypt.conf
+  fast_pair.crypto.tinycrypt.sysbuild:
+    sysbuild: true
+    platform_allow:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf54l15pdk/nrf54l15/cpuapp
+      - qemu_cortex_m3
+    integration_platforms:
+      - nrf52dk/nrf52832
+      - nrf52840dk/nrf52840
+      - nrf5340dk/nrf5340/cpuapp
+      - nrf5340dk/nrf5340/cpuapp/ns
+      - nrf54l15pdk/nrf54l15/cpuapp
+      - qemu_cortex_m3
+    extra_args: CONF_FILE=prj_tinycrypt.conf
+    tags: sysbuild
