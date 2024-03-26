@@ -93,7 +93,7 @@ Values are provided in kilobytes (KB).
 
    .. tab:: nRF5340
 
-      The following table lists memory requirements for samples running on the :ref:`nRF5340 DK <programming_board_names>` (:ref:`nrf5340dk_nrf5340_cpuapp <zephyr:nrf5340dk_nrf5340>`).
+      The following table lists memory requirements for samples running on the :ref:`nRF5340 DK <programming_board_names>` (:ref:`nrf5340dk/nrf5340/cpuapp <zephyr:nrf5340dk_nrf5340>`).
 
       +------------------------------------------------------------------------------------------------------------------------+--------------------------+---------------------------+----------------------------------+-----------------------------+-------------+--------------------------+-------------+
       | Sample                                                                                                                 | ROM, ZBOSS stack + App   | ROM, MCUboot bootloader   | ROM, ZBOSS non-volatile memory   | ROM, ZBOSS product config   | Total ROM   | RAM, ZBOSS stack + App   | Total RAM   |
