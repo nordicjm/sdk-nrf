@@ -66,11 +66,11 @@ Enter the following command to execute the unit tests on nRF9160 DK:
 
 .. code-block:: console
 
-   twister -T . -p nrf9160dk_nrf9160_ns --device-testing --device-serial <serial port>
+   twister -T . -p nrf9160dk/nrf9160/ns --device-testing --device-serial <serial port>
 
 In this console snippet, ``serial port`` must be the port where you receive logs from the DK, normally the first port listed by ``nrfjprog --com``, for example ``/dev/ttyACM0``.
 
-The :file:`testcase.yaml` file for that unit test must have the entry ``platform_allow: nrf9160dk_nrf9160_ns``.
+The :file:`testcase.yaml` file for that unit test must have the entry ``platform_allow: nrf9160dk/nrf9160/ns``.
 See :file:`nrf/applications/asset_tracker_v2/tests/location_module/testcase.yaml` for an example.
 
 Twister can also be used to see code coverage reports.
