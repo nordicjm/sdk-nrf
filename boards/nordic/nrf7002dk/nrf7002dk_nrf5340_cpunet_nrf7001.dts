@@ -6,7 +6,7 @@
 
 /dts-v1/;
 #include <nordic/nrf5340_cpunet_qkaa.dtsi>
-#include "nrf7002dk_nrf7001_nrf5340_cpunet-pinctrl.dtsi"
+#include "nrf7002dk_nrf5340_cpunet-pinctrl.dtsi"
 
 / {
 	model = "Nordic NRF7002 DK (emulating NRF7001) NRF5340 Network";
@@ -169,4 +169,4 @@ arduino_spi: &spi0 {
 };
 
 /* Include shared RAM configuration file */
-#include "nrf5340_shared_sram_planning_conf.dts"
+#include "nrf5340_nrf7001_shared_sram_planning_conf.dtsi"
