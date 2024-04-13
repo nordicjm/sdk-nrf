@@ -30,7 +30,7 @@ Zephyr and the |NCS| provide support for developing cellular applications using 
        | `nRF9160 System in Package (SiP) <nRF9160 product website_>`_
    * - Thingy91
      - PCA20035
-     - ``thingy91_nrf9160_ns``
+     - ``thingy91/nrf9160``, ``thingy91/nrf9160/ns``
      - | :ref:`Getting started <ug_thingy91_gsg>`
        | `User Guide <Nordic Thingy:91 User Guide_>`_
      - | `Thingy\:91 product page`_

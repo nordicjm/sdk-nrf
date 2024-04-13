@@ -204,7 +204,7 @@ Temperature sensing is mostly implemented in the :file:`src/temperature.c` file.
 This includes generation of false temperature readings on your nRF91 Series DK, which does not have a built-in temperature sensor.
 
 Using the built-in temperature sensor of the `Nordic Thingy:91`_ requires a `devicetree overlay <Zephyr Devicetree Overlays_>`_ file, namely the :file:`boards/thingy91_nrf9160_ns.overlay` file, as well as enabling the Kconfig options :kconfig:option:`CONFIG_SENSOR` and :kconfig:option:`CONFIG_BME680`.
-The devicetree overlay file is automatically applied during compilation whenever the ``thingy91_nrf9160_ns`` target is selected.
+The devicetree overlay file is automatically applied during compilation whenever the ``thingy91/nrf9160/ns`` target is selected.
 The required Kconfig options are implicitly enabled by :ref:`CONFIG_TEMP_DATA_USE_SENSOR <CONFIG_TEMP_DATA_USE_SENSOR>`.
 
 .. note::
