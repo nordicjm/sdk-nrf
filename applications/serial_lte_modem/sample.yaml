@@ -8,12 +8,12 @@ tests:
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
       - nrf9131ek_nrf9131_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     tags: ci_build
   applications.serial_lte_modem.native_tls:
     build_only: true
@@ -23,12 +23,12 @@ tests:
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
       - nrf9131ek_nrf9131_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     tags: ci_build
   applications.serial_lte_modem.lwm2m_carrier:
     build_only: true
@@ -38,10 +38,10 @@ tests:
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
       - nrf9131ek_nrf9131_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     tags: ci_build
