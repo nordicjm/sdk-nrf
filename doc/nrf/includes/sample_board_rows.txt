@@ -86,11 +86,11 @@
 
 .. thingy91_nrf9160
 
-| :ref:`Thingy:91 <ug_thingy91>` | PCA20035 | thingy91_nrf9160 | ``thingy91_nrf9160`` |
+| :ref:`Thingy:91 <ug_thingy91>` | PCA20035 | thingy91 | ``thingy91/nrf9160`` |
 
 .. thingy91_nrf9160_ns
 
-| :ref:`Thingy:91 <ug_thingy91>` | PCA20035 | thingy91_nrf9160 | ``thingy91_nrf9160_ns`` |
+| :ref:`Thingy:91 <ug_thingy91>` | PCA20035 | thingy91 | ``thingy91/nrf9160/ns`` |
 
 .. nrf52dk_nrf52810
 
@@ -122,7 +122,7 @@
 
 .. thingy91_nrf52840
 
-| :ref:`Thingy:91 <ug_thingy91>` | PCA20035 | thingy91_nrf52840 | ``thingy91_nrf52840`` |
+| :ref:`Thingy:91 <ug_thingy91>` | PCA20035 | thingy91 | ``thingy91/nrf52840`` |
 
 .. nrf5340dk_nrf5340_cpuapp_and_cpuapp_ns
 
