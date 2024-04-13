@@ -110,7 +110,7 @@ tests:
     build_only: true
     extra_args: OVERLAY_CONFIG=overlay-scan-only.conf CONFIG_WPA_SUPP=n
     platform_allow:
-      - thingy91x_nrf9151_ns
+      - thingy91x/nrf9151/ns
     tags: ci_build
   sample.nrf7002.shell.otbr:
     build_only: true

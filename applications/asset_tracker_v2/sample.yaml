@@ -8,12 +8,12 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
       - native_sim
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
       - native_sim
     tags: ci_build
   applications.asset_tracker_v2.nrf_cloud.sysbuild:
@@ -22,11 +22,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     tags: ci_build sysbuild
   applications.asset_tracker_v2.nrf_cloud-pgps:
     build_only: true
@@ -35,11 +35,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-pgps.conf
     tags: ci_build
   applications.asset_tracker_v2.nrf_cloud-pgps.sysbuild:
@@ -48,11 +48,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-pgps.conf
     tags: ci_build sysbuild
   applications.asset_tracker_v2.nrf_cloud-no-agnss:
@@ -62,11 +62,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: CONFIG_NRF_CLOUD_AGNSS=n
     tags: ci_build
   applications.asset_tracker_v2.nrf_cloud-no-agnss.sysbuild:
@@ -75,11 +75,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: CONFIG_NRF_CLOUD_AGNSS=n
     tags: ci_build sysbuild
   applications.asset_tracker_v2.aws:
@@ -89,12 +89,12 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
       - native_sim
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
       - native_sim
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
@@ -106,11 +106,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
     extra_args: EXTRA_CONF_FILE="overlay-aws.conf"
@@ -122,11 +122,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
     extra_args: EXTRA_CONF_FILE="overlay-aws.conf;overlay-pgps.conf"
@@ -137,11 +137,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
     extra_args: EXTRA_CONF_FILE="overlay-aws.conf;overlay-pgps.conf"
@@ -153,11 +153,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
@@ -170,11 +170,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_AWS_IOT_BROKER_HOST_NAME="example-hostname.aws.com"
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
@@ -188,12 +188,12 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
       - native_sim
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
       - native_sim
     extra_configs:
       - CONFIG_AZURE_IOT_HUB_DPS_HOSTNAME="global.azure-devices-provisioning.net"
@@ -206,11 +206,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_AZURE_IOT_HUB_DPS_HOSTNAME="global.azure-devices-provisioning.net"
       - CONFIG_AZURE_IOT_HUB_DPS_ID_SCOPE="IDSCOPE"
@@ -223,12 +223,12 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
       - native_sim
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
       - native_sim
     extra_args: EXTRA_CONF_FILE=overlay-debug.conf
     tags: ci_build
@@ -238,11 +238,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-debug.conf
     tags: ci_build sysbuild
   applications.asset_tracker_v2.debug-memfault:
@@ -252,11 +252,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE="overlay-debug.conf;overlay-memfault.conf"
@@ -267,11 +267,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE="overlay-debug.conf;overlay-memfault.conf"
@@ -283,11 +283,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE=overlay-memfault.conf
@@ -298,11 +298,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE=overlay-memfault.conf
@@ -314,11 +314,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-low-power.conf
     tags: ci_build
   applications.asset_tracker_v2.low-power.sysbuild:
@@ -327,11 +327,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-low-power.conf
     tags: ci_build sysbuild
   applications.asset_tracker_v2.carrier.nrf9160dk:
@@ -339,8 +339,8 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
@@ -351,11 +351,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE=overlay-carrier.conf
     tags: ci_build sysbuild
   applications.asset_tracker_v2.carrier.nrf9161dk:
@@ -381,11 +381,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_LWM2M_RD_CLIENT_SUPPORT_BOOTSTRAP=y
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-low-power.conf"
@@ -396,11 +396,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-low-power.conf"
     tags: ci_build sysbuild
   applications.asset_tracker_v2.lwm2m.debug:
@@ -410,11 +410,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-debug.conf"
     tags: ci_build
   applications.asset_tracker_v2.lwm2m.debug.sysbuild:
@@ -423,11 +423,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-debug.conf"
     tags: ci_build sysbuild
   applications.asset_tracker_v2.lwm2m.debug-modem_trace:
@@ -462,11 +462,11 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args:
       EXTRA_CONF_FILE="overlay-lwm2m.conf"
       SNIPPET="nrf91-modem-trace-uart;tfm-enable-share-uart"
@@ -477,11 +477,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: >
       EXTRA_CONF_FILE="overlay-lwm2m.conf"
       asset_tracker_v2_SNIPPET="nrf91-modem-trace-uart;tfm-enable-share-uart"
@@ -493,13 +493,13 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-memfault.conf"
@@ -510,11 +510,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE="overlay-lwm2m.conf;overlay-memfault.conf"
@@ -526,13 +526,13 @@ tests:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
       - nrf9151dk_nrf9151_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE="overlay-low-power.conf;overlay-memfault.conf"
@@ -543,11 +543,11 @@ tests:
     build_on_all: true
     platform_allow:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9160dk_nrf9160_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_configs:
       - CONFIG_MEMFAULT_NCS_PROJECT_KEY="PROJECTKEY"
     extra_args: EXTRA_CONF_FILE="overlay-low-power.conf;overlay-memfault.conf"
