@@ -336,7 +336,7 @@ The following configuration files are provided:
   This file is automatically merged with the :file:`prj.conf` file when you build for the ``nrf9161dk_nrf9161_ns`` build target.
 
 * :file:`boards/thingy91_nrf9160_ns.conf` - Configuration file specific for Thingy:91.
-  This file is automatically merged with the :file:`prj.conf` file when you build for the ``thingy91_nrf9160_ns`` build target.
+  This file is automatically merged with the :file:`prj.conf` file when you build for the ``thingy91/nrf9160/ns`` build target.
 
 .. _slm_native_tls:
 
