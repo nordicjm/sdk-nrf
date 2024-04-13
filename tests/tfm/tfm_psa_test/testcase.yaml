@@ -15,11 +15,11 @@ tests:
     platform_allow: >
       nrf5340dk_nrf5340_cpuapp_ns
       nrf9160dk_nrf9160_ns
-      nrf54l15pdk_nrf54l15_cpuapp_ns
+      nrf54l15pdk/nrf54l15/cpuapp/ns
     integration_platforms:
       - nrf5340dk_nrf5340_cpuapp_ns
       - nrf9160dk_nrf9160_ns
-      - nrf54l15pdk_nrf54l15_cpuapp_ns
+      - nrf54l15pdk/nrf54l15/cpuapp/ns
   tfm.psa_test_storage_lvl2:
     tags: tfm_lvl2
     extra_args: "CONFIG_TFM_PSA_TEST_STORAGE=y"
@@ -27,11 +27,11 @@ tests:
     platform_allow: >
       nrf5340dk_nrf5340_cpuapp_ns
       nrf9160dk_nrf9160_ns
-      nrf54l15pdk_nrf54l15_cpuapp_ns
+      nrf54l15pdk/nrf54l15/cpuapp/ns
     integration_platforms:
       - nrf5340dk_nrf5340_cpuapp_ns
       - nrf9160dk_nrf9160_ns
-      - nrf54l15pdk_nrf54l15_cpuapp_ns
+      - nrf54l15pdk/nrf54l15/cpuapp/ns
   tfm.psa_test_crypto_lvl1:
     tags: tfm_lvl1
     extra_args: "CONFIG_TFM_PSA_TEST_CRYPTO=y CONFIG_TFM_ISOLATION_LEVEL=1"
@@ -39,11 +39,11 @@ tests:
     platform_allow: >
       nrf5340dk_nrf5340_cpuapp_ns
       nrf9160dk_nrf9160_ns
-      nrf54l15pdk_nrf54l15_cpuapp_ns
+      nrf54l15pdk/nrf54l15/cpuapp/ns
     integration_platforms:
       - nrf5340dk_nrf5340_cpuapp_ns
       - nrf9160dk_nrf9160_ns
-      - nrf54l15pdk_nrf54l15_cpuapp_ns
+      - nrf54l15pdk/nrf54l15/cpuapp/ns
   tfm.psa_test_crypto_lvl2:
     tags: tfm_lvl2
     extra_args: "CONFIG_TFM_PSA_TEST_CRYPTO=y"
