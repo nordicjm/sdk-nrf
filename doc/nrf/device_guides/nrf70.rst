@@ -16,14 +16,14 @@ Zephyr and the |NCS| provide support for developing networking applications with
    * - nRF7002 DK
      - Not applicable
      - PCA10143
-     - ``nrf7002dk_nrf5340_cpuapp``
+     - ``nrf7002dk/nrf5340/cpuapp``
      - | `Product Specification <Product specification for nRF70 Series devices_>`_
        | :ref:`Getting started <nrf7002dk_nrf5340>`
        | `User Guide <nRF7002 DK Hardware_>`_
    * - nRF7001 emulation on nRF7002 DK
      - Not applicable
      - PCA10143
-     - ``nrf7002dk_nrf7001_nrf5340_cpuapp``
+     - ``nrf7002dk/nrf5340/cpuapp/nrf7001``
      - | `Product Specification <nRF7001 Product Specification_>`_
    * - :ref:`zephyr:nrf5340dk_nrf5340`
      - nRF7002 EK
