@@ -51,7 +51,7 @@
     - applications.matter_bridge.memory_profiling
     - sample.matter.light_bulb.memory_profiling
   platforms:
-    - nrf7002dk_nrf5340_cpuapp
+    - nrf7002dk/nrf5340/cpuapp
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -73,7 +73,7 @@
     - sample.nrf7002.rx_prioritized
     - sample.nrf7002.tx_prioritized
   platforms:
-    - nrf7002dk_nrf5340_cpuapp
+    - nrf7002dk/nrf5340/cpuapp
   comment: "To save CI-Integration time, these are part of Wi-Fi nighlty"
 
 - scenarios:
@@ -217,7 +217,7 @@
     - sample.cellular.slm_shell
   platforms:
     - nrf5340dk_nrf5340_cpuapp
-    - nrf7002dk_nrf5340_cpuapp
+    - nrf7002dk/nrf5340/cpuapp
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -240,7 +240,7 @@
 - scenarios:
     - sample.net.azure_iot_hub
   platforms:
-    - nrf7002dk_nrf5340_cpuapp
+    - nrf7002dk/nrf5340/cpuapp
     - nrf9160dk_nrf9160_ns
     - nrf9161dk_nrf9161_ns
   comment: "Configurations excluded to limit resources usage in integration builds"
@@ -254,7 +254,7 @@
 - scenarios:
     - sample.net.coap_client
   platforms:
-    - nrf7002dk_nrf5340_cpuapp_ns
+    - nrf7002dk/nrf5340/cpuapp/ns
     - nrf9160dk_nrf9160_ns
     - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
@@ -263,14 +263,14 @@
     - sample.matter.template.smp_dfu
   platforms:
     - nrf52840dk_nrf52840
-    - nrf7002dk_nrf5340_cpuapp
+    - nrf7002dk/nrf5340/cpuapp
     - nrf5340dk_nrf5340_cpuapp
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
     - sample.matter.thermostat.debug
   platforms:
-    - nrf7002dk_nrf5340_cpuapp
+    - nrf7002dk/nrf5340/cpuapp
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
