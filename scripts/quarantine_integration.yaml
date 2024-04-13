@@ -225,7 +225,7 @@
     - sample.cellular.udp
   platforms:
     - nrf9160dk_nrf9160_ns
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -256,7 +256,7 @@
   platforms:
     - nrf7002dk_nrf5340_cpuapp_ns
     - nrf9160dk_nrf9160_ns
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -294,7 +294,7 @@
     - sample.debug.memfault.etb
   platforms:
     - nrf9160dk_nrf9160_ns
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -308,13 +308,13 @@
     - sample.sensor.bme68x.polling
   platforms:
     - thingy53_nrf5340_cpuapp_ns
-    - thingy91_nrf9160
+    - thingy91/nrf9160
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
     - sample.sensor.bme68x.i2c
   platforms:
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -341,7 +341,7 @@
     - applications.serial_lte_modem.lwm2m_carrier
     - applications.serial_lte_modem.native_tls
   platforms:
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -512,7 +512,7 @@
 - scenarios:
     - sample.cellular.nrf_cloud_multi_service.coap
   platforms:
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -876,7 +876,7 @@
     - applications.asset_tracker_v2.nrf_cloud-pgps
     - applications.asset_tracker_v2.nrf_cloud.sysbuild
   platforms:
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -1000,7 +1000,7 @@
     - sample.net.udp
   platforms:
     - nrf9161dk_nrf9161_ns
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:
@@ -1021,7 +1021,7 @@
 - scenarios:
     - sample.net.aws_iot
   platforms:
-    - thingy91_nrf9160_ns
+    - thingy91/nrf9160/ns
   comment: "Configurations excluded to limit resources usage in integration builds"
 
 - scenarios:

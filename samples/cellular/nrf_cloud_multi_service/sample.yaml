@@ -7,13 +7,13 @@ tests:
       - nrf9151dk_nrf9151_ns
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
-      - thingy91x_nrf9151_ns
+      - thingy91/nrf9160/ns
+      - thingy91x/nrf9151/ns
     integration_platforms:
       - nrf9151dk_nrf9151_ns
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     tags: ci_build
   sample.cellular.nrf_cloud_multi_service.mqtt.full:
     build_only: true
@@ -36,12 +36,12 @@ tests:
       - nrf9151dk_nrf9151_ns
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     integration_platforms:
       - nrf9151dk_nrf9151_ns
       - nrf9160dk_nrf9160_ns
       - nrf9161dk_nrf9161_ns
-      - thingy91_nrf9160_ns
+      - thingy91/nrf9160/ns
     extra_args: EXTRA_CONF_FILE="overlay_coap.conf"
     tags: ci_build
   sample.cellular.nrf_cloud_multi_service.coap.min:
