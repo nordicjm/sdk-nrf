@@ -46,7 +46,7 @@ tests:
     platform_allow: >
       nrf54h20dk_nrf54h20_cpuapp
       nrf54l15pdk_nrf54l15_cpuapp
-      nrf54l15pdk_nrf54l15_cpuapp_ns
+      nrf54l15pdk/nrf54l15/cpuapp/ns
     harness: console
     harness_config:
       type: multi_line
@@ -54,5 +54,5 @@ tests:
         - .*Example finished successfully!.*
     integration_platforms:
       - nrf54l15pdk_nrf54l15_cpuapp
-      - nrf54l15pdk_nrf54l15_cpuapp_ns
+      - nrf54l15pdk/nrf54l15/cpuapp/ns
       - nrf54h20dk_nrf54h20_cpuapp
