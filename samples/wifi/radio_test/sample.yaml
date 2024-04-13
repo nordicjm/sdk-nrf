@@ -55,5 +55,5 @@ tests:
     tags: ci_build
   sample.thingy91x_nrf7002.radio_test:
     build_only: true
-    platform_allow: thingy91x_nrf9151_ns
+    platform_allow: thingy91x/nrf9151/ns
     tags: ci_build
