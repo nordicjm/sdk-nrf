@@ -89,7 +89,7 @@ This platform design is suitable for the following development kits:
 For this design, the Wi-Fi driver on the application core communicates with the external nRF7002 Wi-Fi 6 Companion IC over QSPI or SPI:
 
 * For the ``nrf5340dk_nrf5340_cpuapp``, nRF7002 support is added using ``nrf7002ek`` shield connected through SPI.
-* For the ``nrf7002dk_nrf5340_cpuapp``, nRF7002 is connected with the nRF5340 SoC through QSPI.
+* For the ``nrf7002dk/nrf5340/cpuapp``, nRF7002 is connected with the nRF5340 SoC through QSPI.
 
 .. figure:: images/matter_platform_design_nRF53_wifi.svg
    :alt: Multiprotocol Wi-Fi and Bluetooth LE architecture (nRF53 with the nRF7002 Wi-Fi 6 Companion IC)

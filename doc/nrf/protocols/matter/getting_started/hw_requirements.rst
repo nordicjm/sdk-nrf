@@ -143,7 +143,7 @@ Values are provided in kilobytes (KB).
 
    .. tab:: nRF7002 DK
 
-      The following table lists memory requirements for samples running on the :ref:`nRF7002 DK <programming_board_names>` (:ref:`nrf7002dk_nrf5340_cpuapp <nrf7002dk_nrf5340>`).
+      The following table lists memory requirements for samples running on the :ref:`nRF7002 DK <programming_board_names>` (:ref:`nrf7002dk <nrf7002dk_nrf5340>`).
 
       +-------------------------------------------------------------------+---------------+-------------------+----------------+------------+-------------+---------------------------------+
       | Sample                                                            |   MCUboot ROM |   Application ROM |   Factory data |   Settings |   Total ROM |   Total RAM (incl. static HEAP) |
@@ -490,7 +490,7 @@ For more information about configuration of memory layouts in Matter, see :ref:`
 
    .. tab:: nRF7002 DK
 
-      The following memory map is valid for Matter applications running on the :ref:`nRF7002 DK <programming_board_names>` (:ref:`nrf7002dk_nrf5340 <nrf7002dk_nrf5340>`).
+      The following memory map is valid for Matter applications running on the :ref:`nRF7002 DK <programming_board_names>` (:ref:`nrf7002dk <nrf7002dk_nrf5340>`).
 
       Application core flash (size: 0x100000 = 1024kB)
         +-----------------------------------------+---------------------+-------------------+---------------------+-----------------+-------------------+
@@ -595,11 +595,11 @@ You can generate :ref:`Partition Manager's ASCII representation <pm_partition_re
 
    west build -b <build_target> -t partition_manager_report
 
-For example, for the ``nrf7002dk_nrf5340_cpuapp`` build target, the command is as follows:
+For example, for the ``nrf7002dk/nrf5340/cpuapp`` build target, the command is as follows:
 
 .. code-block:: console
 
-   west build -b nrf7002dk_nrf5340_cpuapp -t partition_manager_report
+   west build -b nrf7002dk/nrf5340/cpuapp -t partition_manager_report
 
 .. note::
 
