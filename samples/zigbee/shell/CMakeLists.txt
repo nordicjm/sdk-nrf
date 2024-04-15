@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+##wtf
 cmake_minimum_required(VERSION 3.20.0)
 
 # Set USB as default transport when sample is built for the nRF52 Dongle

@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
+## wtf
+
 cmake_minimum_required(VERSION 3.20.0)
 
 if(DEFINED SHIELD AND "${BOARD}" STREQUAL "nrf5340dk_nrf5340_cpunet")

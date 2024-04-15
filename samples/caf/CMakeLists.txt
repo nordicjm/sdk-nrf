@@ -16,7 +16,7 @@ target_sources(app PRIVATE
 
 # Add include directory for board specific CAF def files
 zephyr_include_directories(
-  configuration/${BOARD}
+  configuration/${BOARD}${NORMALIZED_BOARD_QUALIFIERS}
   )
 
 target_sources_ifdef(CONFIG_CAF_SAMPLE_LED_STATE

@@ -5,6 +5,8 @@
 #
 cmake_minimum_required(VERSION 3.20.0)
 
+##wtf
+
 if(DEFINED SHIELD AND "${BOARD}" STREQUAL "nrf5340dk_nrf5340_cpunet")
   string(REPLACE " " ";" SHIELD_LIST "${SHIELD}")
   foreach(sh IN LISTS SHIELD_LIST)
