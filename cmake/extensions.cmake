@@ -222,7 +222,7 @@ Please provide one of following: CONF_FILES")
 
   if(NOT DEFINED ZEPHYR_FILE_BOARD)
     # Defaulting to system wide settings when BOARD is not given as argument
-    set(ZEPHYR_FILE_BOARD ${BOARD})
+    set(ZEPHYR_FILE_BOARD ${BOARD}${BOARD_QUALIFIERS})
     if(DEFINED BOARD_REVISION)
       set(ZEPHYR_FILE_BOARD_REVISION ${BOARD_REVISION})
     endif()
