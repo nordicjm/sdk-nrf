@@ -74,6 +74,16 @@ else()
       list(APPEND application_vars ${var_name})
     endif()
 
+    # Special handling for HWMv2 board qualifiers and revisions for s1_image
+    if("${var_name}" STREQUAL "BOARD")
+      if(DEFINED BOARD_QUALIFIERS)
+        list(APPEND application_vars BOARD_QUALIFIERS)
+      endif()
+      if(DEFINED BOARD_REVISION)
+        list(APPEND application_vars BOARD_REVISION)
+      endif()
+    endif()
+
     # All CONFIG_.* and CLI_CONFIG_* variables are given helptext by the build
     # system. Therefore we need this special handling for passing the value to
     # the variant image.
