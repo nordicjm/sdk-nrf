@@ -96,7 +96,7 @@ else()
   endforeach()
 
   foreach(app_var_name ${application_vars})
-    string(REPLACE "\"" "\\\"" app_var_value "${${app_var_name}}")
+    string(REPLACE "\"" "\\\"" app_var_value "$CACHE{${app_var_name}}")
     file(
       APPEND
       ${base_image_preload_file}
