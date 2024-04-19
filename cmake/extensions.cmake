@@ -229,14 +229,14 @@ Please provide one of following: CONF_FILES")
 
   if(NOT DEFINED PREPROCESS_ARGS_BOARD)
     # Defaulting to system wide settings when BOARD is not given as argument
-    set(board_in ${BOARD})
+    set(board_combined ${BOARD})
 
     if(DEFINED BOARD_REVISION)
-      set(board_in ${board_in}@${BOARD_REVISION})
+      set(board_combined ${board_combined}@${BOARD_REVISION})
     endif()
 
-    set(board_in ${board_in}${BOARD_QUALIFIERS})
-    parse_board_components(board_in board_name board_revision board_qualifiers)
+    set(board_combined ${board_combined}${BOARD_QUALIFIERS})
+    parse_board_components(board_combined board_name board_revision board_qualifiers)
   endif()
 
   if(NCS_FILE_PM)
