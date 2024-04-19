@@ -277,12 +277,14 @@ Please provide one of following: CONF_FILES")
       )
       list(APPEND filename_list ${PM_FILE_PREFIX}_${filename})
 
-      # Prepare search for pm_static_build.yml
-      # Note that BOARD argument is used to position suffix accordingly
-      zephyr_build_string(filename
-                          BOARD ${ZEPHYR_FILE_BUILD}
-      )
-      list(APPEND filename_list ${PM_FILE_PREFIX}_${filename})
+      if(DEFINED ZEPHYR_FILE_BUILD)
+        # Prepare search for pm_static_build.yml
+        # Note that BOARD argument is used to position suffix accordingly
+        zephyr_build_string(filename
+                            BOARD ${ZEPHYR_FILE_BUILD}
+        )
+        list(APPEND filename_list ${PM_FILE_PREFIX}_${filename})
+      endif()
 
       # Prepare search for pm_static.yml
       list(APPEND filename_list ${PM_FILE_PREFIX})
