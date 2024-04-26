@@ -41,6 +41,8 @@ manifest:
       url-base: https://github.com/boschsensortec
     - name: eembc
       url-base: https://github.com/eembc
+    - name: nordicjm
+      url-base: https://github.com/nordicjm
 
   # If not otherwise specified, the projects below should be obtained
   # from the ncs remote.
@@ -160,7 +162,8 @@ manifest:
     - name: matter
       repo-path: sdk-connectedhomeip
       path: modules/lib/matter
-      revision: e734b7924bf2b6bdc78e20d8416267f42ba95675
+      revision: sysbuild
+      remote: nordicjm
       west-commands: scripts/west/west-commands.yml
       submodules:
         - name: nlio
