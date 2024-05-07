@@ -78,6 +78,10 @@ function(include_matter_factory_data)
   nrfconnect_generate_factory_data()
 endfunction()
 
+function(include_nrf700x)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/nrf700x.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
@@ -337,6 +341,12 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     include_matter_factory_data()
   endif()
 
+  sysbuild_get(CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE IMAGE ${DEFAULT_IMAGE} VAR CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE KCONFIG)
+
+  if(CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE)
+    include_nrf700x()
+  endif()
+
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
     # Run partition manager for each image before running CMake.
@@ -353,6 +363,11 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
 
     if(SB_CONFIG_SUPPORT_NETCORE AND NOT SB_CONFIG_NETCORE_EMPTY)
       get_property(PM_MCUBOOT_PRIMARY_1_SIZE TARGET partition_manager PROPERTY PM_MCUBOOT_PRIMARY_1_SIZE)
+    endif()
+
+    if(CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE)
+      get_property(PM_NRF70_WIFI_FW_OFFSET TARGET partition_manager PROPERTY PM_NRF70_WIFI_FW_OFFSET)
+      get_property(PM_NRF70_WIFI_FW_SIZE TARGET partition_manager PROPERTY PM_NRF70_WIFI_FW_SIZE)
     endif()
   endif()
   foreach(image ${IMAGES})
