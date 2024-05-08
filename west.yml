@@ -63,7 +63,7 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
       repo-path: sdk-zephyr
-      revision: 8e18208ae30e172d05b69bba5908095a561c0794
+      revision: pull/1706/head
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
@@ -208,7 +208,7 @@ manifest:
         - sidewalk
     - name: find-my
       repo-path: sdk-find-my
-      revision: 68a3f93bffcd844a90630d4e70f323f327bdf33f
+      revision: pull/201/head
       groups:
         - find-my
     - name: azure-sdk-for-c
