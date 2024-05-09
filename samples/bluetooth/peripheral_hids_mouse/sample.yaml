@@ -3,13 +3,6 @@ sample:
   name: BLE HIDS mouse sample
 tests:
   sample.bluetooth.peripheral_hids_mouse:
-    harness: bluetooth
-    integration_platforms:
-      - nrf52dk/nrf52832
-      - nrf52840dk/nrf52840
-    platform_allow: nrf52dk/nrf52832 nrf52840dk/nrf52840
-    tags: bluetooth
-  sample.bluetooth.peripheral_hids_mouse.sysbuild:
     sysbuild: true
     harness: bluetooth
     integration_platforms:
@@ -18,20 +11,6 @@ tests:
     platform_allow: nrf52dk/nrf52832 nrf52840dk/nrf52840
     tags: bluetooth sysbuild
   sample.bluetooth.peripheral_hids_mouse.build:
-    build_only: true
-    integration_platforms:
-      - nrf52dk/nrf52832
-      - nrf52840dk/nrf52840
-      - nrf5340dk/nrf5340/cpuapp
-      - nrf5340dk/nrf5340/cpuapp/ns
-      - nrf54l15pdk/nrf54l15/cpuapp
-      - nrf54l15pdk@0.3.0/nrf54l15/cpuapp
-      - nrf54h20dk/nrf54h20/cpuapp
-    platform_allow: nrf52dk/nrf52832 nrf52840dk/nrf52840 nrf5340dk/nrf5340/cpuapp
-      nrf5340dk/nrf5340/cpuapp/ns nrf54l15pdk/nrf54l15/cpuapp nrf54l15pdk@0.3.0/nrf54l15/cpuapp
-      nrf54h20dk/nrf54h20/cpuapp
-    tags: bluetooth ci_build
-  sample.bluetooth.peripheral_hids_mouse.build.sysbuild:
     sysbuild: true
     build_only: true
     integration_platforms:
@@ -47,13 +26,6 @@ tests:
       nrf54h20dk/nrf54h20/cpuapp
     tags: bluetooth ci_build sysbuild
   sample.bluetooth.peripheral_hids_mouse.ble_rpc:
-    build_only: true
-    extra_args: OVERLAY_CONFIG="overlay-nrf_rpc.conf"
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-    platform_allow: nrf5340dk/nrf5340/cpuapp
-    tags: bluetooth ci_build
-  sample.bluetooth.peripheral_hids_mouse.ble_rpc.sysbuild:
     sysbuild: true
     build_only: true
     extra_args: OVERLAY_CONFIG="overlay-nrf_rpc.conf"
@@ -62,14 +34,6 @@ tests:
     platform_allow: nrf5340dk/nrf5340/cpuapp
     tags: bluetooth ci_build sysbuild
   sample.bluetooth.peripheral_hids_mouse.no_sec:
-    build_only: true
-    extra_configs:
-      - CONFIG_BT_HIDS_SECURITY_ENABLED=n
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-    platform_allow: nrf52dk/nrf52832 nrf52840dk/nrf52840 nrf5340dk/nrf5340/cpuapp
-    tags: bluetooth ci_build
-  sample.bluetooth.peripheral_hids_mouse.no_sec.sysbuild:
     sysbuild: true
     build_only: true
     extra_configs:
@@ -80,12 +44,6 @@ tests:
     tags: bluetooth ci_build sysbuild
   # Build integration regression protection.
   sample.nrf_security.bluetooth.integration:
-    build_only: true
-    extra_args: CONFIG_NRF_SECURITY=y CONFIG_BOOTLOADER_MCUBOOT=y
-    platform_allow: nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-  sample.nrf_security.bluetooth.integration.sysbuild:
     sysbuild: true
     build_only: true
     extra_args: CONFIG_NRF_SECURITY=y CONFIG_BOOTLOADER_MCUBOOT=y

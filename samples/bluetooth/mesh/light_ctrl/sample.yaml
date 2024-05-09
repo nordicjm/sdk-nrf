@@ -3,21 +3,6 @@ sample:
   name: Bluetooth Mesh light fixture
 tests:
   sample.bluetooth.mesh.light_ctrl:
-    build_only: true
-    integration_platforms:
-      - nrf52dk/nrf52832
-      - nrf52840dk/nrf52840
-      - nrf52833dk/nrf52833
-      - nrf5340dk/nrf5340/cpuapp
-      - nrf5340dk/nrf5340/cpuapp/ns
-      - thingy53/nrf5340/cpuapp
-      - nrf21540dk/nrf52840
-      - nrf52840dongle/nrf52840
-    platform_allow: nrf52dk/nrf52832 nrf52840dk/nrf52840 nrf5340dk/nrf5340/cpuapp
-      nrf5340dk/nrf5340/cpuapp/ns thingy53/nrf5340/cpuapp
-      nrf21540dk/nrf52840 nrf52833dk/nrf52833 nrf52840dongle/nrf52840
-    tags: bluetooth ci_build
-  sample.bluetooth.mesh.light_ctrl.sysbuild:
     sysbuild: true
     build_only: true
     integration_platforms:
@@ -34,21 +19,6 @@ tests:
       nrf21540dk/nrf52840 nrf52833dk/nrf52833 nrf52840dongle/nrf52840
     tags: bluetooth ci_build sysbuild
   sample.bluetooth.mesh.light_ctrl.emds:
-    extra_args: OVERLAY_CONFIG="overlay-emds.conf"
-    build_only: true
-    integration_platforms:
-      - nrf52dk/nrf52832
-      - nrf52840dk/nrf52840
-      - nrf52833dk/nrf52833
-      - nrf5340dk/nrf5340/cpuapp
-      - nrf5340dk/nrf5340/cpuapp/ns
-      - thingy53/nrf5340/cpuapp
-      - nrf21540dk/nrf52840
-    platform_allow: nrf52dk/nrf52832 nrf52840dk/nrf52840 nrf5340dk/nrf5340/cpuapp
-      nrf5340dk/nrf5340/cpuapp/ns thingy53/nrf5340/cpuapp
-      nrf21540dk/nrf52840 nrf52833dk/nrf52833
-    tags: bluetooth ci_build
-  sample.bluetooth.mesh.light_ctrl.emds.sysbuild:
     sysbuild: true
     extra_args: OVERLAY_CONFIG="overlay-emds.conf"
     build_only: true

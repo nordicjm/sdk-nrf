@@ -2,17 +2,6 @@ sample:
   name: sms Sample
 tests:
   sample.cellular.sms:
-    build_only: true
-    integration_platforms:
-      - nrf9151dk/nrf9151/ns
-      - nrf9160dk/nrf9160/ns
-      - nrf9161dk/nrf9161/ns
-    platform_allow:
-      - nrf9151dk/nrf9151/ns
-      - nrf9160dk/nrf9160/ns
-      - nrf9161dk/nrf9161/ns
-    tags: ci_build
-  sample.cellular.sms.sysbuild:
     sysbuild: true
     build_only: true
     integration_platforms:

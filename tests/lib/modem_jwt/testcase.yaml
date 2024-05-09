@@ -1,11 +1,5 @@
 tests:
   unity.modem_jwt:
-    platform_allow: qemu_cortex_m3 native_posix
-    integration_platforms:
-      - qemu_cortex_m3
-      - native_posix
-    tags: jwt
-  unity.modem_jwt.sysbuild:
     sysbuild: true
     platform_allow: qemu_cortex_m3 native_posix
     integration_platforms:

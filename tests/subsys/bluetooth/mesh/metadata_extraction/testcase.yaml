@@ -6,35 +6,21 @@ common:
     - nrf52840dk/nrf52840
 tests:
   bluetooth.mesh.metadata_extraction_single:
-    extra_configs:
-      - CONFIG_COMP_DATA_LAYOUT_SINGLE=y
-  bluetooth.mesh.metadata_extraction_single.sysbuild:
     sysbuild: true
     tags: sysbuild
     extra_args:
       - SB_CONFIG_COMP_DATA_LAYOUT_SINGLE=y
   bluetooth.mesh.metadata_extraction_multiple:
-    extra_configs:
-      - CONFIG_COMP_DATA_LAYOUT_MULTIPLE=y
-  bluetooth.mesh.metadata_extraction_multiple.sysbuild:
     sysbuild: true
     tags: sysbuild
     extra_args:
       - SB_CONFIG_COMP_DATA_LAYOUT_MULTIPLE=y
   bluetooth.mesh.metadata_extraction_array:
-    extra_configs:
-      - CONFIG_COMP_DATA_LAYOUT_ARRAY=y
-  bluetooth.mesh.metadata_extraction_array.sysbuild:
     sysbuild: true
     tags: sysbuild
     extra_args:
       - SB_CONFIG_COMP_DATA_LAYOUT_ARRAY=y
   bluetooth.mesh.metadata_extraction_single_lto:
-    extra_configs:
-      - CONFIG_COMP_DATA_LAYOUT_SINGLE=y
-      - CONFIG_ISR_TABLES_LOCAL_DECLARATION=y
-      - CONFIG_LTO=y
-  bluetooth.mesh.metadata_extraction_single_lto.sysbuild:
     sysbuild: true
     tags: sysbuild
     extra_args:

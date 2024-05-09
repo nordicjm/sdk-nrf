@@ -15,8 +15,6 @@ common:
       - "Success!"
 tests:
   sample.keys.identity_key_generate.random_key:
-    tags: keys ci_build
-  sample.keys.identity_key_generate.random_key.sysbuild:
     sysbuild: true
     tags: keys ci_build sysbuild
 
@@ -24,10 +22,6 @@ tests:
   # This sample configuration is mainly useful for writing that expected key,
   # which is called a "dummy key".
   sample.keys.identity_key_generate.static_key:
-    extra_configs:
-      - CONFIG_IDENTITY_KEY_DUMMY=y
-    tags: keys ci_build
-  sample.keys.identity_key_generate.static_key.sysbuild:
     sysbuild: true
     extra_configs:
       - CONFIG_IDENTITY_KEY_DUMMY=y

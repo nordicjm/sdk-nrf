@@ -3,13 +3,6 @@ common:
   tags: partition_manager
 tests:
   regions.little_fs:
-    platform_allow: nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-    extra_configs:
-      - CONFIG_FILE_SYSTEM_LITTLEFS=y
-      - CONFIG_PM_PARTITION_REGION_LITTLEFS_EXTERNAL=y
-  regions.little_fs.sysbuild:
     sysbuild: true
     platform_allow: nrf5340dk/nrf5340/cpuapp
     integration_platforms:
@@ -19,13 +12,6 @@ tests:
       - CONFIG_PM_PARTITION_REGION_LITTLEFS_EXTERNAL=y
     tags: sysbuild
   regions.nvs_storage:
-    platform_allow: nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-    extra_configs:
-      - CONFIG_NVS=y
-      - CONFIG_PM_PARTITION_REGION_NVS_STORAGE_EXTERNAL=y
-  regions.nvs_storage.sysbuild:
     sysbuild: true
     platform_allow: nrf5340dk/nrf5340/cpuapp
     integration_platforms:
@@ -35,15 +21,6 @@ tests:
       - CONFIG_PM_PARTITION_REGION_NVS_STORAGE_EXTERNAL=y
     tags: sysbuild
   regions.settings_storage:
-    platform_allow: nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-    extra_configs:
-      - CONFIG_FCB=y
-      - CONFIG_SETTINGS=y
-      - CONFIG_SETTINGS_FCB=y
-      - CONFIG_PM_PARTITION_REGION_SETTINGS_STORAGE_EXTERNAL=y
-  regions.settings_storage.sysbuild:
     sysbuild: true
     platform_allow: nrf5340dk/nrf5340/cpuapp
     integration_platforms:
@@ -55,15 +32,6 @@ tests:
       - CONFIG_PM_PARTITION_REGION_SETTINGS_STORAGE_EXTERNAL=y
     tags: sysbuild
   regions.settings_storage_tfm:
-    platform_allow: nrf5340dk/nrf5340/cpuapp/ns
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp/ns
-    extra_configs:
-      - CONFIG_FCB=y
-      - CONFIG_SETTINGS=y
-      - CONFIG_SETTINGS_FCB=y
-      - CONFIG_PM_PARTITION_REGION_SETTINGS_STORAGE_EXTERNAL=y
-  regions.settings_storage_tfm.sysbuild:
     sysbuild: true
     platform_allow: nrf5340dk/nrf5340/cpuapp/ns
     integration_platforms:
