@@ -1,13 +1,10 @@
 #
-# Copyright (c) 2023 Nordic Semiconductor
+# Copyright (c) 2024 Nordic Semiconductor
 #
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-config NRF_DEFAULT_802154
-	default y
-
 config PM_EXTERNAL_FLASH_MCUBOOT_SECONDARY
-	default y if BOARD_NRF5340DK_NRF5340_CPUAPP
+	default y if BOARD_NRF5340DK_NRF5340_CPUAPP || BOARD_NRF52840DK_NRF52840
 
 source "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
