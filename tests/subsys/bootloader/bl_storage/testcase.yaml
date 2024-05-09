@@ -1,20 +1,5 @@
 tests:
   bootloader.bl_storage:
-    platform_allow: nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf9160dk/nrf9160
-      - nrf5340dk/nrf5340/cpuapp
-    tags: b0
-    harness: console
-    harness_config:
-      type: multi_line
-      ordered: true
-      regex:
-        - "Rebooting. Should fail to validate because of monotonic counter."
-        - "Firmware version \\(10\\) is smaller than monotonic counter \\(11\\)."
-        - "Failed to validate, permanently invalidating!"
-        - "No bootable image found\\. Aborting boot\\."
-  bootloader.bl_storage.sysbuild:
     sysbuild: true
     platform_allow: nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
     integration_platforms:

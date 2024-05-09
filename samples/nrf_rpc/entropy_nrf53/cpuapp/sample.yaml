@@ -3,11 +3,6 @@ sample:
   name: Entropy remote application core
 tests:
   sample.nrf_rpc.entropy_cpuapp:
-    build_only: true
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-    platform_allow: nrf5340dk/nrf5340/cpuapp
-  sample.nrf_rpc.entropy_cpuapp.sysbuild:
     sysbuild: true
     build_only: true
     integration_platforms:

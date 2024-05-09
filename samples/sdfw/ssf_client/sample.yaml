@@ -10,11 +10,6 @@ common:
 
 tests:
   samples.sdfw.ssf_client:
-    platform_allow: nrf54h20dk/nrf54h20/cpuapp nrf54h20dk/nrf54h20/cpurad
-    integration_platforms:
-      - nrf54h20dk/nrf54h20/cpuapp
-      - nrf54h20dk/nrf54h20/cpurad
-  samples.sdfw.ssf_client.sysbuild:
     sysbuild: true
     tags: sysbuild
     platform_allow: nrf54h20dk/nrf54h20/cpuapp nrf54h20dk/nrf54h20/cpurad
@@ -22,12 +17,6 @@ tests:
       - nrf54h20dk/nrf54h20/cpuapp
       - nrf54h20dk/nrf54h20/cpurad
   samples.sdfw.ssf_client.logging.uart:
-    platform_allow: nrf54h20dk/nrf54h20/cpuapp nrf54h20dk/nrf54h20/cpurad
-    integration_platforms:
-      - nrf54h20dk/nrf54h20/cpuapp
-      - nrf54h20dk/nrf54h20/cpurad
-    extra_args: EXTRA_CONF_FILE=uart_logging.conf
-  samples.sdfw.ssf_client.logging.uart.sysbuild:
     sysbuild: true
     tags: sysbuild
     platform_allow: nrf54h20dk/nrf54h20/cpuapp nrf54h20dk/nrf54h20/cpurad

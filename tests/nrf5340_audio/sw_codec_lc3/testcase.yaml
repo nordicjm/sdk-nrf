@@ -1,12 +1,5 @@
 tests:
   nrf5340_audio.sw_codec_lc3_test:
-    platform_allow: nrf5340dk/nrf5340/cpuapp nrf5340_audio_dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf5340dk/nrf5340/cpuapp
-      - nrf5340_audio_dk/nrf5340/cpuapp
-    tags: sw_codec_lc3
-    timeout: 20
-  nrf5340_audio.sw_codec_lc3_test.sysbuild:
     sysbuild: true
     platform_allow: nrf5340dk/nrf5340/cpuapp nrf5340_audio_dk/nrf5340/cpuapp
     integration_platforms:

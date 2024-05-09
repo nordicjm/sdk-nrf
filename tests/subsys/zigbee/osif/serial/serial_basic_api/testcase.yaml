@@ -1,12 +1,5 @@
 tests:
   zigbee.osif.serial.basic:
-    depends_on: gpio
-    platform_allow: nrf52840dk/nrf52840 nrf52833dk/nrf52833 nrf5340dk/nrf5340/cpuapp
-    tags: osif_serial
-    harness: ztest
-    harness_config:
-      fixture: gpio_loopback
-  zigbee.osif.serial.basic.sysbuild:
     sysbuild: true
     depends_on: gpio
     platform_allow: nrf52840dk/nrf52840 nrf52833dk/nrf52833 nrf5340dk/nrf5340/cpuapp

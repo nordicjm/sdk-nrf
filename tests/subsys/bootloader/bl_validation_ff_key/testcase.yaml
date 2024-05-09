@@ -1,22 +1,5 @@
 tests:
   bootloader.bl_validation.ff_key:
-    platform_allow: nrf9160dk/nrf9160 nrf52840dk/nrf52840 nrf52dk/nrf52832
-      nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf9160dk/nrf9160
-      - nrf52840dk/nrf52840
-      - nrf52dk/nrf52832
-      - nrf5340dk/nrf5340/cpuapp
-    tags: b0 bl_validation ff_key
-    harness: console
-    harness_config:
-      type: multi_line
-      ordered: true
-      regex:
-        - "A public key contains 0xFFFF, which is unsupported"
-        - "Failed to validate, permanently invalidating!"
-        - "No bootable image found. Aborting boot."
-  bootloader.bl_validation.ff_key.sysbuild:
     sysbuild: true
     platform_allow: nrf9160dk/nrf9160 nrf52840dk/nrf52840 nrf52dk/nrf52832
       nrf5340dk/nrf5340/cpuapp

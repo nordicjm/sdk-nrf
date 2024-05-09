@@ -1,18 +1,5 @@
 tests:
   crypto.builtin:
-    extra_args: OVERLAY_CONFIG=overlay-builtin.conf
-    platform_allow: nrf52840dk/nrf52840 nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf52840dk/nrf52840
-      - nrf9160dk/nrf9160
-      - nrf5340dk/nrf5340/cpuapp
-    tags: crypto ci_build legacy builtin_legacy
-    harness_config:
-      type: multi_line
-      regex:
-        - ".*PROJECT EXECUTION SUCCESSFUL.*"
-    timeout: 600
-  crypto.builtin.sysbuild:
     sysbuild: true
     extra_args: OVERLAY_CONFIG=overlay-builtin.conf
     platform_allow: nrf52840dk/nrf52840 nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
@@ -27,19 +14,6 @@ tests:
         - ".*PROJECT EXECUTION SUCCESSFUL.*"
     timeout: 600
   crypto.cc3xx:
-    extra_args: OVERLAY_CONFIG=overlay-cc3xx.conf
-    platform_allow: nrf52840dk/nrf52840 nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf52840dk/nrf52840
-      - nrf9160dk/nrf9160
-      - nrf5340dk/nrf5340/cpuapp
-    tags: crypto ci_build legacy cc3xx_legacy
-    harness_config:
-      type: multi_line
-      regex:
-        - ".*PROJECT EXECUTION SUCCESSFUL.*"
-    timeout: 200
-  crypto.cc3xx.sysbuild:
     sysbuild: true
     extra_args: OVERLAY_CONFIG=overlay-cc3xx.conf
     platform_allow: nrf52840dk/nrf52840 nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
@@ -54,19 +28,6 @@ tests:
         - ".*PROJECT EXECUTION SUCCESSFUL.*"
     timeout: 200
   crypto.oberon:
-    extra_args: OVERLAY_CONFIG=overlay-oberon.conf
-    platform_allow: nrf52840dk/nrf52840 nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
-    integration_platforms:
-      - nrf52840dk/nrf52840
-      - nrf9160dk/nrf9160
-      - nrf5340dk/nrf5340/cpuapp
-    tags: crypto ci_build legacy oberon_legacy
-    harness_config:
-      type: multi_line
-      regex:
-        - ".*PROJECT EXECUTION SUCCESSFUL.*"
-    timeout: 200
-  crypto.oberon.sysbuild:
     sysbuild: true
     extra_args: OVERLAY_CONFIG=overlay-oberon.conf
     platform_allow: nrf52840dk/nrf52840 nrf9160dk/nrf9160 nrf5340dk/nrf5340/cpuapp
