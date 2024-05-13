@@ -6,7 +6,7 @@
 
 function(generate_dfu_zip)
   set(oneValueArgs OUTPUT TYPE TARGET IMAGE)
-  set(multiValueArgs BIN_FILES SCRIPT_PARAMS DEPENDS)
+  set(multiValueArgs BIN_FILES SCRIPT_PARAMS DEPENDS ZIP_NAMES)
   cmake_parse_arguments(GENZIP "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if (NOT(
@@ -38,12 +38,17 @@ function(generate_dfu_zip)
     endif()
   endif()
 
+  if(DEFINED GENZIP_ZIP_NAMES)
+    set(GENZIP_ZIP_NAMES --zip-names ${GENZIP_ZIP_NAMES})
+  endif()
+
   add_custom_command(
     OUTPUT ${GENZIP_OUTPUT}
     COMMAND
     ${PYTHON_EXECUTABLE}
     ${ZEPHYR_NRF_MODULE_DIR}/scripts/bootloader/generate_zip.py
     --bin-files ${GENZIP_BIN_FILES}
+    ${GENZIP_ZIP_NAMES}
     --output ${GENZIP_OUTPUT}
     --name "${APPNAME}"
     ${meta_argument}

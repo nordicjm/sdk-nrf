@@ -82,6 +82,10 @@ function(include_nrf700x)
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/nrf700x.cmake)
 endfunction()
 
+function(include_fw_zip)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/zip.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
@@ -380,6 +384,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   if(SB_CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE)
     include_nrf700x()
   endif()
+
+include_fw_zip()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
   if(SB_CONFIG_PARTITION_MANAGER)
