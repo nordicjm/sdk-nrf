@@ -82,6 +82,10 @@ function(include_nrf700x)
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/nrf700x.cmake)
 endfunction()
 
+function(include_fw_zip)
+  include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/zip.cmake)
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
@@ -316,6 +320,11 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
     endif()
   endif()
 
+  if(SB_CONFIG_SUPPORT_NETCORE AND NOT SB_CONFIG_SECURE_BOOT_NETCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
+    # Disable PCD if there is no secure boot enabled for the network core
+    set_config_bool(mcuboot CONFIG_PCD_APP n)
+  endif()
+
   if(SB_CONFIG_BT_FAST_PAIR)
     set_config_bool(${DEFAULT_IMAGE} CONFIG_BT_FAST_PAIR y)
 
@@ -369,16 +378,20 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     include_provision_hex()
   endif()
 
-  if(SB_CONFIG_DFU_ZIP_BLUETOOTH_MESH_METADATA)
-    include_mesh_dfu_metadata()
-  endif()
-
   if(SB_CONFIG_MATTER_FACTORY_DATA)
     include_matter_factory_data()
   endif()
 
   if(SB_CONFIG_NRF_WIFI_PATCHES_EXT_FLASH_STORE)
     include_nrf700x()
+  endif()
+
+  if(SB_CONFIG_DFU_ZIP)
+    include_fw_zip()
+  endif()
+
+  if(SB_CONFIG_DFU_ZIP_BLUETOOTH_MESH_METADATA)
+    include_mesh_dfu_metadata()
   endif()
 
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/extensions.cmake)
@@ -447,5 +460,6 @@ endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/netcore.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/secureboot.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/mcuboot.cmake)
 
 store_ncs_vars()
