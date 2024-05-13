@@ -29,7 +29,7 @@ endmacro()
 if(SYSBUILD)
   zephyr_get(PM_STATIC_YML_FILE SYSBUILD GLOBAL)
 elseif(CONFIG_PARTITION_MANAGER_ENABLED)
-  message(DEPRECATION "
+  message(FATAL_ERROR "
           ---------------------------------------------------------------------
           --- WARNING: Child and parent image functionality is deprecated   ---
           --- and should be replaced with sysbuild. Child and parent image  ---
