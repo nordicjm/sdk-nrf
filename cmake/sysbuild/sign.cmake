@@ -165,6 +165,8 @@ function(b0_sign_image slot)
       )
   elseif(SB_CONFIG_SECURE_BOOT_SIGNING_CUSTOM)
     set(custom_sign_cmd "${SB_CONFIG_SECURE_BOOT_SIGNING_COMMAND}")
+    set(SIGNATURE_PUBLIC_KEY_FILE ${SB_CONFIG_SECURE_BOOT_SIGNING_PUBLIC_KEY})
+    set(SIGNATURE_PUBLIC_KEY_FILE ${SB_CONFIG_SECURE_BOOT_SIGNING_PUBLIC_KEY} PARENT_SCOPE)
 
     if (("${custom_sign_cmd}" STREQUAL "") OR (NOT EXISTS ${SIGNATURE_PUBLIC_KEY_FILE}))
       message(FATAL_ERROR "You must specify a signing command and valid public key file for custom signing.")
