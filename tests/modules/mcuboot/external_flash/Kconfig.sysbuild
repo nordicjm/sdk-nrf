@@ -7,4 +7,16 @@
 config PM_EXTERNAL_FLASH_MCUBOOT_SECONDARY
 	default y if BOARD_NRF5340DK_NRF5340_CPUAPP || BOARD_NRF52840DK_NRF52840
 
+config NRF_DEFAULT_EMPTY
+	default y if SOC_SERIES_NRF53X
+
+config SECURE_BOOT
+	default y if SOC_SERIES_NRF53X
+
+config SECURE_BOOT_NETCORE
+	default y if SECURE_BOOT
+
+config NETCORE_APP_UPDATE
+	default y if SOC_SERIES_NRF53X
+
 source "${ZEPHYR_BASE}/share/sysbuild/Kconfig"
