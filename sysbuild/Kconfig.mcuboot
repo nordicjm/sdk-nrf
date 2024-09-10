@@ -143,6 +143,11 @@ config MCUBOOT_QSPI_XIP_IMAGE_NUMBER
 	default 1 if QSPI_XIP_SPLIT_IMAGE
 	default -1
 
+config MCUBOOT_MCUBOOT_IMAGE_NUMBER
+	int
+	default 0 if SECURE_BOOT_APPCORE
+	default -1
+
 config MCUBOOT_MIN_UPDATEABLE_IMAGES
 	int
 	default 4 if MCUBOOT_NETWORK_CORE_IMAGE_NUMBER != -1 && MCUBOOT_WIFI_PATCHES_IMAGE_NUMBER != -1 && MCUBOOT_QSPI_XIP_IMAGE_NUMBER != -1
@@ -163,7 +168,7 @@ config MCUBOOT_APP_SYNC_UPDATEABLE_IMAGES
 	default y
 	help
 	  If enabled then will synchronise the value of ``MCUBOOT_UPDATEABLE_IMAGES`` to MCUboot
-	  and the main application, if disable then will only set this value to MCUboot
+	  and the main application, if disabled then will only set this value to MCUboot.
 
 config SECURE_BOOT_MCUBOOT_VERSION
 	string "MCUboot S0/S1 image update version"
