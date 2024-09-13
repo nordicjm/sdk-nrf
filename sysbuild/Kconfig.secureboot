@@ -12,7 +12,6 @@ config SECURE_BOOT
 
 config SECURE_BOOT_APPCORE
 	bool "Appcore"
-	depends on !BOOTLOADER_MCUBOOT || MCUBOOT_MODE_OVERWRITE_ONLY
 	select SECURE_BOOT
 	help
 	  Enable first stage bootloader for application core.
