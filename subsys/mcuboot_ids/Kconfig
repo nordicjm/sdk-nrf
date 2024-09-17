@@ -24,6 +24,7 @@ config MCUBOOT_QSPI_XIP_IMAGE_NUMBER
 
 config MCUBOOT_MCUBOOT_IMAGE_NUMBER
 	int "MCUboot (S0/S1) image number (informative only, do not change)"
+	depends on MCUBOOT
 	default -1
 
 endmenu
