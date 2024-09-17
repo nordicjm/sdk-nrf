@@ -158,17 +158,25 @@ config MCUBOOT_MIN_UPDATEABLE_IMAGES
 	default 2 if MCUBOOT_NETWORK_CORE_IMAGE_NUMBER != -1 || MCUBOOT_WIFI_PATCHES_IMAGE_NUMBER != -1 || MCUBOOT_QSPI_XIP_IMAGE_NUMBER != -1
 	default 1
 
+config MCUBOOT_MIN_ADDITIONAL_UPDATEABLE_IMAGES
+	int
+	default 1 if MCUBOOT_MCUBOOT_IMAGE_NUMBER != -1
+	default 0
+
 config MCUBOOT_UPDATEABLE_IMAGES
 	int "Updateable images"
 	range MCUBOOT_MIN_UPDATEABLE_IMAGES MCUBOOT_MAX_UPDATEABLE_IMAGES
 #	default 2 if SOC_SERIES_NRF91X && SECURE_BOOT_APPCORE && (MCUBOOT_MODE_SWAP_WITHOUT_SCRATCH || MCUBOOT_MODE_SWAP_SCRATCH || MCUBOOT_MODE_OVERWRITE_ONLY)
 	help
-	  The number of images that MCUboot will be built with.
+	  The number of images that MCUboot will be built with. Note that if
+	  ``MCUBOOT_ADDITIONAL_UPDATEABLE_IMAGES`` is set to a non-zero value then that value will
+	  be added to the MCUboot updateable image number but not the application, this is to allow
+	  for features like NSIB updates of MCUboot itself.
 
 config MCUBOOT_ADDITIONAL_UPDATEABLE_IMAGES
-	int
-	default 1 if MCUBOOT_MCUBOOT_IMAGE_NUMBER != -1
-	default 0
+	int "Additional MCUboot-only updateable images"
+	range MCUBOOT_MIN_ADDITIONAL_UPDATEABLE_IMAGES MCUBOOT_MIN_ADDITIONAL_UPDATEABLE_IMAGES
+	default MCUBOOT_MIN_ADDITIONAL_UPDATEABLE_IMAGES
 	help
 	  The number of additional images that MCUboot will be built with.
 
