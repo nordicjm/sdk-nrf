@@ -39,6 +39,10 @@ extern "C" {
 	typedef uint32_t bl_sha256_ctx_t[SHA256_CTX_SIZE/4];
 #endif
 
+#define SHA512_CTX_SIZE 64
+typedef psa_hash_operation_t bl_sha512_ctx_t;
+
+
 /**
  * @brief Initialize bootloader crypto module.
  *
@@ -95,7 +99,6 @@ int bl_root_of_trust_verify_external(const uint8_t *public_key,
 				     const uint8_t *signature,
 				     const uint8_t *firmware,
 				     const uint32_t firmware_len);
-
 
 /**
  * @brief Initialize a sha256 operation context variable.
@@ -169,6 +172,74 @@ int bl_sha256_verify(const uint8_t *data, uint32_t data_len, const uint8_t *expe
 typedef int (*bl_sha256_verify_t)(const uint8_t *data, uint32_t data_len,
 				const uint8_t *expected);
 
+/**
+ * @brief Initialize a sha512 operation context variable.
+ *
+ * @param[out]  ctx  Context to be initialized.
+ *
+ * @retval 0         On success.
+ * @retval -EINVAL   If @p ctx was NULL.
+ */
+int bl_sha512_init(bl_sha512_ctx_t *ctx);
+
+/* Typedef for use in EXT_API declaration */
+typedef int (*bl_sha512_init_t)(bl_sha512_ctx_t *ctx);
+
+/**
+ * @brief Hash a portion of data.
+ *
+ * @note @p ctx must be initialized before being used in this function.
+ *       An uninitialized @p ctx might not be reported as an error. Also,
+ *       @p ctx must not be used if it has been finalized, though this might
+ *       also not be reported as an error.
+ *
+ * @param[in]  ctx       Context variable. Must have been initialized.
+ * @param[in]  data      Data to hash.
+ * @param[in]  data_len  Length of @p data.
+ *
+ * @retval 0         On success.
+ * @retval -EINVAL   If @p ctx was NULL, uninitialized, or corrupted.
+ * @retval -ENOSYS   If the context has already been finalized.
+ */
+int bl_sha512_update(bl_sha512_ctx_t *ctx, const uint8_t *data, uint32_t data_len);
+
+/* Typedef for use in EXT_API declaration */
+typedef int (*bl_sha512_update_t)(bl_sha512_ctx_t *ctx, const uint8_t *data,
+				uint32_t data_len);
+
+/**
+ * @brief Finalize a hash result.
+ *
+ * @param[in]  ctx       Context variable.
+ * @param[out] output    Where to put the resulting digest. Must be at least
+ *                       32 bytes long.
+ *
+ * @retval 0         On success.
+ * @retval -EINVAL   If @p ctx was NULL or corrupted, or @p output was NULL.
+ */
+int bl_sha512_finalize(bl_sha512_ctx_t *ctx, uint8_t *output);
+
+/* Typedef for use in EXT_API declaration */
+typedef int (*bl_sha512_finalize_t)(bl_sha512_ctx_t *ctx, uint8_t *output);
+
+/**
+ * @brief Calculate a digest and verify it directly.
+ *
+ * @param[in]  data      The data to hash.
+ * @param[in]  data_len  The length of @p data.
+ * @param[in]  expected  The expected digest over @p data.
+ *
+ * @retval 0          If the procedure succeeded and the resulting digest is
+ *                    identical to @p expected.
+ * @retval -EHASHINV  If the procedure succeeded, but the digests don't match.
+ * @return Any error code from @ref bl_sha256_init, @ref bl_sha256_update, or
+ *         @ref bl_sha256_finalize if something else went wrong.
+ */
+int bl_sha512_verify(const uint8_t *data, uint32_t data_len, const uint8_t *expected);
+
+/* Typedef for use in EXT_API declaration */
+typedef int (*bl_sha512_verify_t)(const uint8_t *data, uint32_t data_len,
+				const uint8_t *expected);
 
 /**
  * @brief Validate a secp256r1 signature.
@@ -190,6 +261,31 @@ int bl_secp256r1_validate(const uint8_t *hash,
 
 /* Typedef for use in EXT_API declaration */
 typedef int (*bl_secp256r1_validate_t)(
+			  const uint8_t *hash,
+			  uint32_t hash_len,
+			  const uint8_t *signature,
+			  const uint8_t *public_key);
+
+/**
+ * @brief Validate an ed25519 signature.
+ *
+ * @param[in]  hash        The hash to validate against.
+ * @param[in]  hash_len    The length of the hash.
+ * @param[in]  signature   The signature to validate.
+ * @param[in]  public_key  The public key to validate with.
+ *
+ * @retval 0         The operation succeeded and the signature is valid for the
+ *                   hash.
+ * @retval -EINVAL   A parameter was NULL, or the @p hash_len was not 32 bytes.
+ * @retval -ESIGINV  The signature validation failed.
+ */
+int bl_ed25519_validate(const uint8_t *hash,
+			  uint32_t hash_len,
+			  const uint8_t *signature,
+			  const uint8_t *public_key);
+
+/* Typedef for use in EXT_API declaration */
+typedef int (*bl_ed25519_validate_t)(
 			  const uint8_t *hash,
 			  uint32_t hash_len,
 			  const uint8_t *signature,
@@ -219,6 +315,24 @@ struct bl_sha256_ext_api {
  */
 struct bl_secp256r1_ext_api {
 	bl_secp256r1_validate_t bl_secp256r1_validate;
+};
+
+/**
+ * @brief Structure describing the BL_SHA512 EXT_API.
+ */
+struct bl_sha512_ext_api {
+	bl_sha512_init_t bl_sha512_init;
+	bl_sha512_update_t bl_sha512_update;
+	bl_sha512_finalize_t bl_sha512_finalize;
+	bl_sha512_verify_t bl_sha512_verify;
+	uint32_t bl_sha512_ctx_size;
+};
+
+/**
+ * @brief Structure describing the BL_ED25519 EXT_API.
+ */
+struct bl_ed25519_ext_api {
+	bl_ed25519_validate_t bl_ed25519_validate;
 };
 
   /** @} */

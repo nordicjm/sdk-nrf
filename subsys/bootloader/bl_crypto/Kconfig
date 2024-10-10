@@ -14,9 +14,17 @@ menuconfig SECURE_BOOT_CRYPTO
 if (SECURE_BOOT_CRYPTO)
 config SB_ECDSA_SECP256R1
 	bool
+
+config SB_ED25519
+	bool
+
 config SB_RSA_PSS2048
 	bool
+
 config SB_SHA256
+	bool
+
+config SB_SHA512
 	bool
 
 config SB_SIGNATURE_LEN
@@ -30,7 +38,8 @@ config SB_PUBLIC_KEY_LEN
 	default 256 if SB_RSA_PSS2048
 
 config SB_HASH_LEN
-	def_int 32
+	def_int 64 if SB_SHA512
+	def_int 32 if SB_SHA256
 
 choice SB_CRYPTO_SIG
 	prompt "Firmware verification Algorithm"
@@ -63,6 +72,10 @@ choice SB_CRYPTO_SIG
 	config SB_CRYPTO_NO_ECDSA_SECP256R1
 		bool "Disable secp256r1 support"
 		select SB_ECDSA_SECP256R1
+
+	config SB_CRYPTO_ED25519
+		bool "ed25519 support"
+		select SB_ED25519
 
 	#config SB_CRYPTO_OBERON_RSA_2048
 	#	bool #"Software RSA-PSS 2048-bits"
@@ -114,6 +127,10 @@ choice SB_CRYPTO_HASH
 		bool "Disable SHA256 support"
 		select SB_SHA256
 
+	config SB_CRYPTO_SHA512
+		bool "SHA512 support"
+		select SB_SHA512
+
 endchoice
 
 EXT_API = BL_ROT_VERIFY
@@ -130,6 +147,18 @@ source "${ZEPHYR_BASE}/../nrf/subsys/fw_info/Kconfig.template.fw_info_ext_api"
 
 EXT_API = BL_SECP256R1
 id = 0x1003
+flags = 1
+ver = 1
+source "${ZEPHYR_BASE}/../nrf/subsys/fw_info/Kconfig.template.fw_info_ext_api"
+
+EXT_API = BL_SHA512
+id = 0x1004
+flags = 0
+ver = 1
+source "${ZEPHYR_BASE}/../nrf/subsys/fw_info/Kconfig.template.fw_info_ext_api"
+
+EXT_API = BL_ED25519
+id = 0x1005
 flags = 1
 ver = 1
 source "${ZEPHYR_BASE}/../nrf/subsys/fw_info/Kconfig.template.fw_info_ext_api"
