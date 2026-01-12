@@ -65,7 +65,7 @@ manifest:
     # https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/zephyr/guides/modules.html
     - name: zephyr
       repo-path: sdk-zephyr
-      revision: c2ea6bb946e4986109ae7326e2da92882b3f443e
+      revision: pull/3678/head
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
@@ -119,7 +119,7 @@ manifest:
     - name: wfa-qt-control-app
       repo-path: sdk-wi-fiquicktrack-controlappc
       path: modules/lib/wfa-qt-control-app
-      revision: d4bc010be69aa89290c5af6767702ff46c1829e5
+      revision: pull/29/head
       userdata:
         ncs:
           upstream-url: https://github.com/Wi-FiQuickTrack/Wi-FiQuickTrack-ControlAppC
@@ -127,7 +127,7 @@ manifest:
           compare-by-default: true
     - name: mcuboot
       repo-path: sdk-mcuboot
-      revision: 735d976eff46735d6e7ccbd6d350bb1a17265d6d
+      revision: pull/588/head
       path: bootloader/mcuboot
     - name: qcbor
       url: https://github.com/laurencelundblade/QCBOR
@@ -144,7 +144,7 @@ manifest:
     - name: nrfxlib
       repo-path: sdk-nrfxlib
       path: nrfxlib
-      revision: 6d370ebef86b9b4b5f52463c4cc1d636f38bd175
+      revision: pull/1964/head
     - name: trusted-firmware-m
       repo-path: sdk-trusted-firmware-m
       path: modules/tee/tf-m/trusted-firmware-m
@@ -156,7 +156,7 @@ manifest:
     - name: matter
       repo-path: sdk-connectedhomeip
       path: modules/lib/matter
-      revision: a1f66bf38a70efc1c44257969fcfc1726dd9b6ce
+      revision: pull/699/head
       west-commands: scripts/west/west-commands.yml
       submodules:
         - name: nlio
@@ -196,7 +196,7 @@ manifest:
           compare-by-default: false
     - name: find-my
       repo-path: sdk-find-my
-      revision: 64be52b5b3f68dc77936c5d2d4d1fa15f59c336a
+      revision: pull/360/head
       groups:
         - find-my
     - name: azure-sdk-for-c
@@ -245,7 +245,7 @@ manifest:
       remote: throwtheswitch
     - name: memfault-firmware-sdk
       path: modules/lib/memfault-firmware-sdk
-      revision: 1.32.0
+      revision: pull/102/head
       remote: memfault
     - name: bsim
       repo-path: bsim_west
