@@ -22,6 +22,17 @@ tests:
       pytest_root:
         - "${CUSTOM_ROOT_TEST_DIR}/test_measure_power_consumption.py::test_measure_and_data_dump_bootup_time"
 
+  benchmarks.bootup_time.all_cores:
+    platform_allow:
+      - nrf54h20dk/nrf54h20/cpuapp
+    extra_args:
+      - SB_CONFIG_SUPPORT_NETCORE_TESTAPP=y
+      - SB_CONFIG_SUPPORT_PPRCORE_TESTAPP=y
+      - SB_CONFIG_SUPPORT_FLPRCORE_TESTAPP=y
+    harness_config:
+      pytest_root:
+        - "${CUSTOM_ROOT_TEST_DIR}/test_measure_power_consumption.py::test_measure_and_data_dump_bootup_time_all_cores"
+
   benchmarks.bootup_time.mcuboot:
     platform_allow:
       - nrf52840dk/nrf52840
