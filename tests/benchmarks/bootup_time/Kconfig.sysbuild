@@ -5,10 +5,10 @@
 #
 
 config SUPPORT_NETCORE_TESTAPP
-	bool "Support testapp as Netcore image"
+	bool
+	default y if SOC_NRF54H20_CPUAPP
 
 choice NETCORE
-	default NETCORE_TESTAPP if SUPPORT_NETCORE_TESTAPP
 
 config NETCORE_TESTAPP
 	bool "testapp image"
@@ -26,10 +26,10 @@ config NETCORE_IMAGE_PATH
 endif # !NETCORE_NONE
 
 config SUPPORT_PPRCORE_TESTAPP
-	bool "Support testapp as PPR core image"
+	bool
+	default y if SOC_NRF54H20_CPUAPP
 
 choice PPRCORE
-	default PPRCORE_TESTAPP if SUPPORT_PPRCORE_TESTAPP
 
 config PPRCORE_TESTAPP
 	bool "testapp image"
@@ -47,10 +47,10 @@ config PPRCORE_IMAGE_PATH
 endif # !PPRCORE_NONE
 
 config SUPPORT_FLPRCORE_TESTAPP
-	bool "Support testapp as FLPR core image"
+	bool
+	default y if SOC_NRF54H20_CPUAPP
 
 choice FLPRCORE
-	default FLPRCORE_TESTAPP if SUPPORT_FLPRCORE_TESTAPP
 
 config FLPRCORE_TESTAPP
 	bool "testapp image"

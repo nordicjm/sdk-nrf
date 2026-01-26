@@ -40,9 +40,9 @@ tests:
     platform_allow:
       - nrf54h20dk/nrf54h20/cpuapp
     extra_args:
-      - SB_CONFIG_SUPPORT_NETCORE_TESTAPP=y
-      - SB_CONFIG_SUPPORT_PPRCORE_TESTAPP=y
-      - SB_CONFIG_SUPPORT_FLPRCORE_TESTAPP=y
+      - SB_CONFIG_NETCORE_TESTAPP=y
+      - SB_CONFIG_PPRCORE_TESTAPP=y
+      - SB_CONFIG_FLPRCORE_TESTAPP=y
     harness_config:
       pytest_root:
         - "${CUSTOM_ROOT_TEST_DIR}/test_measure_power_consumption.py::test_measure_and_data_dump_bootup_time_all_cores"
@@ -61,7 +61,7 @@ tests:
     extra_args:
       - CONFIG_PM=y
       - CONFIG_POWEROFF=y
-      - SB_CONFIG_SUPPORT_NETCORE_TESTAPP=y
+      - SB_CONFIG_NETCORE_TESTAPP=y
     harness_config:
       pytest_root:
         - "${CUSTOM_ROOT_TEST_DIR}/test_measure_power_consumption.py::test_measure_and_data_dump_bootup_time"
