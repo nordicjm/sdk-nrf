@@ -43,7 +43,8 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
     elseif(application STREQUAL "s1_image")
       set(part_label "s1_slot")
     else()
-      message(FATAL_ERROR "No mapping for ${application}")
+      set(part_label "s0_partition")
+#      message(FATAL_ERROR "No mapping for ${application}")
     endif()
 
     # Get the partition node and pick size from it.
