@@ -20,7 +20,8 @@ LOG_MODULE_REGISTER(pcd, CONFIG_PCD_LOG_LEVEL);
 
 #ifdef CONFIG_PCD_USE_CONSTANTS
 /* PCD command block location is static. */
-#define PCD_CMD_ADDRESS CONFIG_PCD_CMD_ADDRESS
+//#define PCD_CMD_ADDRESS CONFIG_PCD_CMD_ADDRESS
+#define PCD_CMD_ADDRESS DT_REG_ADDR(DT_NODELABEL(sram0_shared))
 
 #else
 /* PCD command block location is configured with Partition Manager. */
@@ -45,7 +46,9 @@ LOG_MODULE_REGISTER(pcd, CONFIG_PCD_LOG_LEVEL);
 
 /** Offset which the application should be copied into */
 #ifdef CONFIG_PCD_USE_CONSTANTS
-#define PCD_NET_CORE_APP_OFFSET CONFIG_PCD_NET_CORE_APP_OFFSET
+//#define PCD_NET_CORE_APP_OFFSET CONFIG_PCD_NET_CORE_APP_OFFSET
+//TODO: hack
+#define PCD_NET_CORE_APP_OFFSET 0x86000
 #else
 #define PCD_NET_CORE_APP_OFFSET PM_CPUNET_B0N_CONTAINER_SIZE
 #endif
@@ -118,8 +121,13 @@ int pcd_fw_copy(const struct device *fdev)
 		return -EFAULT;
 	}
 
+#ifdef CONFIG_PARTITION_MANAGER_ENABLED
 	rc = stream_flash_init(&stream, fdev, buf, sizeof(buf),
 			       pcd_cmd_p->offset, PM_APP_SIZE, NULL);
+#else
+	rc = stream_flash_init(&stream, fdev, buf, sizeof(buf), pcd_cmd_p->offset,
+			       DT_REG_SIZE(DT_NODELABEL(s0_partition)), NULL);
+#endif
 	if (rc != 0) {
 		LOG_ERR("stream_flash_init failed: %d", rc);
 		return rc;

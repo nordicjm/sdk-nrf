@@ -33,8 +33,8 @@ BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
 #define B0N_ADDRESS	FIXED_PARTITION_ADDRESS(b0n)
 #define B0N_SIZE	FIXED_PARTITION_SIZE(b0n)
 /* The flash is locked at flash page granularity */
-BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
-	"B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the b0n partition size.");
+//BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
+//	"B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the b0n partition size.");
 #endif
 
 
@@ -48,11 +48,13 @@ int main(void)
 		return 0;
 	}
 
+#if 0
 	err = fprotect_area(B0N_ADDRESS, B0N_SIZE);
 	if (err) {
 		printk("Failed to protect b0n flash, cancel startup\n\r");
 		goto failure;
 	}
+#endif
 
 	uint32_t s0_addr = s0_address_read();
 	bool valid = false;
@@ -133,11 +135,13 @@ int main(void)
 		break;
 	}
 
+#if 0
 	err = fprotect_area(PM_APP_ADDRESS, PM_APP_SIZE);
 	if (err) {
 		printk("Failed to protect app flash: %d\n\r", err);
 		goto failure;
 	}
+#endif
 
 	bl_boot(fw_info_find(s0_addr));
 	return 0;

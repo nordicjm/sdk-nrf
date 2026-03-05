@@ -14,6 +14,8 @@ config SECURE_BOOT_STORAGE_ADDRESS
 	default 0xffd500 if SOC_SERIES_NRF54L
 	default 0xff8108 if SOC_SERIES_NRF91
 	default 0xff8100 if SOC_NRF5340_CPUAPP
+#TODO: probably wrong since it is set in dts
+	default 0x1008580 if SOC_NRF5340_CPUNET
 	help
 	  Address of secure storage within processor address space.
 

@@ -41,13 +41,13 @@ config PCD_USE_CONSTANTS
 	depends on !PCD_LOCK_NETCORE_DEBUG
 	default y if !PARTITION_MANAGER_ENABLED
 
-config PCD_CMD_ADDRESS
-	hex "PCD Command Address in RAM"
-	depends on PCD_USE_CONSTANTS
+#config PCD_CMD_ADDRESS
+#	hex "PCD Command Address in RAM"
+#	depends on PCD_USE_CONSTANTS
 
-config PCD_NET_CORE_APP_OFFSET
-	hex "Network Core Application Offset in Flash"
-	depends on PCD_USE_CONSTANTS
+#config PCD_NET_CORE_APP_OFFSET
+#	hex "Network Core Application Offset in Flash"
+#	depends on PCD_USE_CONSTANTS
 
 module=PCD
 module-str=Peripheral Core DFU
