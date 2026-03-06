@@ -13,6 +13,7 @@
 
 LOG_MODULE_REGISTER(bl_validation, CONFIG_SECURE_BOOT_VALIDATION_LOG_LEVEL);
 
+#ifndef CONFIG_SOC_NRF5340_CPUNET
 /* Firmware image contains header, that precedes executable code;
  * fw_info is placed within image at CONFIG_FW_INFO_OFFSET from the
  * beginning of executable code. This means that within firmware image
@@ -26,10 +27,13 @@ LOG_MODULE_REGISTER(bl_validation, CONFIG_SECURE_BOOT_VALIDATION_LOG_LEVEL);
  * reserved header space.
  */
 #if USE_PARTITION_MANAGER
+#include <pm_config.h>
+
 /* S0/S1 both have the same pad size */
 #define FIRMWARE_HEADER_SKIP	PM_MCUBOOT_PAD_SIZE
 #else
 #define FIRMWARE_HEADER_SKIP	CONFIG_SB_IMAGE_BOOT_OFFSET
+#endif
 #endif
 
 #ifdef CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION
@@ -146,7 +150,7 @@ bool bl_validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address)
  */
 #if USE_PARTITION_MANAGER
 #include <pm_config.h>
-#if CONFIG_SOC_NRF5340_CPUNET
+#ifdef CONFIG_SOC_NRF5340_CPUNET
 /* When running on nRF5340 CPUNET, then S0 is actually application and
  * there is no S1 slot.
  */
@@ -161,7 +165,7 @@ bool bl_validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address)
 #else /* USE_PARTITION_MANAGER */
 /* DTS Partitions */
 #include <zephyr/storage/flash_map.h>
-#if CONFIG_SOC_NRF5340_CPUNET
+#ifdef CONFIG_SOC_NRF5340_CPUNET
 /* Same as described for PP, above, except that this time we use DTS partition labels */
 #define S0_SIZE		FIXED_PARTITION_SIZE(net_app)
 #else /* CONFIG_SOC_NRF5340_CPUNET */
@@ -419,6 +423,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("NULL parameter.");
 		}
+printk("q1\n");
 		return false;
 	}
 
@@ -426,6 +431,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("Invalid firmware info format.");
 		}
+printk("q2\n");
 		return false;
 	}
 
@@ -433,6 +439,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("The firmware doesn't belong at destination addr.");
 		}
+printk("q3: 0x%x vs 0x%x\n", fw_dst_address, fwinfo->address);
 		return false;
 	}
 
@@ -440,6 +447,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("src and dst must be equal for local calls.");
 		}
+printk("q4\n");
 		return false;
 	}
 
@@ -447,6 +455,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("Firmware info doesn't point to itself.");
 		}
+printk("q5\n");
 		return false;
 	}
 
@@ -455,12 +464,14 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 			LOG_ERR("Firmware has been invalidated: 0x%x.",
 				fwinfo->valid);
 		}
+printk("q6\n");
 		return false;
 	}
 
 	if (!external) {
 		LOG_INF("Trying to get Firmware version");
 	}
+printk("q7\n");
 
 #ifdef CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION
 #if defined(CONFIG_NRFX_NVMC)
@@ -475,6 +486,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("Cannot read the firmware version. %d", err);
 		}
+printk("q8\n");
 		return false;
 	}
 
@@ -483,6 +495,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 			LOG_ERR("Firmware version (%u) is smaller than monotonic counter (%u).",
 				fwinfo->version, stored_version);
 		}
+printk("q9\n");
 		return false;
 	}
 #endif /* CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION */
@@ -493,6 +506,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("Invalid size or total_size in firmware info.");
 		}
+printk("q10\n");
 		return false;
 	}
 #endif
@@ -502,6 +516,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("Firmware info is not within signed region.");
 		}
+printk("q11\n");
 		return false;
 	}
 
@@ -510,6 +525,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 			LOG_ERR("Boot address is not within signed region.");
 		}
 		return false;
+printk("q12\n");
 	}
 
 	/* Wait until this point to set these values as we must know that we
@@ -523,6 +539,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 			LOG_ERR("Reset handler is not within signed region.");
 		}
 		return false;
+printk("q13\n");
 	}
 
 	fw_val_info = validation_info_find(fw_src_address + fwinfo->size, 4);
@@ -532,6 +549,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 			LOG_ERR("Could not find valid firmware validation info.");
 		}
 		return false;
+printk("q14\n");
 	}
 
 	if (fw_val_info->address != fwinfo->address) {
@@ -539,6 +557,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 			LOG_ERR("Validation info doesn't belong to this firmware.");
 		}
 		return false;
+printk("q15\n");
 	}
 
 #if defined(CONFIG_SB_VALIDATE_FW_SIGNATURE)
@@ -552,10 +571,15 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 #endif
 }
 
-
 bool bl_validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address)
 {
-	const uint32_t fw_info_offset = fw_src_address + FIRMWARE_HEADER_SKIP;
+	uint32_t fw_info_offset = fw_src_address;
+
+#if !defined(USE_PARTITION_MANAGER) && !defined(CONFIG_SOC_NRF5340_CPUNET)
+	fw_info_offset += FIRMWARE_HEADER_SKIP;
+#endif
+//TODO
+	fw_info_offset += 0x200;
 
 	return validate_firmware(fw_dst_address, fw_src_address,
 				fw_info_find(fw_info_offset), true);

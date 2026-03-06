@@ -37,12 +37,12 @@ BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
 //	"B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the b0n partition size.");
 #endif
 
-
 int main(void)
 {
 	int err;
 	const struct device *fdev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller));
 
+printk("b0o\n");
 	if (!device_is_ready(fdev)) {
 		printk("Flash device not ready\n");
 		return 0;

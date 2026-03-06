@@ -21,8 +21,7 @@ LOG_MODULE_REGISTER(pcd, CONFIG_PCD_LOG_LEVEL);
 #ifdef CONFIG_PCD_USE_CONSTANTS
 /* PCD command block location is static. */
 //#define PCD_CMD_ADDRESS CONFIG_PCD_CMD_ADDRESS
-#define PCD_CMD_ADDRESS DT_REG_ADDR(DT_NODELABEL(sram0_shared))
-
+#define PCD_CMD_ADDRESS DT_REG_ADDR(DT_NODELABEL(sram0_first_shared))
 #else
 /* PCD command block location is configured with Partition Manager. */
 #include <pm_config.h>
@@ -53,7 +52,7 @@ LOG_MODULE_REGISTER(pcd, CONFIG_PCD_LOG_LEVEL);
 #define PCD_NET_CORE_APP_OFFSET PM_CPUNET_B0N_CONTAINER_SIZE
 #endif
 
-#define NETWORK_CORE_UPDATE_CHECK_TIME K_SECONDS(1)
+#define NETWORK_CORE_UPDATE_CHECK_TIME K_SECONDS(2)
 
 static void network_core_finished_check_handler(struct k_timer *timer);
 
@@ -71,6 +70,7 @@ void pcd_fw_copy_invalidate(void)
 
 enum pcd_status pcd_fw_copy_status_get(void)
 {
+printk("pcd_cmd_p: %p\n", pcd_cmd_p);
 	if (pcd_cmd_p->magic == PCD_CMD_MAGIC_COPY) {
 		return PCD_STATUS_COPY;
 	} else if (pcd_cmd_p->magic == PCD_CMD_MAGIC_READ_VERSION) {
@@ -118,6 +118,7 @@ int pcd_fw_copy(const struct device *fdev)
 	int rc;
 
 	if (pcd_cmd_p->magic != PCD_CMD_MAGIC_COPY) {
+printk("s1\n");
 		return -EFAULT;
 	}
 
@@ -130,6 +131,7 @@ int pcd_fw_copy(const struct device *fdev)
 #endif
 	if (rc != 0) {
 		LOG_ERR("stream_flash_init failed: %d", rc);
+printk("s2 %p, %p, %d, %ld, %d\n", fdev, buf, sizeof(buf), pcd_cmd_p->offset, DT_REG_SIZE(DT_NODELABEL(s0_partition)));
 		return rc;
 	}
 
@@ -137,10 +139,12 @@ int pcd_fw_copy(const struct device *fdev)
 					 pcd_cmd_p->len, true);
 	if (rc != 0) {
 		LOG_ERR("stream_flash_buffered_write fail: %d", rc);
+printk("s3\n");
 		return rc;
 	}
 
 	LOG_INF("Transfer done");
+printk("s4\n");
 
 	return 0;
 }
@@ -189,6 +193,7 @@ static int pcd_cmd_write(uint32_t command, const void *data, size_t len, off_t o
 		return -EINVAL;
 	}
 
+printk("pcd_cmd_p: %p\n", pcd_cmd_p);
 	pcd_cmd_p->magic = command;
 	pcd_cmd_p->data = data;
 	pcd_cmd_p->len = len;
