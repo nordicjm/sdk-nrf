@@ -26,15 +26,24 @@
 #if USE_PARTITION_MANAGER
 #define B0N_ADDRESS	PM_B0N_CONTAINER_ADDRESS
 #define B0N_SIZE	PM_B0N_CONTAINER_SIZE
+#define S0_ADDRESS	PM_APP_ADDRESS
+#define S0_SIZE		PM_APP_SIZE
 /* The flash is locked at flash page granularity */
 BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
 	"B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the B0_SIZE Kconfig.");
 #else
-#define B0N_ADDRESS	FIXED_PARTITION_ADDRESS(b0n)
-#define B0N_SIZE	FIXED_PARTITION_SIZE(b0n)
+#define B0N_ADDRESS FIXED_PARTITION_ADDRESS(b0n)
+#define B0N_SIZE (FIXED_PARTITION_SIZE(b0n) + FIXED_PARTITION_SIZE(provision))
+#define S0_ADDRESS FIXED_PARTITION_ADDRESS(s0_partition)
+#define S0_SIZE FIXED_PARTITION_SIZE(s0_partition)
 /* The flash is locked at flash page granularity */
-//BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
-//	"B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the b0n partition size.");
+BUILD_ASSERT(FIXED_PARTITION_ADDRESS(provision) == (FIXED_PARTITION_ADDRESS(b0n) + \
+						    FIXED_PARTITION_SIZE(b0n)),
+	     "`provision` partition must be directly after `b0n` partition.");
+BUILD_ASSERT((B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
+	     "B0N_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the `b0n` partition size.");
+BUILD_ASSERT((S0_SIZE % CONFIG_FPROTECT_BLOCK_SIZE) == 0,
+	     "S0_SIZE % CONFIG_FPROTECT_BLOCK_SIZE was not 0. Check the `s0` partition size.");
 #endif
 
 int main(void)
@@ -48,13 +57,11 @@ printk("b0o\n");
 		return 0;
 	}
 
-#if 0
 	err = fprotect_area(B0N_ADDRESS, B0N_SIZE);
 	if (err) {
 		printk("Failed to protect b0n flash, cancel startup\n\r");
 		goto failure;
 	}
-#endif
 
 	uint32_t s0_addr = s0_address_read();
 	bool valid = false;
@@ -135,13 +142,11 @@ printk("b0o\n");
 		break;
 	}
 
-#if 0
-	err = fprotect_area(PM_APP_ADDRESS, PM_APP_SIZE);
+	err = fprotect_area(S0_ADDRESS, S0_SIZE);
 	if (err) {
 		printk("Failed to protect app flash: %d\n\r", err);
 		goto failure;
 	}
-#endif
 
 	bl_boot(fw_info_find(s0_addr));
 	return 0;

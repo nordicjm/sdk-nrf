@@ -18,11 +18,7 @@
 
 LOG_MODULE_REGISTER(pcd, CONFIG_PCD_LOG_LEVEL);
 
-#ifdef CONFIG_PCD_USE_CONSTANTS
-/* PCD command block location is static. */
-//#define PCD_CMD_ADDRESS CONFIG_PCD_CMD_ADDRESS
-#define PCD_CMD_ADDRESS DT_REG_ADDR(DT_NODELABEL(sram0_first_shared))
-#else
+#ifdef CONFIG_PARTITION_MANAGER_ENABLED
 /* PCD command block location is configured with Partition Manager. */
 #include <pm_config.h>
 
@@ -36,23 +32,20 @@ LOG_MODULE_REGISTER(pcd, CONFIG_PCD_LOG_LEVEL);
 #define PCD_CMD_ADDRESS PM__PCD_SRAM_ADDRESS
 #endif /* PM_PCD_SRAM_ADDRESS */
 
-#endif /* CONFIG_PCD_CMD_ADDRESS */
+/* Offset which the application should be copied into */
+#define PCD_NET_CORE_APP_OFFSET PM_CPUNET_B0N_CONTAINER_SIZE
+#else
+/* PCD command block location is static. */
+#define PCD_CMD_ADDRESS DT_REG_ADDR(DT_NODELABEL(sram0_first_shared))
+#endif
 
 #ifdef CONFIG_PCD_APP
 
 #include <hal/nrf_reset.h>
 #include <hal/nrf_spu.h>
 
-/** Offset which the application should be copied into */
-#ifdef CONFIG_PCD_USE_CONSTANTS
-//#define PCD_NET_CORE_APP_OFFSET CONFIG_PCD_NET_CORE_APP_OFFSET
-//TODO: hack
-#define PCD_NET_CORE_APP_OFFSET 0x86000
-#else
-#define PCD_NET_CORE_APP_OFFSET PM_CPUNET_B0N_CONTAINER_SIZE
-#endif
 
-#define NETWORK_CORE_UPDATE_CHECK_TIME K_SECONDS(2)
+#define NETWORK_CORE_UPDATE_CHECK_TIME K_SECONDS(1)
 
 static void network_core_finished_check_handler(struct k_timer *timer);
 
@@ -129,9 +122,10 @@ printk("s1\n");
 	rc = stream_flash_init(&stream, fdev, buf, sizeof(buf), pcd_cmd_p->offset,
 			       DT_REG_SIZE(DT_NODELABEL(s0_partition)), NULL);
 #endif
+printk("vars %p, %p, %d, %ld, %d\n", fdev, buf, sizeof(buf), pcd_cmd_p->offset, DT_REG_SIZE(DT_NODELABEL(s0_partition)));
 	if (rc != 0) {
 		LOG_ERR("stream_flash_init failed: %d", rc);
-printk("s2 %p, %p, %d, %ld, %d\n", fdev, buf, sizeof(buf), pcd_cmd_p->offset, DT_REG_SIZE(DT_NODELABEL(s0_partition)));
+printk("s2\n");
 		return rc;
 	}
 
