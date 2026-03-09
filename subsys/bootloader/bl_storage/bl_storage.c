@@ -19,7 +19,7 @@
 #define BL_STORAGE_ADDRESS	PM_PROVISION_ADDRESS
 #else
 /* Address of storage as seen in processor address space */
-#define BL_STORAGE_ADDRESS	CONFIG_SECURE_BOOT_STORAGE_ADDRESS
+#define BL_STORAGE_ADDRESS DT_REG_ADDR(DT_NODELABEL(bl_storage))
 #endif
 
 const volatile struct bl_storage_data *BL_STORAGE =

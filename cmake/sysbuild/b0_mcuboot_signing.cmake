@@ -39,9 +39,9 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
     # at application cmake level.
     set(part_label)
     if(application STREQUAL "mcuboot")
-      set(part_label "s0_slot")
+      set(part_label "s0_partition")
     elseif(application STREQUAL "s1_image")
-      set(part_label "s1_slot")
+      set(part_label "s1_partition")
     else()
       set(part_label "s0_partition")
 #      message(FATAL_ERROR "No mapping for ${application}")
@@ -186,16 +186,16 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT)
     else()
       # The same DTS is used for all images, so the application selection does not
       # matter here, so we just use the mcuboot
-      dt_partition_addr(s0_slot_address LABEL "s0_slot" TARGET mcuboot ABSOLUTE REQUIRED)
-      dt_partition_size(s0_slot_size LABEL "s0_slot" TARGET mcuboot REQUIRED)
-      dt_partition_addr(s1_slot_address LABEL "s1_slot" TARGET mcuboot ABSOLUTE REQUIRED)
-      dt_partition_size(s1_slot_size LABEL "s1_slot" TARGET mcuboot REQUIRED)
+      dt_partition_addr(s0_slot_address LABEL "s0_partition" TARGET mcuboot ABSOLUTE REQUIRED)
+      dt_partition_size(s0_slot_size LABEL "s0_partition" TARGET mcuboot REQUIRED)
+      dt_partition_addr(s1_slot_address LABEL "s1_partition" TARGET mcuboot ABSOLUTE REQUIRED)
+      dt_partition_size(s1_slot_size LABEL "s1_partition" TARGET mcuboot REQUIRED)
     endif()
 
     # Signing the MCUboot image, secondary stage bootloader, that will be running from S1 slot.
     if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
       ncs_secure_boot_mcuboot_sign(s1_image "${bin_files}" "${signed_targets}" "")
-      set(extra_bin_data "signed_by_mcuboot_and_b0_s1_image.binload_address=${s1_slot_address};signed_by_mcuboot_and_b0_s1_image.binslot=1")
+      set(extra_bin_data "signed_by_mcuboot_and_b0_s1_image.binload_address=${s1_partition_address};signed_by_mcuboot_and_b0_s1_image.binslot=1")
     endif()
 
     if(bin_files)
@@ -209,7 +209,7 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT)
         TYPE mcuboot
         IMAGE mcuboot
         SCRIPT_PARAMS
-        "signed_by_mcuboot_and_b0_mcuboot.binload_address=${s0_slot_address}"
+        "signed_by_mcuboot_and_b0_mcuboot.binload_address=${s0_partition_address}"
         ${extra_bin_data}
         "version_MCUBOOT=${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION}"
         "version_B0=${mcuboot_fw_info_firmware_version}"

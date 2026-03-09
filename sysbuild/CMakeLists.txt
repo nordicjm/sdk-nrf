@@ -717,12 +717,17 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
 
         add_overlay_dts(
           mcuboot
+          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot.overlay
+        )
+
+        add_overlay_dts(
+          ${DEFAULT_IMAGE}
           ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
-          )
+        )
         if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
           add_overlay_dts(
             s1_image
-            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
+            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot.overlay
             )
         endif()
       else()

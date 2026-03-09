@@ -51,7 +51,6 @@ int main(void)
 	int err;
 	const struct device *fdev = DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller));
 
-printk("b0o\n");
 	if (!device_is_ready(fdev)) {
 		printk("Flash device not ready\n");
 		return 0;

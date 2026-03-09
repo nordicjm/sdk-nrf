@@ -423,7 +423,6 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 		if (!external) {
 			LOG_ERR("NULL parameter.");
 		}
-printk("q1\n");
 		return false;
 	}
 
@@ -431,7 +430,6 @@ printk("q1\n");
 		if (!external) {
 			LOG_ERR("Invalid firmware info format.");
 		}
-printk("q2\n");
 		return false;
 	}
 
@@ -439,7 +437,6 @@ printk("q2\n");
 		if (!external) {
 			LOG_ERR("The firmware doesn't belong at destination addr.");
 		}
-printk("q3: 0x%x vs 0x%x\n", fw_dst_address, fwinfo->address);
 		return false;
 	}
 
@@ -447,7 +444,6 @@ printk("q3: 0x%x vs 0x%x\n", fw_dst_address, fwinfo->address);
 		if (!external) {
 			LOG_ERR("src and dst must be equal for local calls.");
 		}
-printk("q4\n");
 		return false;
 	}
 
@@ -455,7 +451,6 @@ printk("q4\n");
 		if (!external) {
 			LOG_ERR("Firmware info doesn't point to itself.");
 		}
-printk("q5\n");
 		return false;
 	}
 
@@ -464,14 +459,12 @@ printk("q5\n");
 			LOG_ERR("Firmware has been invalidated: 0x%x.",
 				fwinfo->valid);
 		}
-printk("q6\n");
 		return false;
 	}
 
 	if (!external) {
 		LOG_INF("Trying to get Firmware version");
 	}
-printk("q7\n");
 
 #ifdef CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION
 #if defined(CONFIG_NRFX_NVMC)
@@ -486,7 +479,6 @@ printk("q7\n");
 		if (!external) {
 			LOG_ERR("Cannot read the firmware version. %d", err);
 		}
-printk("q8\n");
 		return false;
 	}
 
@@ -495,7 +487,6 @@ printk("q8\n");
 			LOG_ERR("Firmware version (%u) is smaller than monotonic counter (%u).",
 				fwinfo->version, stored_version);
 		}
-printk("q9\n");
 		return false;
 	}
 #endif /* CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION */
@@ -506,7 +497,6 @@ printk("q9\n");
 		if (!external) {
 			LOG_ERR("Invalid size or total_size in firmware info.");
 		}
-printk("q10\n");
 		return false;
 	}
 #endif
@@ -516,7 +506,6 @@ printk("q10\n");
 		if (!external) {
 			LOG_ERR("Firmware info is not within signed region.");
 		}
-printk("q11\n");
 		return false;
 	}
 
@@ -525,7 +514,6 @@ printk("q11\n");
 			LOG_ERR("Boot address is not within signed region.");
 		}
 		return false;
-printk("q12\n");
 	}
 
 	/* Wait until this point to set these values as we must know that we
@@ -539,7 +527,6 @@ printk("q12\n");
 			LOG_ERR("Reset handler is not within signed region.");
 		}
 		return false;
-printk("q13\n");
 	}
 
 	fw_val_info = validation_info_find(fw_src_address + fwinfo->size, 4);
@@ -549,7 +536,6 @@ printk("q13\n");
 			LOG_ERR("Could not find valid firmware validation info.");
 		}
 		return false;
-printk("q14\n");
 	}
 
 	if (fw_val_info->address != fwinfo->address) {
@@ -557,7 +543,6 @@ printk("q14\n");
 			LOG_ERR("Validation info doesn't belong to this firmware.");
 		}
 		return false;
-printk("q15\n");
 	}
 
 #if defined(CONFIG_SB_VALIDATE_FW_SIGNATURE)
