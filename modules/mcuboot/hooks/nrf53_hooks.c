@@ -80,9 +80,8 @@ int boot_read_image_header_hook(int img_index, int slot, struct image_header *im
 		img_head->ih_img_size = PM_CPUNET_APP_SIZE;
 #else
 		img_head->ih_hdr_size = CONFIG_NCS_MCUBOOT_IMAGE_HEADER_SIZE;
-		img_head->ih_load_addr = 0x10000000;
-//TODO: investigate the size mismatch
-		img_head->ih_img_size = DT_REG_SIZE(DT_NODELABEL(slot2_partition)) - (32*1024);
+		img_head->ih_load_addr = DT_REG_ADDR(DT_NODELABEL(slot2_partition));
+		img_head->ih_img_size = PCD_NET_CORE_APP_SIZE;
 #endif
 		img_head->ih_flags = 0;
 		img_head->ih_ver.iv_major = 0;
@@ -139,16 +138,14 @@ int network_core_update(bool wait)
 	void *mock_flash;
 	size_t mock_size;
 
-#if 0
 #ifdef CONFIG_PARTITION_MANAGER_ENABLED
 	mock_flash_dev = DEVICE_DT_GET(DT_NODELABEL(PM_MCUBOOT_PRIMARY_1_DEV));
 #else
-	mock_flash_dev = DEVICE_DT_GET(DT_NODELABEL(flash_sim0));
+	mock_flash_dev = DEVICE_DT_GET(DT_NODELABEL(nordic_ram_flash_controller));
 #endif
 	if (!device_is_ready(mock_flash_dev)) {
 		return -ENODEV;
 	}
-#endif
 
 	mock_flash = flash_simulator_get_memory(NULL, &mock_size);
 	hdr = (struct image_header *) mock_flash;
@@ -161,7 +158,7 @@ int network_core_update(bool wait)
 #ifdef CONFIG_PARTITION_MANAGER_ENABLED
 		if (reset_addr > PM_CPUNET_B0N_ADDRESS) {
 #else
-{
+		if (reset_addr > PCD_NET_CORE_APP_ADDRESS) {
 #endif
 			if (wait) {
 				return pcd_network_core_update(vtable, fw_size);

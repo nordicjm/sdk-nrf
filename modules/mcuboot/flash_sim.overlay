@@ -25,12 +25,13 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			erase-value = <0xff>;
+			status = "disabled";
 
 			/* This node label must match that used in the flash
 			 * simulator.
 			 */
 			flash_sim0: flash_sim@0 {
-				status = "okay";
+				status = "disabled";
 				compatible = "soc-nv-flash";
 				erase-block-size = <4096>;
 				write-block-size = <4>;

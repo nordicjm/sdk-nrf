@@ -1,5 +1,5 @@
 / {
 	chosen {
-		zephyr,code-partition = &b0n;
+		zephyr,code-partition = &b0n_partition;
 	};
 };
