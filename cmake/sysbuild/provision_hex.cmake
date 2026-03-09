@@ -105,27 +105,27 @@ function(provision application prefix_name)
     endif()
   else()
     if(cpunet_target)
-#      message(FATAL_ERROR "Still missing")
-#fuck
       dt_partition_addr(s0_slot_address LABEL "s0_partition" TARGET b0n ABSOLUTE REQUIRED)
       set(s0_arg --s0-addr ${s0_slot_address})
       set(s1_arg)
     else()
       # We can pick all of these from MCUboot image, as DTS partitions come from common
       # DTS and image header size is the same for all images for a given platform.
-      dt_partition_addr(s0_slot_address LABEL "s0_slot" TARGET mcuboot ABSOLUTE REQUIRED)
-      dt_partition_addr(s1_slot_address LABEL "s1_slot" TARGET mcuboot ABSOLUTE REQUIRED)
+      dt_partition_addr(s0_slot_address LABEL "s0_partition" TARGET mcuboot ABSOLUTE REQUIRED)
+      dt_partition_addr(s1_slot_address LABEL "s1_partition" TARGET mcuboot ABSOLUTE REQUIRED)
       set(s0_arg --s0-addr ${s0_slot_address})
       set(s1_arg --s1-addr ${s1_slot_address})
     endif()
 
-    if(cpunet_target)
-#    if(CONFIG_SECURE_BOOT)
-      # B0 is secure bootloader and we pick the address from its configuration.
-#      sysbuild_get(provision_size IMAGE b0 VAR CONFIG_SECURE_BOOT_STORAGE_SIZE KCONFIG)
-#      sysbuild_get(provision_address IMAGE b0 VAR CONFIG_SECURE_BOOT_STORAGE_ADDRESS KCONFIG)
-      sysbuild_get(provision_size IMAGE b0n VAR CONFIG_SECURE_BOOT_STORAGE_SIZE KCONFIG)
-      sysbuild_get(provision_address IMAGE b0n VAR CONFIG_SECURE_BOOT_STORAGE_ADDRESS KCONFIG)
+    if(CONFIG_SECURE_BOOT)
+      if(cpunet_target)
+        # B0 is secure bootloader and we pick the address from its configuration.
+        sysbuild_get(provision_size IMAGE b0n VAR CONFIG_SECURE_BOOT_STORAGE_SIZE KCONFIG)
+        sysbuild_get(provision_address IMAGE b0n VAR CONFIG_SECURE_BOOT_STORAGE_ADDRESS KCONFIG)
+      else()
+        sysbuild_get(provision_size IMAGE b0 VAR CONFIG_SECURE_BOOT_STORAGE_SIZE KCONFIG)
+        sysbuild_get(provision_address IMAGE b0 VAR CONFIG_SECURE_BOOT_STORAGE_ADDRESS KCONFIG)
+      endif()
     else(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
       # This is MCUboot downgrade prevention, so we pick the address from MCUboot config.
       sysbuild_get(provision_size IMAGE mcuboot VAR CONFIG_SECURE_BOOT_STORAGE_SIZE KCONFIG)
@@ -185,32 +185,41 @@ function(provision application prefix_name)
     )
   endif()
 
-  add_custom_target(
-    ${prefix_name}provision_target
-    DEPENDS
-    ${PROVISION_HEX}
-    ${PROVISION_DEPENDS}
-    )
-
-  get_property(
-    ${prefix_name}provision_set
-    GLOBAL PROPERTY ${prefix_name}provision_PM_HEX_FILE SET
-    )
-
-  if(NOT ${prefix_name}provision_set)
-    # Set hex file and target for the 'provision' placeholder partition.
-    # This includes the hex file (and its corresponding target) to the build.
-    set_property(
-      GLOBAL PROPERTY
-      ${prefix_name}provision_PM_HEX_FILE
-      ${PROVISION_HEX}
-      )
-
-    set_property(
-      GLOBAL PROPERTY
-      ${prefix_name}provision_PM_TARGET
+  if(SB_CONFIG_PARTITION_MANAGER)
+    add_custom_target(
       ${prefix_name}provision_target
+      DEPENDS
+      ${PROVISION_HEX}
+      ${PROVISION_DEPENDS}
+    )
+
+    get_property(
+      ${prefix_name}provision_set
+      GLOBAL PROPERTY ${prefix_name}provision_PM_HEX_FILE SET
+    )
+
+    if(NOT ${prefix_name}provision_set)
+      # Set hex file and target for the 'provision' placeholder partition.
+      # This includes the hex file (and its corresponding target) to the build.
+      set_property(
+        GLOBAL PROPERTY
+        ${prefix_name}provision_PM_HEX_FILE
+        ${PROVISION_HEX}
       )
+
+      set_property(
+        GLOBAL PROPERTY
+        ${prefix_name}provision_PM_TARGET
+        ${prefix_name}provision_target
+      )
+    endif()
+  else()
+    add_custom_target(
+      ${prefix_name}provision_target
+      ALL
+      DEPENDS
+      ${PROVISION_HEX}
+    )
   endif()
 endfunction()
 
