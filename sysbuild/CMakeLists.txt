@@ -1063,7 +1063,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
   ExternalProject_Get_Property(${DEFAULT_IMAGE} BINARY_DIR)
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${BINARY_DIR}/zephyr/.config)
 
-  if(NCS_SYSBUILD_PARTITION_MANAGER)
+  if(SB_CONFIG_PARTITION_MANAGER)
     if(SB_CONFIG_SECURE_BOOT AND SB_CONFIG_SECURE_BOOT_APPCORE AND SB_CONFIG_BOOTLOADER_MCUBOOT)
       ExternalProject_Get_Property(mcuboot BINARY_DIR)
       set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${BINARY_DIR}/zephyr/.config)
@@ -1080,10 +1080,6 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
     message(WARNING "nrf54ls05 needs to move away from partition manager, usage of PM is temporary")
   endif()
 endfunction(${SYSBUILD_CURRENT_MODULE_NAME}_post_cmake)
-
-# Enable use of partition manager with sysbuild.
-# Consider if this shoulc come through Sysbuild Kconfig flag.
-set(NCS_SYSBUILD_PARTITION_MANAGER TRUE)
 
 list(APPEND CMAKE_MODULE_PATH ${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/modules)
 include(ncs_sysbuild_extensions)

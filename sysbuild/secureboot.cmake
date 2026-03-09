@@ -26,9 +26,6 @@ if(SB_CONFIG_SECURE_BOOT)
         BOARD_REVISION ${BOARD_REVISION}
         BUILD_ONLY true
       )
-      set_target_properties(b0n PROPERTIES
-        IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
-      )
 
       if(NOT "CPUNET" IN_LIST PM_DOMAINS)
         list(APPEND PM_DOMAINS CPUNET)
@@ -46,10 +43,6 @@ if(SB_CONFIG_SECURE_BOOT)
         BOARD_REVISION ${BOARD_REVISION}
       )
 
-      set_target_properties(b0n PROPERTIES
-        IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
-      )
-
       include(image_flasher.cmake)
       add_image_flasher(NAME net_provision HEX_FILE "${CMAKE_BINARY_DIR}/net_provision.hex" BASE_IMAGE b0n)
 
@@ -65,21 +58,22 @@ if(SB_CONFIG_SECURE_BOOT)
         endif()
       endif()
     endif()
+
+    set_target_properties(b0n PROPERTIES
+      IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
+    )
   endif()
 
   if(SB_CONFIG_SECURE_BOOT_APPCORE)
     set(secure_boot_source_dir ${ZEPHYR_NRF_MODULE_DIR}/samples/bootloader)
 
-    ExternalZephyrProject_Add(
-      APPLICATION b0
-      SOURCE_DIR ${secure_boot_source_dir}
-      BUILD_ONLY true
-    )
-    set_target_properties(b0 PROPERTIES
-      IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
-    )
-
     if(SB_CONFIG_PARTITION_MANAGER)
+      ExternalZephyrProject_Add(
+        APPLICATION b0
+        SOURCE_DIR ${secure_boot_source_dir}
+        BUILD_ONLY true
+      )
+
       if(NOT "APP" IN_LIST PM_DOMAINS)
         list(APPEND PM_DOMAINS APP)
       endif()
@@ -87,7 +81,19 @@ if(SB_CONFIG_SECURE_BOOT)
         PM_APP_IMAGES
         "b0"
       )
+    else()
+      ExternalZephyrProject_Add(
+        APPLICATION b0
+        SOURCE_DIR ${secure_boot_source_dir}
+      )
+
+      include(image_flasher.cmake)
+      add_image_flasher(NAME app_provision HEX_FILE "${CMAKE_BINARY_DIR}/app_provision.hex")
     endif()
+
+    set_target_properties(b0 PROPERTIES
+      IMAGE_CONF_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/image_configurations/b0_image_default.cmake
+    )
   endif()
 
   if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)

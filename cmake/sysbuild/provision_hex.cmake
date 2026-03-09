@@ -111,8 +111,8 @@ function(provision application prefix_name)
     else()
       # We can pick all of these from MCUboot image, as DTS partitions come from common
       # DTS and image header size is the same for all images for a given platform.
-      dt_partition_addr(s0_slot_address LABEL "s0_partition" TARGET mcuboot ABSOLUTE REQUIRED)
-      dt_partition_addr(s1_slot_address LABEL "s1_partition" TARGET mcuboot ABSOLUTE REQUIRED)
+      dt_partition_addr(s0_slot_address LABEL "s0_partition" TARGET ${DEFAULT_IMAGE} ABSOLUTE REQUIRED)
+      dt_partition_addr(s1_slot_address LABEL "s1_partition" TARGET ${DEFAULT_IMAGE} ABSOLUTE REQUIRED)
       set(s0_arg --s0-addr ${s0_slot_address})
       set(s1_arg --s1-addr ${s1_slot_address})
     endif()

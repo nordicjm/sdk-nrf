@@ -103,18 +103,18 @@ if(CONFIG_NCS_IS_VARIANT_IMAGE)
     elseif(soc_series_nrf54l EQUAL 1)
       # This is very similar to what happens with the nrf54h20 above, except it is done with Secure
       # Boot awareness. In Secure Boot configuration we expect MCUboot, or S0 image, to run from
-      # partition labeled s0_slot, and s1_image to run from partition labeled s1_slot.
+      # partition labeled s0_partition, and s1_image to run from partition labeled s1_slot.
       # Due how to entire "variant" configuration works, here, even though S1 image of MCUboot is
       # built, we will see configuration for MCUboot in S0, this also included code partition from
-      # DTS. Here, we only know that we are supposed to process MCUboot configured for s0_slot
-      # partition into s1_slot partition.
+      # DTS. Here, we only know that we are supposed to process MCUboot configured for s0_partition
+      # partition into s1_partition partition.
 
-      # First we will check if zephyr,code-partition is the same as s0_slot, to confirm that
-      # we even have good config to start with. We will also get the s1_slot partition parameters.
-      dt_partition_addr(s0_slot_addr LABEL "s0_slot" REQUIRED)
+      # First we will check if zephyr,code-partition is the same as s0_partition, to confirm that
+      # we even have good config to start with. We will also get the s1_partition partition parameters.
+      dt_partition_addr(s0_slot_addr LABEL "s0_partition" REQUIRED)
       if(code_partition_offset EQUAL s0_slot_addr)
-        dt_partition_addr(s1_slot_addr LABEL "s1_slot" REQUIRED)
-        dt_partition_addr(s1_slot_size LABEL "s1_slot" REQUIRED)
+        dt_partition_addr(s1_slot_addr LABEL "s1_partition" REQUIRED)
+        dt_partition_addr(s1_slot_size LABEL "s1_partition" REQUIRED)
 	foreach(line IN LISTS dotconfig_content)
 	  if("${line}" MATCHES "^CONFIG_FLASH_LOAD_OFFSET=.*$")
 	    string(REGEX REPLACE "CONFIG_FLASH_LOAD_OFFSET=(.*)" "CONFIG_FLASH_LOAD_OFFSET=${s1_slot_addr}" line ${line})
@@ -140,7 +140,7 @@ if(CONFIG_NCS_IS_VARIANT_IMAGE)
 	  list(APPEND autoconf_variant_content "${line}\n")
 	endforeach()
       else()
-        message(FATAL_ERROR "Expected zephyr,code-partition to match s0_slot partition for MCUboot build")
+        message(FATAL_ERROR "Expected zephyr,code-partition to match s0_partition partition for MCUboot build")
       endif()
     else()
       message(FATAL_ERROR "Unexpected path")

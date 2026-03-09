@@ -49,7 +49,11 @@
 /* S0/S1 both have the same pad size */
 #define APP_HEADER_SKIP	PM_S0_PAD_SIZE
 #else
+#if CONFIG_MCUBOOT_MCUBOOT_IMAGE_NUMBER == -1
+#define APP_HEADER_SKIP	0
+#else
 #define APP_HEADER_SKIP	CONFIG_SB_IMAGE_BOOT_OFFSET
+#endif
 #endif
 
 #if defined(CONFIG_FPROTECT)

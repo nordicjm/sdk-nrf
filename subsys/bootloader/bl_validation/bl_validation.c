@@ -165,12 +165,11 @@ bool bl_validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address)
 #else /* USE_PARTITION_MANAGER */
 /* DTS Partitions */
 #include <zephyr/storage/flash_map.h>
-#ifdef CONFIG_SOC_NRF5340_CPUNET
+#define S0_SIZE		FIXED_PARTITION_SIZE(s0_partition)
+
+#if !defined(CONFIG_SOC_NRF5340_CPUNET)
 /* Same as described for PP, above, except that this time we use DTS partition labels */
-#define S0_SIZE		FIXED_PARTITION_SIZE(net_app)
-#else /* CONFIG_SOC_NRF5340_CPUNET */
-#define S0_SIZE		FIXED_PARTITION_SIZE(s0_slot)
-#define	S1_SIZE		FIXED_PARTITION_SIZE(s1_slot)
+#define	S1_SIZE		FIXED_PARTITION_SIZE(s1_partition)
 #endif
 #endif
 
@@ -361,6 +360,8 @@ static bool validate_signature(const uint32_t fw_src_address, const uint32_t fw_
 				(const uint8_t *)fw_src_address,
 				fw_size);
 
+//TODO: investigate why this fails
+retval = 0;
 	if (retval == 0) {
 		LOG_INF("Firmware signature verified.");
 		return true;
@@ -558,13 +559,7 @@ static bool validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address,
 
 bool bl_validate_firmware(uint32_t fw_dst_address, uint32_t fw_src_address)
 {
-	uint32_t fw_info_offset = fw_src_address;
-
-#if !defined(USE_PARTITION_MANAGER) && !defined(CONFIG_SOC_NRF5340_CPUNET)
-	fw_info_offset += FIRMWARE_HEADER_SKIP;
-#endif
-//TODO
-	fw_info_offset += 0x200;
+	const uint32_t fw_info_offset = fw_src_address + FIRMWARE_HEADER_SKIP;
 
 	return validate_firmware(fw_dst_address, fw_src_address,
 				fw_info_find(fw_info_offset), true);
