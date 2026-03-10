@@ -49,10 +49,16 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
 
     # Get the partition node and pick size from it.
     dt_partition_size(slot_size LABEL "${part_label}" TARGET ${application} REQUIRED)
+    dt_partition_addr(slot_address LABEL "${part_label}" TARGET ${application} REQUIRED)
     # Header size is picked from the image that is being signed.
     sysbuild_get(header_size IMAGE mcuboot VAR CONFIG_NCS_MCUBOOT_IMAGE_HEADER_SIZE KCONFIG)
   endif()
-  set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size ${slot_size} --pad-header --header-size ${header_size})
+
+  if(SB_CONFIG_PARTITION_MANAGER)
+    set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size ${slot_size} --pad-header --header-size ${header_size} --rom-fixed ${slot_address})
+  else()
+    set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size ${slot_size} --header-size ${header_size} --rom-fixed ${slot_address})
+  endif()
 
   if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
     set(imgtool_extra --security-counter ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
