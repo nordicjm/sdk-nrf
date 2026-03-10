@@ -13,7 +13,6 @@
 
 LOG_MODULE_REGISTER(bl_validation, CONFIG_SECURE_BOOT_VALIDATION_LOG_LEVEL);
 
-#ifndef CONFIG_SOC_NRF5340_CPUNET
 /* Firmware image contains header, that precedes executable code;
  * fw_info is placed within image at CONFIG_FW_INFO_OFFSET from the
  * beginning of executable code. This means that within firmware image
@@ -33,7 +32,6 @@ LOG_MODULE_REGISTER(bl_validation, CONFIG_SECURE_BOOT_VALIDATION_LOG_LEVEL);
 #define FIRMWARE_HEADER_SKIP	PM_MCUBOOT_PAD_SIZE
 #else
 #define FIRMWARE_HEADER_SKIP	CONFIG_SB_IMAGE_BOOT_OFFSET
-#endif
 #endif
 
 #ifdef CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION

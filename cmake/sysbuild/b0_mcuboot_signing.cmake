@@ -44,7 +44,6 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
       set(part_label "s1_partition")
     else()
       set(part_label "s0_partition")
-#      message(FATAL_ERROR "No mapping for ${application}")
     endif()
 
     # Get the partition node and pick size from it.
@@ -55,10 +54,14 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
   endif()
 
   if(SB_CONFIG_PARTITION_MANAGER)
-    set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size ${slot_size} --pad-header --header-size ${header_size} --rom-fixed ${slot_address})
+    set(pad_header --pad-header)
+  elseif("${prefix}" STREQUAL "CPUNET_")
+    set(pad_header --pad-header)
   else()
-    set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size ${slot_size} --header-size ${header_size} --rom-fixed ${slot_address})
+    set(pad_header)
   endif()
+
+  set(imgtool_sign ${PYTHON_EXECUTABLE} ${IMGTOOL} sign --version ${SB_CONFIG_SECURE_BOOT_MCUBOOT_VERSION} --align 4 --slot-size ${slot_size} --header-size ${header_size} ${pad_header} --rom-fixed ${slot_address})
 
   if(SB_CONFIG_MCUBOOT_HARDWARE_DOWNGRADE_PREVENTION)
     set(imgtool_extra --security-counter ${SB_CONFIG_MCUBOOT_HW_DOWNGRADE_PREVENTION_COUNTER_VALUE})
