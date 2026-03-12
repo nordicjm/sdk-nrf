@@ -72,7 +72,8 @@ function(provision application prefix_name)
 
     b0_sign_image(${application} ${cpunet_target})
     if(NOT cpunet_target AND SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-      b0_sign_image("s1_image" n)
+      b0_image_name(s1_image_name)
+      b0_sign_image(${s1_image_name} n)
     endif()
   endif()
 

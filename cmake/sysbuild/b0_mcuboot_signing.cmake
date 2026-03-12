@@ -34,21 +34,10 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
     set(slot_size $<TARGET_PROPERTY:partition_manager,${prefix}PM_${application_uppercase}_SIZE>)
     set(header_size ${SB_CONFIG_PM_MCUBOOT_PAD})
   else()
-    # With partition manager disabled we need to map applications to partitions by hand as there
-    # is no reflection in application name in partitions. This mapping should probably by done
-    # at application cmake level.
-    set(part_label)
-    if(application STREQUAL "mcuboot")
-      set(part_label "s0_partition")
-    elseif(application STREQUAL "s1_image")
-      set(part_label "s1_partition")
-    else()
-      set(part_label "s0_partition")
-    endif()
-
     # Get the partition node and pick size from it.
-    dt_partition_size(slot_size LABEL "${part_label}" TARGET ${application} REQUIRED)
-    dt_partition_addr(slot_address LABEL "${part_label}" TARGET ${application} REQUIRED)
+    dt_chosen(code_partition_path PROPERTY "zephyr,code-partition" TARGET ${application})
+    dt_partition_size(slot_size PATH "${code_partition_path}" TARGET ${application} REQUIRED)
+    dt_partition_addr(slot_address PATH "${code_partition_path}" TARGET ${application} REQUIRED)
     # Header size is picked from the image that is being signed.
     sysbuild_get(header_size IMAGE mcuboot VAR CONFIG_NCS_MCUBOOT_IMAGE_HEADER_SIZE KCONFIG)
   endif()
@@ -203,8 +192,14 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT)
 
     # Signing the MCUboot image, secondary stage bootloader, that will be running from S1 slot.
     if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-      ncs_secure_boot_mcuboot_sign(s1_image "${bin_files}" "${signed_targets}" "")
-      set(extra_bin_data "signed_by_mcuboot_and_b0_s1_image.binload_address=${s1_partition_address};signed_by_mcuboot_and_b0_s1_image.binslot=1")
+      if(SB_CONFIG_PARTITION_MANAGER)
+        ncs_secure_boot_mcuboot_sign(s1_image "${bin_files}" "${signed_targets}" "")
+        set(extra_bin_data "signed_by_mcuboot_and_b0_s1_image.binload_address=${s1_partition_address};signed_by_mcuboot_and_b0_s1_image.binslot=1")
+      else()
+        b0_image_name(s1_image_name)
+        ncs_secure_boot_mcuboot_sign(${s1_image_name} "${bin_files}" "${signed_targets}" "")
+        set(extra_bin_data "signed_by_mcuboot_and_b0_${s1_image_name}.binload_address=${s1_partition_address};signed_by_mcuboot_and_b0_${s1_image_name}.binslot=1")
+      endif()
     endif()
 
     if(bin_files)
@@ -229,8 +224,12 @@ if(SB_CONFIG_BOOTLOADER_MCUBOOT)
   endif()
 
   if(SB_CONFIG_SECURE_BOOT_NETCORE)
-    get_property(image_name GLOBAL PROPERTY DOMAIN_APP_CPUNET)
-    ncs_secure_boot_mcuboot_sign(${image_name} "${bin_files}" "${signed_targets}" CPUNET_)
+    if(SB_CONFIG_PARTITION_MANAGER)
+      get_property(image_name GLOBAL PROPERTY DOMAIN_APP_CPUNET)
+      ncs_secure_boot_mcuboot_sign(${image_name} "${bin_files}" "${signed_targets}" CPUNET_)
+    else()
+      ncs_secure_boot_mcuboot_sign(${SB_CONFIG_NETCORE_IMAGE_NAME} "${bin_files}" "${signed_targets}" CPUNET_)
+    endif()
   endif()
 
   # Clear temp variables

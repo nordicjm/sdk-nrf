@@ -8,11 +8,12 @@ function(dfu_app_b0_zip_package)
   sysbuild_get(app_fw_info_firmware_version IMAGE ${DEFAULT_IMAGE} VAR CONFIG_FW_INFO_FIRMWARE_VERSION KCONFIG)
 
   set(s0_name "signed_by_b0_${DEFAULT_IMAGE}.bin")
-  set(s1_name signed_by_b0_s1_image.bin)
+  b0_image_name(s1_image_name)
+  set(s1_name signed_by_b0_${s1_image_name}.bin)
 
   generate_dfu_zip(
     OUTPUT ${CMAKE_BINARY_DIR}/dfu_application.zip
-    BIN_FILES ${CMAKE_BINARY_DIR}/signed_by_b0_${DEFAULT_IMAGE}.bin ${CMAKE_BINARY_DIR}/signed_by_b0_s1_image.bin
+    BIN_FILES ${CMAKE_BINARY_DIR}/signed_by_b0_${DEFAULT_IMAGE}.bin ${CMAKE_BINARY_DIR}/signed_by_b0_${s1_image_name}.bin
     ZIP_NAMES ${s0_name} ${s1_name}
     TYPE application
     IMAGE ${DEFAULT_IMAGE}

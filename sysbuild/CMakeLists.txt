@@ -64,6 +64,18 @@ function(include_hpf)
   include(${ZEPHYR_NRF_MODULE_DIR}/cmake/sysbuild/hpf.cmake)
 endfunction()
 
+function(b0_image_name var)
+  if(SB_CONFIG_PARTITION_MANAGER)
+    set(${var} s1_image PARENT_SCOPE)
+  else()
+    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+      set(${var} mcuboot_s1_variant PARENT_SCOPE)
+    else()
+      set(${var} ${DEFAULT_IMAGE}_s1_variant PARENT_SCOPE)
+    endif()
+  endif()
+endfunction()
+
 function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
   cmake_parse_arguments(PRE_CMAKE "" "" "IMAGES" ${ARGN})
   restore_ncs_vars()
@@ -88,6 +100,8 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       set_config_bool(${image} CONFIG_BUILD_OUTPUT_HEX n)
     endif()
   endforeach()
+
+  b0_image_name(s1_image_name)
 
   if(SB_CONFIG_BOOTLOADER_MCUBOOT)
     find_program(IMGTOOL imgtool.py HINTS ${ZEPHYR_MCUBOOT_MODULE_DIR}/scripts/ NAMES imgtool NAMES_PER_DIR)
@@ -600,7 +614,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       set_target_properties(b0 PROPERTIES BOARD ${board_target_secure})
 
       if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-        set_target_properties(s1_image PROPERTIES BOARD ${board_target_secure})
+        set_target_properties(${s1_image_name} PROPERTIES BOARD ${board_target_secure})
       endif()
     endif()
 
@@ -636,7 +650,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       endif()
 
       if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-        set_config_bool(s1_image CONFIG_SB_MONOTONIC_COUNTER_IS_ENABLED y)
+        set_config_bool(${s1_image_name} CONFIG_SB_MONOTONIC_COUNTER_IS_ENABLED y)
       endif()
     else()
       set_config_bool(b0 CONFIG_SB_MONOTONIC_COUNTER_ROLLBACK_PROTECTION n)
@@ -648,7 +662,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       endif()
 
       if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-        set_config_bool(s1_image CONFIG_SB_MONOTONIC_COUNTER_IS_ENABLED n)
+        set_config_bool(${s1_image_name} CONFIG_SB_MONOTONIC_COUNTER_IS_ENABLED n)
       endif()
     endif()
 
@@ -726,7 +740,7 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
         )
         if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
           add_overlay_dts(
-            s1_image
+            ${s1_image_name}
             ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot.overlay
             )
         endif()

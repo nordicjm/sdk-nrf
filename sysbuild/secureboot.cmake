@@ -45,6 +45,9 @@ if(SB_CONFIG_SECURE_BOOT)
 
       include(image_flasher.cmake)
       add_image_flasher(NAME net_provision HEX_FILE "${CMAKE_BINARY_DIR}/net_provision.hex" BASE_IMAGE b0n)
+      add_overlay_dts(${SB_CONFIG_NETCORE_IMAGE_NAME}
+        ${ZEPHYR_NRF_MODULE_DIR}/snippets/s0-partition/s0-partition.overlay
+      )
 
       if(SB_CONFIG_NETCORE_APP_UPDATE)
         # PCD requires the offset of the s0 partition which is read from the b0n image, therefore
@@ -97,19 +100,39 @@ if(SB_CONFIG_SECURE_BOOT)
   endif()
 
   if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
-    set(image s1_image)
-
-    if(SB_CONFIG_BOOTLOADER_MCUBOOT)
-      ExternalNcsVariantProject_Add(APPLICATION mcuboot VARIANT ${image})
-    else()
-      ExternalNcsVariantProject_Add(APPLICATION ${DEFAULT_IMAGE} VARIANT ${image})
-    endif()
-
     if(SB_CONFIG_PARTITION_MANAGER)
+      set(image s1_image)
+
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        ExternalNcsVariantProject_Add(APPLICATION mcuboot VARIANT ${image})
+      else()
+        ExternalNcsVariantProject_Add(APPLICATION ${DEFAULT_IMAGE} VARIANT ${image})
+      endif()
+
       set_property(GLOBAL APPEND PROPERTY
         PM_APP_IMAGES
         "${image}"
       )
+    else()
+      if(SB_CONFIG_BOOTLOADER_MCUBOOT)
+        ExternalZephyrVariantProject_Add(
+          APPLICATION mcuboot_s1_variant
+          SOURCE_APP mcuboot
+          SNIPPET s1-partition
+        )
+
+        add_overlay_dts(mcuboot ${ZEPHYR_NRF_MODULE_DIR}/snippets/s0-partition/s0-partition.overlay)
+      else()
+        ExternalZephyrVariantProject_Add(
+          APPLICATION ${DEFAULT_IMAGE}_s1_variant
+          SOURCE_APP ${DEFAULT_IMAGE}
+          SNIPPET s1-partition
+        )
+
+        add_overlay_dts(${DEFAULT_IMAGE}
+          ${ZEPHYR_NRF_MODULE_DIR}/snippets/s0-partition/s0-partition.overlay
+        )
+      endif()
     endif()
   endif()
 endif()
