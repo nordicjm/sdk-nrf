@@ -33,6 +33,7 @@ function(ncs_secure_boot_mcuboot_sign application bin_files signed_targets prefi
     string(TOUPPER "${application}" application_uppercase)
     set(slot_size $<TARGET_PROPERTY:partition_manager,${prefix}PM_${application_uppercase}_SIZE>)
     set(header_size ${SB_CONFIG_PM_MCUBOOT_PAD})
+    set(slot_address $<TARGET_PROPERTY:partition_manager,${prefix}PM_${application_uppercase}_ADDRESS>)
   else()
     # Get the partition node and pick size from it.
     dt_chosen(code_partition_path PROPERTY "zephyr,code-partition" TARGET ${application})

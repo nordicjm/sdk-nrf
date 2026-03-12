@@ -29,7 +29,12 @@ LOG_MODULE_REGISTER(bl_validation, CONFIG_SECURE_BOOT_VALIDATION_LOG_LEVEL);
 #include <pm_config.h>
 
 /* S0/S1 both have the same pad size */
+#if defined(PM_MCUBOOT_PAD_SIZE)
 #define FIRMWARE_HEADER_SKIP	PM_MCUBOOT_PAD_SIZE
+#elif defined(CONFIG_SOC_NRF5340_CPUNET)
+//TODO: This
+#define FIRMWARE_HEADER_SKIP	0x200
+#endif
 #else
 #define FIRMWARE_HEADER_SKIP	CONFIG_SB_IMAGE_BOOT_OFFSET
 #endif

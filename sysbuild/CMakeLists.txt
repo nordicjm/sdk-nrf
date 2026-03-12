@@ -729,20 +729,33 @@ function(${SYSBUILD_CURRENT_MODULE_NAME}_pre_cmake)
       if(SB_CONFIG_NETCORE_APP_UPDATE)
         set_config_bool(mcuboot CONFIG_PCD_APP y)
 
-        add_overlay_dts(
-          mcuboot
-          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot.overlay
-        )
-
-        add_overlay_dts(
-          ${DEFAULT_IMAGE}
-          ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
-        )
-        if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
+        if(SB_CONFIG_PARTITION_MANAGER)
           add_overlay_dts(
-            ${s1_image_name}
-            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot.overlay
+            mcuboot
+            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot_pm.overlay
+          )
+
+          add_overlay_dts(
+            ${DEFAULT_IMAGE}
+            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_pm.overlay
+          )
+
+          if(SB_CONFIG_SECURE_BOOT_BUILD_S1_VARIANT_IMAGE)
+            add_overlay_dts(
+              ${s1_image_name}
+              ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot_pm.overlay
             )
+          endif()
+        else()
+          add_overlay_dts(
+            mcuboot
+            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim_mcuboot.overlay
+          )
+
+          add_overlay_dts(
+            ${DEFAULT_IMAGE}
+            ${ZEPHYR_NRF_MODULE_DIR}/modules/mcuboot/flash_sim.overlay
+          )
         endif()
       else()
         set_config_bool(mcuboot CONFIG_PCD_APP n)
