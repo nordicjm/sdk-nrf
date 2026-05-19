@@ -236,7 +236,12 @@ if(num_binaries GREATER 0)
       )
     endif()
 
-    add_custom_target(extra_img_${extra_image_number}_target ALL DEPENDS ${output_hex})
+#    add_custom_target(extra_img_${extra_image_number}_target ALL DEPENDS ${output_hex})
+   ExternalSysbuildImage_Add(NAME extra_img_${extra_image_number}_target
+                             TARGET ${output_hex}
+                             ALL
+)
+
 
     set_property(GLOBAL PROPERTY ${image_name}_PM_HEX_FILE ${output_hex})
     set_property(GLOBAL PROPERTY ${image_name}_PM_TARGET extra_img_${extra_image_number}_target)

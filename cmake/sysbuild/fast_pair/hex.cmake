@@ -109,12 +109,17 @@ function(fast_pair_hex_dts)
     USES_TERMINAL
     )
 
-  add_custom_target(
-    ${fp_partition_name}_target
-    ALL
-    DEPENDS
-    "${fp_provisioning_data_hex}"
-    )
+#  add_custom_target(
+#    ${fp_partition_name}_target
+#    ALL
+#    DEPENDS
+#    "${fp_provisioning_data_hex}"
+#    )
+
+   ExternalSysbuildImage_Add(NAME ${fp_partition_name}_target
+                             TARGET ${fp_provisioning_data_hex}
+                             ALL
+)
 endfunction()
 
 function(fast_pair_device_model_warning)

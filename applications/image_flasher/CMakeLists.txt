@@ -31,12 +31,9 @@ set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/zephyr)
 
 # Copy over Kconfig and dts files from the main image
 set(base_image_binary_dir ${PROJECT_BINARY_DIR}/../../${base_image}/zephyr)
-zephyr_file_copy(${base_image_binary_dir}/.config ${PROJECT_BINARY_DIR}/.config
-  ONLY_IF_DIFFERENT
-)
-zephyr_file_copy(${base_image_binary_dir}/edt.pickle ${PROJECT_BINARY_DIR}/edt.pickle
-  ONLY_IF_DIFFERENT
-)
+#zephyr_file_copy(${base_image_binary_dir}/edt.pickle ${PROJECT_BINARY_DIR}/edt.pickle
+#  ONLY_IF_DIFFERENT
+#)
 import_kconfig(CONFIG_ ${base_image_binary_dir}/.config)
 
 # Manually include board configuration to enable automatic runners.yaml generation

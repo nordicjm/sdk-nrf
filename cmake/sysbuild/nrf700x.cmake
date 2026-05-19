@@ -30,10 +30,14 @@ function(setup_nrf700x_xip_data)
   message(STATUS "nRF WiFi FW patch binary will be stored in external flash")
 
   if(NOT SB_CONFIG_PARTITION_MANAGER AND NOT SB_CONFIG_BOOTLOADER_MCUBOOT)
-    add_custom_target(nrf70_wifi_fw_patch_target
-      ALL
-      DEPENDS ${CMAKE_BINARY_DIR}/nrf70.hex
-    )
+#    add_custom_target(nrf70_wifi_fw_patch_target
+#      ALL
+#      DEPENDS ${CMAKE_BINARY_DIR}/nrf70.hex
+#    )
+   ExternalSysbuildImage_Add(NAME nrf70_wifi_fw_patch_target
+                             TARGET ${CMAKE_BINARY_DIR}/nrf70.hex
+                             ALL
+)
   else()
     add_custom_target(nrf70_wifi_fw_patch_target
       DEPENDS ${CMAKE_BINARY_DIR}/nrf70.hex
