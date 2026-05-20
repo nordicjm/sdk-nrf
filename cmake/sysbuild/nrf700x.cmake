@@ -34,10 +34,10 @@ function(setup_nrf700x_xip_data)
 #      ALL
 #      DEPENDS ${CMAKE_BINARY_DIR}/nrf70.hex
 #    )
-   ExternalSysbuildImage_Add(NAME nrf70_wifi_fw_patch_target
-                             TARGET ${CMAKE_BINARY_DIR}/nrf70.hex
-                             ALL
-)
+    ExternalImage_Add(TARGET nrf70_wifi_fw_patch_target
+      DEPENDENCIES ${CMAKE_BINARY_DIR}/nrf70.hex
+      ALL
+    )
   else()
     add_custom_target(nrf70_wifi_fw_patch_target
       DEPENDS ${CMAKE_BINARY_DIR}/nrf70.hex

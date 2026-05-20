@@ -223,20 +223,20 @@ function(provision application prefix_name)
 #      ${PROVISION_HEX}
 #    )
 
-  # Calculate the network board target
-  string(REPLACE "/" ";" split_board_qualifiers ";${BOARD_QUALIFIERS}")
-  list(GET split_board_qualifiers 1 target_soc)
-  list(GET split_board_qualifiers 2 target_cpucluster)
-  set(board_target_netcore "${BOARD}/${target_soc}/${SB_CONFIG_NETCORE_REMOTE_BOARD_TARGET_CPUCLUSTER}")
-  set(target_soc)
-  set(target_cpucluster)
+    # Calculate the network board target
+    string(REPLACE "/" ";" split_board_qualifiers ";${BOARD_QUALIFIERS}")
+    list(GET split_board_qualifiers 1 target_soc)
+    list(GET split_board_qualifiers 2 target_cpucluster)
+    set(board_target_netcore "${BOARD}/${target_soc}/${SB_CONFIG_NETCORE_REMOTE_BOARD_TARGET_CPUCLUSTER}")
+    set(target_soc)
+    set(target_cpucluster)
 
-   ExternalSysbuildImage_Add(NAME ${prefix_name}provision_target
-                             TARGET ${PROVISION_HEX}
-                             BOARD ${board_target_netcore}
-                             ALL
-)
-
+    ExternalImage_Add(TARGET ${prefix_name}provision_target
+      DEPENDENCIES ${PROVISION_HEX}
+      HEX_FILE ${PROVISION_HEX}
+      BOARD ${board_target_netcore}
+      ALL
+    )
   endif()
 endfunction()
 

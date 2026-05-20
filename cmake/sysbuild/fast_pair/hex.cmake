@@ -116,10 +116,11 @@ function(fast_pair_hex_dts)
 #    "${fp_provisioning_data_hex}"
 #    )
 
-   ExternalSysbuildImage_Add(NAME ${fp_partition_name}_target
-                             TARGET ${fp_provisioning_data_hex}
-                             ALL
-)
+  ExternalImage_Add(TARGET ${fp_partition_name}_target
+    DEPENDENCIES ${fp_provisioning_data_hex}
+    HEX_FILE ${fp_provisioning_data_hex}
+    ALL
+  )
 endfunction()
 
 function(fast_pair_device_model_warning)
