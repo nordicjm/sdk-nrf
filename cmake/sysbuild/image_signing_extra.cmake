@@ -248,6 +248,8 @@ if(num_binaries GREATER 0)
         PROPERTY sysbuild_merged_hex_dependencies_${board_target}
           extra_img_${extra_image_number}_target
       )
+
+      set(board_target)
     endif()
 
     set_property(GLOBAL PROPERTY ${image_name}_PM_HEX_FILE ${output_hex})

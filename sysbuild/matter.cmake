@@ -23,5 +23,7 @@ if(SB_CONFIG_ZEPHYR_CONNECTEDHOMEIP_MODULE AND SB_CONFIG_MATTER AND
     set_property(GLOBAL APPEND
       PROPERTY sysbuild_merged_hex_dependencies_${board_target} factory_data
     )
+
+    set(board_target)
   endif()
 endif()
