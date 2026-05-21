@@ -216,27 +216,27 @@ function(provision application prefix_name)
       )
     endif()
   else()
-#    add_custom_target(
-#      ${prefix_name}provision_target
-#      ALL
-#      DEPENDS
-#      ${PROVISION_HEX}
-#    )
-
-    # Calculate the network board target
-    string(REPLACE "/" ";" split_board_qualifiers ";${BOARD_QUALIFIERS}")
-    list(GET split_board_qualifiers 1 target_soc)
-    list(GET split_board_qualifiers 2 target_cpucluster)
-    set(board_target_netcore "${BOARD}/${target_soc}/${SB_CONFIG_NETCORE_REMOTE_BOARD_TARGET_CPUCLUSTER}")
-    set(target_soc)
-    set(target_cpucluster)
-
-    ExternalImage_Add(TARGET ${prefix_name}provision_target
-      DEPENDENCIES ${PROVISION_HEX}
-      HEX_FILE ${PROVISION_HEX}
-      BOARD ${board_target_netcore}
+    add_custom_target(
+      ${prefix_name}provision_target
       ALL
+      DEPENDS
+      ${PROVISION_HEX}
     )
+
+    if(SB_CONFIG_MERGED_HEX_FILES)
+      if(cpunet_target)
+        sysbuild_get(board_target IMAGE b0n VAR CONFIG_BOARD_TARGET KCONFIG)
+      else()
+        sysbuild_get(board_target IMAGE ${DEFAULT_IMAGE} VAR CONFIG_BOARD_TARGET KCONFIG)
+      endif()
+
+      string(REPLACE "/" "_" board_target ${board_target})
+      string(REPLACE "@" "_" board_target ${board_target})
+      set_property(GLOBAL APPEND
+        PROPERTY sysbuild_merged_hex_dependencies_${board_target} ${prefix_name}provision_target
+      )
+    endif()
+#message(WARNING "added ${prefix_name}provision_target to sysbuild_merged_hex_dependencies_${board_target}")
   endif()
 endfunction()
 

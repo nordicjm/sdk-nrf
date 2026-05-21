@@ -236,12 +236,12 @@ if(num_binaries GREATER 0)
       )
     endif()
 
-#    add_custom_target(extra_img_${extra_image_number}_target ALL DEPENDS ${output_hex})
-    ExternalImage_Add(TARGET extra_img_${extra_image_number}_target
-      DEPENDENCIES ${output_hex}
-      HEX_FILE ${output_hex}
-      ALL
-    )
+    add_custom_target(extra_img_${extra_image_number}_target ALL DEPENDS ${output_hex})
+#    ExternalImage_Add(TARGET extra_img_${extra_image_number}_target
+#      DEPENDENCIES ${output_hex}
+#      HEX_FILE ${output_hex}
+#      ALL
+#    )
 
     set_property(GLOBAL PROPERTY ${image_name}_PM_HEX_FILE ${output_hex})
     set_property(GLOBAL PROPERTY ${image_name}_PM_TARGET extra_img_${extra_image_number}_target)

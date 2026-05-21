@@ -25,8 +25,8 @@ function(add_image_flasher)
   set(${args_NAME}_HEX_FILE "${args_HEX_FILE}" CACHE FILEPATH "Hex file to flash" FORCE)
   set(IMAGE_FLASHER_DEFAULT_IMAGE ${DEFAULT_IMAGE} CACHE STRING "Default image" FORCE)
 
-  ExternalZephyrNonConfigProject_Add(
-#  ExternalZephyrProject_Add(
+#  ExternalZephyrNonConfigProject_Add(
+  ExternalZephyrProject_Add(
     APPLICATION ${args_NAME}
     SOURCE_DIR ${ZEPHYR_NRF_MODULE_DIR}/applications/image_flasher
   )

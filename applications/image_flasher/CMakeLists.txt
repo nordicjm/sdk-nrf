@@ -31,10 +31,27 @@ set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/zephyr)
 
 # Copy over Kconfig and dts files from the main image
 set(base_image_binary_dir ${PROJECT_BINARY_DIR}/../../${base_image}/zephyr)
-#zephyr_file_copy(${base_image_binary_dir}/edt.pickle ${PROJECT_BINARY_DIR}/edt.pickle
-#  ONLY_IF_DIFFERENT
-#)
-import_kconfig(CONFIG_ ${base_image_binary_dir}/.config)
+
+# No semi-colons are expected in needed Kconfig values so are not protected
+file(READ ${base_image_binary_dir}/.config base_image_config)
+string(REPLACE "\n" ";" base_image_config "${base_image_config}")
+set(image_flasher_config)
+
+foreach(line IN LISTS base_image_config)
+  if(line MATCHES "^CONFIG_SOC_SERIES" OR line MATCHES "^CONFIG_SOC_FAMILY" OR line MATCHES "^CONFIG_SOC_NRF" OR line MATCHES "^CONFIG_BOARD_")
+    list(APPEND image_flasher_config ${line})
+  endif()
+endforeach()
+
+string(REPLACE ";" "\n" image_flasher_config "${image_flasher_config}")
+file(WRITE ${PROJECT_BINARY_DIR}/.config.new ${image_flasher_config})
+zephyr_file_copy(${PROJECT_BINARY_DIR}/.config.new ${PROJECT_BINARY_DIR}/.config
+  ONLY_IF_DIFFERENT
+)
+zephyr_file_copy(${base_image_binary_dir}/edt.pickle ${PROJECT_BINARY_DIR}/edt.pickle
+  ONLY_IF_DIFFERENT
+)
+import_kconfig(CONFIG_ ${PROJECT_BINARY_DIR}/.config)
 
 # Manually include board configuration to enable automatic runners.yaml generation
 foreach(dir ${BOARD_DIRECTORIES})
