@@ -114,7 +114,7 @@ function(fast_pair_hex_dts)
     ALL
     DEPENDS
     "${fp_provisioning_data_hex}"
-    )
+  )
 
     if(SB_CONFIG_MERGED_HEX_FILES)
       set(board_target)
